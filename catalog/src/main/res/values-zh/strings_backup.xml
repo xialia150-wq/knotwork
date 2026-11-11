@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="knotwork_backup_settings_row">备份与恢复</string>
+    <string name="knotwork_backup_settings_row_sub">保留副本或迁移到新手机</string>
+    <string name="knotwork_backup_home_title">备份与恢复</string>
+    <string name="knotwork_backup_home_intro">单个文件，使用你指定的密码加密：包含聊天、记忆、流程、运行历史、触发器、设置和文件。不包含模型文件。</string>
+    <string name="knotwork_backup_home_no_server">Knotwork 不会上传任何内容。备份文件仅保存在你选择的位置。</string>
+    <string name="knotwork_backup_action_backup">备份…</string>
+    <string name="knotwork_backup_action_backup_sub">设置密码并选择文件保存位置</string>
+    <string name="knotwork_backup_action_restore">从文件恢复…</string>
+    <string name="knotwork_backup_action_restore_sub">将替换此手机上的所有内容</string>
+    <string name="knotwork_backup_backup_title">备份</string>
+    <string name="knotwork_backup_backup_lead">恢复时需要此密码。如果遗忘，任何人都无法打开此备份（包括我们）。</string>
+    <string name="knotwork_backup_pw_label">密码</string>
+    <string name="knotwork_backup_pw_rule">至少 12 个字符。使用几个无关的词语组合可提高密码强度。</string>
+    <string name="knotwork_backup_pw_short">密码太短。请至少输入 12 个字符。</string>
+    <string name="knotwork_backup_pw2_label">再次输入密码</string>
+    <string name="knotwork_backup_pw2_mismatch">与上方输入的密码不一致。</string>
+    <string name="knotwork_backup_secrets_label">包含 API 密钥与登录信息</string>
+    <string name="knotwork_backup_secrets_sub">云端 API 密钥、Hugging Face token 与 MCP 登录信息。若不包含，在新手机上需要重新输入。</string>
+    <string name="knotwork_backup_choose_where">选择保存位置</string>
+    <string name="knotwork_backup_working_title">正在备份</string>
+    <string name="knotwork_backup_step_password">正在保护密码</string>
+    <string name="knotwork_backup_step_db">聊天、记忆与设置</string>
+    <string name="knotwork_backup_step_files">文件与图片</string>
+    <string name="knotwork_backup_bytes">%1$s / %2$s</string>
+    <string name="knotwork_backup_keep_open">备份完成前请保持 Knotwork 打开。</string>
+    <string name="knotwork_backup_cancel">取消</string>
+    <string name="knotwork_backup_saved_title">备份已保存</string>
+    <string name="knotwork_backup_saved_keys_in">此文件中包含 API 密钥与登录信息。拥有该文件和密码的任何人均可使用它们。</string>
+    <string name="knotwork_backup_saved_keys_out">此文件中不包含 API 密钥与登录信息。</string>
+    <string name="knotwork_backup_saved_reminder">请妥善保管密码。没有密码将无法打开该文件。</string>
+    <plurals name="knotwork_backup_saved_skipped">
+        <item quantity="other">%1$s 个文件未包含在此备份中：文件名无法存储在备份中。</item>
+    </plurals>
+    <string name="knotwork_backup_done">完成</string>
+    <string name="knotwork_backup_failed_title">备份未保存</string>
+    <string name="knotwork_backup_failed_space">你选择的保存位置空间不足。需要约 %1$s。</string>
+    <string name="knotwork_backup_failed_write">你选择的位置停止接受该文件写入。</string>
+    <string name="knotwork_backup_failed_phone_full">此手机没有足够的可用空间来准备备份。</string>
+    <string name="knotwork_backup_failed_read">Knotwork 的部分数据无法读取。</string>
+    <string name="knotwork_backup_failed_deleted">未完成的文件已删除。</string>
+    <string name="knotwork_backup_failed_left">你需要自行删除未完成的文件 %1$s。</string>
+    <string name="knotwork_backup_try_again">重试</string>
+    <string name="knotwork_backup_close">关闭</string>
+    <string name="knotwork_backup_restore_title">恢复</string>
+    <string name="knotwork_backup_not_backup_title">不是 Knotwork 备份</string>
+    <string name="knotwork_backup_not_backup_body">%1$s 不是由 Knotwork 生成的备份。</string>
+    <string name="knotwork_backup_choose_another">选择其他文件</string>
+    <string name="knotwork_backup_this_file">此文件</string>
+    <string name="knotwork_backup_newer_title">请先更新 Knotwork</string>
+    <string name="knotwork_backup_newer_body">此备份由 Knotwork %1$s 生成。此手机安装的版本为 %2$s，无法读取该备份。</string>
+    <string name="knotwork_backup_made_with">由 Knotwork %1$s 生成于 %2$s</string>
+    <string name="knotwork_backup_restore_lead">请输入创建此备份时设置的密码。</string>
+    <string name="knotwork_backup_check">检查</string>
+    <string name="knotwork_backup_checking_title">正在检查备份</string>
+    <string name="knotwork_backup_step_check_password">正在验证密码</string>
+    <string name="knotwork_backup_step_check_file">正在检查文件的各个部分</string>
+    <string name="knotwork_backup_nothing_yet">此手机上的内容尚未被替换。</string>
+    <string name="knotwork_backup_wrong_password">密码错误，无法打开此备份。</string>
+    <string name="knotwork_backup_damaged_title">此备份已损坏</string>
+    <string name="knotwork_backup_damaged_body">文件的部分内容无法读取，因此无法恢复。</string>
+    <string name="knotwork_backup_incomplete_title">此备份不完整</string>
+    <string name="knotwork_backup_incomplete_body">文件提前结束，可能尚未完成复制。</string>
+    <string name="knotwork_backup_untouched">此手机上的任何内容均未更改。</string>
+    <string name="knotwork_backup_space_title">空间不足</string>
+    <string name="knotwork_backup_space_body">恢复需要在手机上预留 %1$s 可用空间。当前剩余 %2$s。</string>
+    <string name="knotwork_backup_space_ran_out">检查备份时此手机存储空间不足。</string>
+    <string name="knotwork_backup_read_failed_title">无法读取备份</string>
+    <string name="knotwork_backup_read_failed_body">检查时文件变为不可读，或此手机存储出现故障。</string>
+    <string name="knotwork_backup_phone_key_title">无法在此手机上恢复</string>
+    <string name="knotwork_backup_not_started_title">恢复尚未开始</string>
+    <string name="knotwork_backup_not_started_body">Knotwork 无法应用此备份。请从头重试。</string>
+    <string name="knotwork_backup_phone_key_body">Knotwork 无法读取此手机自身的数据库密钥，因此无法在此配置备份。</string>
+    <string name="knotwork_backup_summary_title">准备恢复</string>
+    <string name="knotwork_backup_summary_checked">密码与文件已通过验证</string>
+    <string name="knotwork_backup_summary_from">来自备份的内容</string>
+    <string name="knotwork_backup_summary_keys_in">API 密钥与登录信息：已包含</string>
+    <string name="knotwork_backup_summary_keys_out">API 密钥与登录信息：此备份中未包含</string>
+    <plurals name="knotwork_backup_summary_models">
+        <item quantity="other">需重新下载 %1$d 个模型 · %2$s</item>
+    </plurals>
+    <string name="knotwork_backup_summary_never">智能体安排的计划任务绝不会包含在备份中。</string>
+    <string name="knotwork_backup_summary_lost">将被覆盖丢失</string>
+    <string name="knotwork_backup_summary_lost_body">此手机上现有的所有内容：%1$s 及其设置。</string>
+    <string name="knotwork_backup_summary_lost_settings">此手机上现有的所有内容：其设置。</string>
+    <string name="knotwork_backup_replace">替换我的数据</string>
+    <string name="knotwork_backup_confirm_title">替换此手机上的所有内容？</string>
+    <string name="knotwork_backup_confirm_body">你当前的聊天、记忆、流程、文件和设置将被删除，并替换为备份中的内容。此操作无法撤销。</string>
+    <string name="knotwork_backup_confirm_prompt">输入 %1$s 以确认</string>
+    <string name="knotwork_backup_confirm_keyword">REPLACE</string>
+    <string name="knotwork_backup_confirm_action">替换</string>
+    <string name="knotwork_backup_restoring">正在恢复…</string>
+    <string name="knotwork_backup_restoring_sub">Knotwork 将在几秒后重启。</string>
+    <string name="knotwork_backup_after_title">已恢复</string>
+    <string name="knotwork_backup_after_sub">来自 %1$s 创建的备份</string>
+    <string name="knotwork_backup_after_models">需重新下载的模型</string>
+    <string name="knotwork_backup_download">下载</string>
+    <string name="knotwork_backup_discover">发现</string>
+    <string name="knotwork_backup_model_unknown">来源未知。请在“发现”中查找。</string>
+    <string name="knotwork_backup_download_needs_access">Hugging Face 拒绝了请求。如果该模型设有访问权限限制，请在 Hugging Face 上同意其许可并在“模型”中添加你的 token，然后重试。</string>
+    <string name="knotwork_backup_download_failed">下载未完成。请重试，或在“发现”中查找该模型。</string>
+    <string name="knotwork_backup_download_paused">已暂停：Android 限制了下载在后台运行的时间。</string>
+    <string name="knotwork_backup_download_mismatch">文件与 Hugging Face 发布的校验和不匹配，已被删除。</string>
+    <string name="knotwork_backup_after_keys">请在“设置”中重新输入你的 API 密钥，在“模型”中输入 Hugging Face token，并在“工具”中完成 MCP 登录。</string>
+    <string name="knotwork_backup_after_tasks">智能体安排的计划任务未结转。你可以要求它重新设置。</string>
+    <string name="knotwork_backup_cancel_download">取消下载</string>
+    <plurals name="knotwork_backup_n_chats">
+        <item quantity="other">%1$s 个聊天</item>
+    </plurals>
+    <plurals name="knotwork_backup_n_memories">
+        <item quantity="other">%1$s 条记忆</item>
+    </plurals>
+    <plurals name="knotwork_backup_n_pipelines">
+        <item quantity="other">%1$s 个流程</item>
+    </plurals>
+    <plurals name="knotwork_backup_n_files">
+        <item quantity="other">%1$s 个文件</item>
+    </plurals>
+    <plurals name="knotwork_backup_stat_chats">
+        <item quantity="other">聊天</item>
+    </plurals>
+    <plurals name="knotwork_backup_stat_memories">
+        <item quantity="other">记忆</item>
+    </plurals>
+    <plurals name="knotwork_backup_stat_pipelines">
+        <item quantity="other">流程</item>
+    </plurals>
+    <plurals name="knotwork_backup_stat_files">
+        <item quantity="other">文件</item>
+    </plurals>
+</resources>

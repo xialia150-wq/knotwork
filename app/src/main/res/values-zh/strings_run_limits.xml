@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="run_limits_entry_label">运行限制</string>
+    <string name="run_limits_entry_value" tools:ignore="PluralsCandidate">单次运行 %1$,d 步 · %2$,d token</string>
+    <string name="run_limits_entry_search">单次自主运行的限制：步数、token 以及不可限制的项目。</string>
+    <string name="run_limits_number" tools:ignore="PluralsCandidate">%1$,d</string>
+    <string name="run_limits_intro">自主运行在达到这些限制之一时会自动停止。该运行启动的所有内容均计入其中（包括其调用的流程以及每次恢复运行）。</string>
+    <string name="run_limits_group_steps">步数</string>
+    <string name="run_limits_group_tokens">Token</string>
+    <string name="run_limits_group_spend">费用</string>
+    <string name="run_limits_steps_label">单次运行步数</string>
+    <string name="run_limits_steps_desc">运行在停止前最多可执行的步数。一步代表执行一个节点。</string>
+    <string name="run_limits_steps_background_label">后台单次运行步数</string>
+    <string name="run_limits_steps_background_desc_set">适用于非你手动启动的运行，如触发器、定时计划、快捷设置图块或其他应用启动的运行。</string>
+    <string name="run_limits_steps_background_desc_inherited">未单独设置，因此非你手动启动的运行（触发器、定时计划、快捷设置图块或其他应用）将使用与上方相同的限制。</string>
+    <string name="run_limits_tokens_label">单次运行 Token 数</string>
+    <string name="run_limits_tokens_desc">一次运行总共可以发送和接收的 token 数量。</string>
+    <string name="run_limits_tokens_background_label">后台单次运行 Token 数</string>
+    <string name="run_limits_tokens_background_desc">非你手动启动的运行默认获得较低的 token 限制，因为没有人在旁关注其完成情况。</string>
+    <string name="run_limits_qualifier_inherited">与上方相同</string>
+    <string name="run_limits_spend_label">消费限额</string>
+    <string name="run_limits_spend_state">不计量</string>
+    <string name="run_limits_spend_body">应用使用你自己的 API 密钥运行，因此无法得知你的账单，也无法计量或限制运行产生的费用。上方的 token 限制是最接近的控制手段。</string>
+    <string name="run_limits_soft_note" formatted="false">在已打开的聊天中，运行在达到限制的 75% 时会向你发出警告，此时仍有余量可完成任务。警告阈值不可调整，暂停后恢复的运行可能会再次发出警告。</string>
+    <string name="run_termination_tone_limit">安全限制</string>
+    <string name="run_termination_tone_stuck">停滞</string>
+    <string name="run_termination_tone_info">运行结束</string>
+    <string name="run_termination_title_ceiling">因达到安全限制而停止</string>
+    <string name="run_termination_body_step_ceiling">本次运行已耗尽允许的所有步数。请提高步数限制，或将任务拆分为更小的运行。</string>
+    <string name="run_termination_body_token_ceiling">本次运行已耗尽允许的所有 token。请提高 token 限制，或缩小请求范围。</string>
+    <string name="run_termination_title_no_progress">已停止：运行毫无进展</string>
+    <string name="run_termination_body_no_progress">相同的工作一直在重复而未推进任务，因此该运行已被终止。</string>
+    <string name="run_termination_title_run_stalled">已停止：运行无响应</string>
+    <string name="run_termination_body_run_stalled">任务停止响应并已被终止，以便其他消息能够运行。其等待的步骤（通常是外部工具）始终未返回响应。</string>
+    <string name="run_termination_title_hitl_expired">已停止等待你的批准</string>
+    <string name="run_termination_body_hitl_expired">某个步骤需要你的批准，但在收到回复前等待窗口已关闭。</string>
+    <string name="run_termination_title_graph_changed">此运行暂停期间流程已被修改</string>
+    <string name="run_termination_body_graph_changed">此运行基于该流程的早期版本构建，因此无法从上次中断处继续。重新运行将使用当前版本。</string>
+    <string name="run_termination_title_process_died">此运行执行期间应用已停止</string>
+    <string name="run_termination_body_process_died">下次启动时发现该运行未完成并已将其关闭。未遗留任何处于半运行状态的任务。</string>
+    <string name="run_termination_title_discarded">你放弃了此运行</string>
+    <string name="run_termination_body_discarded">已按你的请求终止，未遗留任何正在运行的任务。</string>
+    <string name="run_termination_title_not_resumable">无法恢复此运行</string>
+    <string name="run_termination_body_not_resumable">已收到你的回复，但该运行此前已关闭。重新运行将从头开始。</string>
+    <string name="run_termination_meter_steps_live" tools:ignore="PluralsCandidate">已使用 %1$,d / %2$,d 步</string>
+    <string name="run_termination_meter_tokens_live" tools:ignore="PluralsCandidate">已使用 %1$,d / %2$,d token</string>
+    <string name="run_ceiling_pause_title">因达到安全限制而暂停</string>
+    <string name="run_ceiling_pause_body_steps" tools:ignore="PluralsCandidate">本次运行已耗尽允许的所有步数。你可以让它继续运行 %1$,d 步，或在此停止。</string>
+    <string name="run_ceiling_pause_body_tokens" tools:ignore="PluralsCandidate">本次运行已耗尽允许的所有 token。你可以让它继续消耗 %1$,d token，或在此停止。</string>
+    <string name="run_ceiling_pause_continue" tools:ignore="PluralsCandidate">继续（+%1$,d）</string>
+    <string name="run_ceiling_pause_stop">停止运行</string>
+    <string name="run_ceiling_pause_notification_title">某项运行正在等待你操作</string>
+    <string name="run_ceiling_pause_notification_text_steps" tools:ignore="PluralsCandidate">已使用 %1$,d / %2$,d 步。点按以决定是否继续运行。</string>
+    <string name="run_ceiling_pause_notification_text_tokens" tools:ignore="PluralsCandidate">已使用 %1$,d / %2$,d token。点按以决定是否继续运行。</string>
+    <string name="run_ceiling_channel_name">运行限制</string>
+    <string name="run_ceiling_channel_description">达到你设置的限制并正在等待指示是否继续的运行。</string>
+    <string name="run_termination_banner_step_ceiling" tools:ignore="PluralsCandidate">因达到安全限制而停止：已使用 %1$,d / %2$,d 步。</string>
+    <string name="run_termination_banner_token_ceiling" tools:ignore="PluralsCandidate">因达到安全限制而停止：已使用 %1$,d / %2$,d token。</string>
+    <string name="run_termination_banner_no_progress">已停止：运行毫无进展。</string>
+    <string name="run_termination_banner_run_stalled">已停止：某个步骤始终未返回响应。</string>
+    <string name="run_termination_banner_hitl_expired">已停止等待你的批准。</string>
+    <string name="run_termination_banner_graph_changed">此运行暂停期间流程已被修改。</string>
+    <string name="run_termination_banner_process_died">此运行执行期间应用已停止。</string>
+    <string name="run_termination_banner_discarded">你放弃了此运行。</string>
+    <string name="run_termination_banner_not_resumable">无法恢复此运行。</string>
+    <string name="run_termination_action_adjust_limits">调整限制</string>
+    <string name="run_termination_action_open_console">打开控制台</string>
+    <string name="run_termination_action_run_again">重新运行</string>
+    <string name="run_notice_soft_steps" tools:ignore="PluralsCandidate">接近步数限制：已使用 %1$,d / %2$,d 步。</string>
+    <string name="run_notice_soft_tokens" tools:ignore="PluralsCandidate">接近 token 限制：已使用 %1$,d / %2$,d token。</string>
+    <string name="run_notice_looks_stuck">本次运行似乎陷入停滞：同一步骤一直在重复。若情况未改变它将会停止。</string>
+    <string name="run_termination_notification_body_step_ceiling" tools:ignore="PluralsCandidate">“%1$s”在执行 %2$,d 步后因达到步数限制而停止。</string>
+    <string name="run_termination_notification_body_token_ceiling" tools:ignore="PluralsCandidate">“%1$s”在消耗 %2$,d token 后因达到 token 限制而停止。</string>
+    <string name="run_outcome_chat_failed_with_diagnostic">本次运行在作出回答前已停止：%1$s</string>
+    <string name="run_outcome_chat_failed">本次运行在作出回答前已停止。</string>
+    <string name="run_outcome_chat_cancelled">本次运行在作出回答前已被停止。</string>
+    <string name="run_outcome_chat_interrupted">本次运行已被中断且未完成。</string>
+</resources>

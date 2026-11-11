@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="backup_snack_cancelled">备份已取消。未完成的文件已删除。</string>
+    <string name="backup_snack_cancelled_left">备份已取消。你需要自行删除未完成的文件 %1$s。</string>
+    <string name="backup_snack_restored">已恢复</string>
+</resources>

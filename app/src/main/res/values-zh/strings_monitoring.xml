@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="monitoring_power_saving_title">省电模式已开启</string>
+    <string name="monitoring_power_saving_text">电量较低。智能体模型已卸载，后台任务已暂停。</string>
+    <string name="monitoring_section_session_aggregates">会话汇总</string>
+    <string name="monitoring_section_time_per_node">各节点类型耗时</string>
+    <string name="monitoring_section_logs">系统操作与日志</string>
+    <string name="monitoring_no_recent_actions">未发现最近的操作。</string>
+    <string name="monitoring_screen_title">实时指标</string>
+    <string name="monitoring_empty_title">暂无指标</string>
+    <string name="monitoring_empty_subtitle">运行流程后即可在此查看实时指标。</string>
+    <string name="monitoring_error_title">无法加载指标</string>
+    <string name="taskmonitor_screen_title">活动任务</string>
+    <string name="taskmonitor_empty_title">没有正在运行的任务</string>
+    <string name="taskmonitor_empty_subtitle">后台任务和正在进行的聊天会话会显示在此处。</string>
+    <string name="taskmonitor_error_title">无法加载任务</string>
+    <string name="taskmonitor_open_chat">打开聊天</string>
+    <string name="taskmonitor_filter_all">全部</string>
+    <string name="taskmonitor_filter_active">活动</string>
+    <string name="taskmonitor_filter_background">后台</string>
+    <string name="taskmonitor_filter_completed">已完成</string>
+    <string name="taskmonitor_detail_no_logs">尚未捕获到日志行。</string>
+    <string name="taskmonitor_row_scheduled_title">计划任务</string>
+    <string name="taskmonitor_row_scheduled_interval_format">每 %1$d 小时</string>
+    <string name="taskmonitor_cancel_all_cd">停止全部计划任务</string>
+    <string name="taskmonitor_cancel_all_title">停止全部计划任务？</string>
+    <string name="taskmonitor_cancel_all_confirm">全部停止</string>
+    <string name="taskmonitor_cancel_all_dismiss">保留任务</string>
+    <plurals name="taskmonitor_cancel_all_body">
+        <item quantity="other">这将停止全部 %1$d 个计划任务，包括当前正在运行的任务。自动化及其触发器不受影响，且不会删除任何内容，任务可以再次被计划。</item>
+    </plurals>
+    <string name="taskmonitor_title_session">聊天会话：%1$s</string>
+    <string name="taskmonitor_title_background">后台任务（%1$s）</string>
+    <string name="taskmonitor_stage_thinking">正在思考</string>
+    <string name="taskmonitor_stage_tool">工具执行</string>
+    <string name="taskmonitor_stage_approval">等待批准</string>
+    <string name="taskmonitor_stage_loading">正在加载</string>
+    <string name="taskmonitor_stage_answering">正在回答</string>
+    <string name="monitoring_stat_inference_time">推理耗时</string>
+    <string name="monitoring_stat_tokens_per_second">每秒 token 数</string>
+    <string name="monitoring_stat_total_tokens">总 token 数</string>
+    <string name="monitoring_unit_ms">%1$d ms</string>
+</resources>
