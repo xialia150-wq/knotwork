@@ -40,7 +40,7 @@
         },
         {
           "en": "Summarise this for my team",
-          "zh": "把这个为我的团队总结一下"
+          "zh": "帮我把这个总结一下，发给团队看"
         }
       ]
     },
@@ -261,7 +261,7 @@
       },
       "description": {
         "en": "A vision intake step turns any attached image into text up front, then the full breadth of the on-device agent runs: intent routing (chat / factual / task), an IF-condition complexity gate, task and query decomposition feeding queue-processor loops, Wikipedia tool lookups, and research / task synthesis. Each subtask runs as a composed sub-pipeline (Clarify / Lookup / Act / Process) through PIPELINE nodes, including a human-in-the-loop clarification.",
-        "zh": "先通过视觉输入步骤将附加图片转换为文本，随后运行设备端智能体的完整能力：意图路由（闲聊/事实/任务）、条件判断复杂度把关、输入队列处理器循环的任务与查询拆解、Wikipedia 工具查询以及研究/任务汇总。每个子任务都通过流程节点作为组合子流程（追问/查询/执行/处理）运行，包含人工介入追问。"
+        "zh": "先通过视觉输入步骤将附加图片转换为文本，随后运行设备端智能体的完整能力：意图路由（闲聊/事实/任务）、条件判断复杂度把关、由任务拆解与查询拆解驱动的队列处理器循环、Wikipedia 工具查询以及研究/任务汇总。每个子任务都通过流程节点作为组合子流程（追问/查询/执行/处理）运行，其中包含需要人工介入的追问。"
       },
       "nodes": {
         "node-1": {
@@ -1117,7 +1117,7 @@
       },
       "description": {
         "en": "Biases a Simple / Data / Complex / Task router toward Task whenever a tool could plausibly help.",
-        "zh": "只要有工具可能提供帮助，就将简单/数据/复杂/任务路由器偏向分流至任务端口。"
+        "zh": "只要有工具可能帮上忙，就把简单/数据/复杂/任务路由偏向任务端口。"
       },
       "tags": [
         {
