@@ -56,6 +56,9 @@ jobs:
             echo "::warning::No RELEASE_KEYSTORE_BASE64 secret: the APK is signed with a throwaway debug key and cannot update a previous install."
           fi
 
+      - name: Generate the bundled-docs index (incl. zh)
+        run: ./gradlew :app:syncBundledDocs --no-daemon --stacktrace
+
       - name: Assemble the foss release APK
         env:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
@@ -98,4 +101,4 @@ jobs:
           gh release create zh-latest "${{ steps.apk.outputs.file }}" \
             --prerelease --target "$GITHUB_SHA" \
             --title "Knotwork 简体中文版（自动构建）" \
-            --notes "非官方的简体中文构建，基于 ${GITHUB_SHA::7}。翻译分期进行中，未翻译的部分显示英文。签名证书 SHA-256：${{ steps.cert.outputs.sha256 }}"
+            --notes "非官方的简体中文构建，基于 ${GITHUB_SHA::7}。界面、内置模板与帮助文档均已汉化；给模型看的提示词保持英文。签名证书 SHA-256：${{ steps.cert.outputs.sha256 }}"

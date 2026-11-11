@@ -1,0 +1,1186 @@
+{
+  "formatVersion": 1,
+  "language": "zh",
+  "pipelines": {
+    "clarify_then_act": {
+      "name": {
+        "en": "Clarify, then act",
+        "zh": "先追问后执行"
+      },
+      "description": {
+        "en": "Pauses to ask one clarifying question when the request is ambiguous, then answers locally with the disambiguated input. Useful when the user's intent is often underspecified.",
+        "zh": "当请求不明确时暂停并提出一个追问问题，随后结合明确后的输入在本地完成回答。适用于用户意图经常不够具体的情况。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "clarify": {
+          "en": "Clarify",
+          "zh": "追问"
+        },
+        "lite_rt": {
+          "en": "Local LLM",
+          "zh": "本地模型"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Help me plan my weekend",
+          "zh": "帮我规划周末行程"
+        },
+        {
+          "en": "Help me choose a laptop",
+          "zh": "帮我选一款笔记本电脑"
+        },
+        {
+          "en": "Summarise this for my team",
+          "zh": "把这个为我的团队总结一下"
+        }
+      ]
+    },
+    "cloud_assist": {
+      "name": {
+        "en": "Cloud-assisted chat",
+        "zh": "云端辅助聊天"
+      },
+      "description": {
+        "en": "Cloud LLM with full conversation history and long-term memory. Use when you need broader knowledge, longer context, or stronger reasoning than the on-device model can offer.",
+        "zh": "具备完整对话历史和长期记忆的云端大模型。适用于需要比设备端模型更广博的知识、更长的上下文或更强推理能力的场景。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "cloud": {
+          "en": "Cloud LLM",
+          "zh": "云端模型"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Compare two ways to learn a language as an adult",
+          "zh": "对比成年人学习外语的两种方法"
+        },
+        {
+          "en": "Draft a polite follow-up email about an unanswered request",
+          "zh": "起草一封关于未获回复请求的礼貌跟进邮件"
+        },
+        {
+          "en": "Explain what a database index does and when it hurts",
+          "zh": "解释数据库索引的作用以及何时会产生负面影响"
+        }
+      ]
+    },
+    "local_only_qa": {
+      "name": {
+        "en": "Local-only Q&A",
+        "zh": "纯本地问答"
+      },
+      "description": {
+        "en": "Single-turn answers handled entirely by the on-device model. No network, no tools. Best for quick factual questions when you want privacy and predictable latency.",
+        "zh": "完全由设备端模型处理的单轮问答。无需网络，不调用工具。最适合注重隐私和稳定延迟的快速事实性问答。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "lite_rt": {
+          "en": "Local LLM",
+          "zh": "本地模型"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Explain how a solar eclipse happens",
+          "zh": "解释日食是如何形成的"
+        },
+        {
+          "en": "What is the difference between RAM and storage?",
+          "zh": "运行内存和存储空间有什么区别？"
+        },
+        {
+          "en": "Give me three practical tips for sleeping better",
+          "zh": "给我三个改善睡眠的实用建议"
+        }
+      ]
+    },
+    "multi_step_research": {
+      "name": {
+        "en": "Multi-step research",
+        "zh": "多步骤研究"
+      },
+      "description": {
+        "en": "Decomposes the request into subtasks, then loops over each subtask through a cloud LLM via the queue processor. The Done branch leaves the loop and produces the final answer.",
+        "zh": "将请求拆解为子任务，随后通过队列处理器利用云端大模型依次循环处理每个子任务。“完成”分支退出循环并生成最终回答。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "decomposition": {
+          "en": "Decomposition",
+          "zh": "任务拆解"
+        },
+        "queue": {
+          "en": "Queue",
+          "zh": "队列处理"
+        },
+        "cloud": {
+          "en": "Researcher",
+          "zh": "调研分析"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Compare electric and hybrid cars for city driving",
+          "zh": "对比纯电动汽车与混合动力汽车在城市通勤中的优劣"
+        },
+        {
+          "en": "Research how coffee spread through Latin America",
+          "zh": "研究咖啡是如何在拉丁美洲传播开来的"
+        },
+        {
+          "en": "What are the trade-offs of fully remote work?",
+          "zh": "全远程办公有哪些利弊权衡？"
+        }
+      ]
+    },
+    "routed_local_cloud": {
+      "name": {
+        "en": "Routed local + cloud",
+        "zh": "本地与云端路由分流"
+      },
+      "description": {
+        "en": "An intent router classifies the request and sends simple queries to the on-device model and complex ones to the cloud. Balances latency and capability without the user having to choose.",
+        "zh": "意图路由对请求进行分类，将简单问题分发给设备端模型，复杂任务分发给云端。无需用户手动选择，即可兼顾响应速度与处理能力。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "router": {
+          "en": "Router",
+          "zh": "意图路由"
+        },
+        "lite_rt": {
+          "en": "Local LLM",
+          "zh": "本地模型"
+        },
+        "cloud": {
+          "en": "Cloud LLM",
+          "zh": "云端模型"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "What time zone is Santiago in?",
+          "zh": "圣地亚哥属于哪个时区？"
+        },
+        {
+          "en": "Design a six-week plan to learn basic statistics",
+          "zh": "制定一份为期六周的基础统计学学习计划"
+        },
+        {
+          "en": "Why would the same query be fast on one machine and slow on another?",
+          "zh": "为什么同一个查询在一台机器上很快而在另一台机器上很慢？"
+        }
+      ]
+    },
+    "share_handler": {
+      "name": {
+        "en": "Share Handler",
+        "zh": "分享内容处理"
+      },
+      "description": {
+        "en": "Share anything to the agent and it becomes a clean, structured note in your inbox. Asks before writing files.",
+        "zh": "将任何内容分享给智能体，即可自动整理为收件箱中整洁、结构化的笔记。写入文件前会先征得你的同意。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Shared content",
+          "zh": "分享内容"
+        },
+        "node-2": {
+          "en": "Structure",
+          "zh": "结构化整理"
+        },
+        "node-3": {
+          "en": "Save capture",
+          "zh": "保存记录"
+        },
+        "node-4": {
+          "en": "Confirm",
+          "zh": "确认"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Save this: buy milk, call the dentist, renew the parking permit",
+          "zh": "保存这个：买牛奶、预约牙医、续办停车证"
+        },
+        {
+          "en": "Capture this: the team sync moved to Thursday at 3pm",
+          "zh": "记录一下：团队例会改到了周四下午 3 点"
+        },
+        {
+          "en": "Keep this for later: lentil soup with cumin and lemon",
+          "zh": "先存下来稍后看：孜然柠檬小扁豆汤食谱"
+        }
+      ]
+    },
+    "showcase_full_agent": {
+      "name": {
+        "en": "Showcase — full agent",
+        "zh": "综合示例：全功能智能体"
+      },
+      "description": {
+        "en": "A vision intake step turns any attached image into text up front, then the full breadth of the on-device agent runs: intent routing (chat / factual / task), an IF-condition complexity gate, task and query decomposition feeding queue-processor loops, Wikipedia tool lookups, and research / task synthesis. Each subtask runs as a composed sub-pipeline (Clarify / Lookup / Act / Process) through PIPELINE nodes, including a human-in-the-loop clarification.",
+        "zh": "先通过视觉输入步骤将附加图片转换为文本，随后运行设备端智能体的完整能力：意图路由（闲聊/事实/任务）、条件判断复杂度把关、输入队列处理器循环的任务与查询拆解、Wikipedia 工具查询以及研究/任务汇总。每个子任务都通过流程节点作为组合子流程（追问/查询/执行/处理）运行，包含人工介入追问。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "node-23": {
+          "en": "Vision intake",
+          "zh": "视觉输入"
+        },
+        "node-2": {
+          "en": "Output",
+          "zh": "输出"
+        },
+        "node-3": {
+          "en": "Message Triage",
+          "zh": "消息分流"
+        },
+        "node-4": {
+          "en": "Chat Reply",
+          "zh": "聊天回复"
+        },
+        "node-5": {
+          "en": "Complexity Check",
+          "zh": "复杂度检查"
+        },
+        "node-6": {
+          "en": "Wikipedia Lookup (simple)",
+          "zh": "Wikipedia 查询（简易）"
+        },
+        "node-7": {
+          "en": "Query Builder",
+          "zh": "查询构建"
+        },
+        "node-8": {
+          "en": "Grounded Answer",
+          "zh": "依据事实回答"
+        },
+        "node-9": {
+          "en": "Query Decomposer",
+          "zh": "查询拆解"
+        },
+        "node-10": {
+          "en": "Topic Queue",
+          "zh": "主题队列"
+        },
+        "node-11": {
+          "en": "Wikipedia Lookup (research)",
+          "zh": "Wikipedia 查询（调研）"
+        },
+        "node-12": {
+          "en": "Research Synthesis",
+          "zh": "研究汇总"
+        },
+        "node-13": {
+          "en": "Task Planner",
+          "zh": "任务规划"
+        },
+        "node-14": {
+          "en": "Subtask Queue",
+          "zh": "子任务队列"
+        },
+        "node-15": {
+          "en": "Subtask Router",
+          "zh": "子任务路由"
+        },
+        "node-16": {
+          "en": "Task Synthesis",
+          "zh": "任务汇总"
+        },
+        "node-17": {
+          "en": "Clarify",
+          "zh": "追问"
+        },
+        "node-18": {
+          "en": "Lookup",
+          "zh": "查询"
+        },
+        "node-20": {
+          "en": "Act",
+          "zh": "执行"
+        },
+        "node-21": {
+          "en": "Process",
+          "zh": "处理"
+        },
+        "node-22": {
+          "en": "Research Distiller",
+          "zh": "研究提炼"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "What is the tallest mountain in South America?",
+          "zh": "南美洲最高的山峰是哪一座？"
+        },
+        {
+          "en": "Compare two programming languages for a beginner",
+          "zh": "为初学者对比两种编程语言"
+        },
+        {
+          "en": "Plan a three-day trip to Valparaíso",
+          "zh": "规划一份为期三天的瓦尔帕莱索旅行计划"
+        }
+      ]
+    },
+    "showcase_research_to_file": {
+      "name": {
+        "en": "Research to file",
+        "zh": "调研并生成文件"
+      },
+      "description": {
+        "en": "End-to-end showcase: the local model turns your question into a Wikipedia lookup, distils the raw extract into clean facts, writes a short Markdown report into the agent workspace under reports/, and replies with the saved path. A working 'research → file in your hands' loop out of the box.",
+        "zh": "端到端综合示例：本地模型将你的问题转换为 Wikipedia 查询，将原始提取内容提炼为要点事实，在智能体工作区的 reports/ 目录下撰写简短的 Markdown 报告，并回复保存的文件路径。开箱即用的“调研 → 生成文件”闭环。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "query_builder": {
+          "en": "Query Builder",
+          "zh": "查询构建"
+        },
+        "search": {
+          "en": "Wikipedia Lookup",
+          "zh": "Wikipedia 查询"
+        },
+        "distiller": {
+          "en": "Research Distiller",
+          "zh": "研究提炼"
+        },
+        "synthesis": {
+          "en": "Synthesis",
+          "zh": "内容汇总"
+        },
+        "write_report": {
+          "en": "Save Report",
+          "zh": "保存报告"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Write me a report on the Atacama Desert",
+          "zh": "为我写一份关于阿塔卡马沙漠的报告"
+        },
+        {
+          "en": "Research the history of the Santiago metro",
+          "zh": "调研圣地亚哥地铁的发展历史"
+        },
+        {
+          "en": "Explain what quantum computing is and save it",
+          "zh": "解释什么是量子计算并保存为文件"
+        }
+      ]
+    },
+    "styled_translation": {
+      "name": {
+        "en": "Styled Translation",
+        "zh": "风格化翻译"
+      },
+      "description": {
+        "en": "Translate messages while keeping their tone, register and dialect — not just the words. Runs entirely on-device.",
+        "zh": "翻译消息的同时保留其语气、语域和方言风格，而非仅逐字翻译。完全在设备端运行。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Text",
+          "zh": "文本输入"
+        },
+        "node-2": {
+          "en": "Translate",
+          "zh": "翻译"
+        },
+        "node-3": {
+          "en": "Translation",
+          "zh": "译文输出"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Hi, are we still meeting tomorrow?",
+          "zh": "嗨，我们明天还按原计划见面吗？"
+        },
+        {
+          "en": "Thank you for your help, I really appreciate it",
+          "zh": "谢谢你的帮助，非常感激"
+        },
+        {
+          "en": "Could you send me the documents before Friday?",
+          "zh": "能否在周五前把文件发给我？"
+        }
+      ]
+    },
+    "subtask_act": {
+      "name": {
+        "en": "Subtask — Act",
+        "zh": "子任务：执行"
+      },
+      "description": {
+        "en": "Sub-pipeline for a task subtask that performs an action through a tool (auto-selected from the available tools, behind the usual confirmation gate). Used by the Showcase agent's Subtask Router.",
+        "zh": "用于通过工具执行操作的任务子任务的子流程（从可用工具中自动选择，受到常规确认步骤的保护）。供全功能智能体示例的子任务路由使用。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "node-2": {
+          "en": "Tool Action",
+          "zh": "工具操作"
+        },
+        "node-3": {
+          "en": "Output",
+          "zh": "输出"
+        }
+      }
+    },
+    "subtask_clarify": {
+      "name": {
+        "en": "Subtask — Clarify",
+        "zh": "子任务：追问"
+      },
+      "description": {
+        "en": "Sub-pipeline for a task subtask that needs the user's input: it asks one focused human-in-the-loop question and forwards the answer. Used by the Showcase agent's Subtask Router.",
+        "zh": "用于需要用户输入的任务子任务的子流程：提出一个针对性的人工介入追问并转发回答。供全功能智能体示例的子任务路由使用。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "node-2": {
+          "en": "Clarify",
+          "zh": "追问"
+        },
+        "node-3": {
+          "en": "Output",
+          "zh": "输出"
+        }
+      }
+    },
+    "subtask_lookup": {
+      "name": {
+        "en": "Subtask — Lookup",
+        "zh": "子任务：查询"
+      },
+      "description": {
+        "en": "Sub-pipeline for a task subtask that needs a factual lookup: it turns the subtask into a Wikipedia search term and runs the search. Used by the Showcase agent's Subtask Router.",
+        "zh": "用于需要事实性查询的任务子任务的子流程：将子任务转化为 Wikipedia 搜索词并执行搜索。供全功能智能体示例的子任务路由使用。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "node-2": {
+          "en": "Subtask Query Builder",
+          "zh": "子任务查询构建"
+        },
+        "node-3": {
+          "en": "Wikipedia Lookup (subtask)",
+          "zh": "Wikipedia 查询（子任务）"
+        },
+        "node-4": {
+          "en": "Output",
+          "zh": "输出"
+        }
+      }
+    },
+    "subtask_process": {
+      "name": {
+        "en": "Subtask — Process",
+        "zh": "子任务：处理"
+      },
+      "description": {
+        "en": "Sub-pipeline for a task subtask the model can complete on its own — reasoning, writing, transforming or calculating from what is already available. Used by the Showcase agent's Subtask Router.",
+        "zh": "用于模型可独立完成的任务子任务的子流程（利用现有信息进行推理、撰写、转换或计算）。供全功能智能体示例的子任务路由使用。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "node-2": {
+          "en": "Process",
+          "zh": "处理"
+        },
+        "node-3": {
+          "en": "Output",
+          "zh": "输出"
+        }
+      }
+    },
+    "tool_using_react": {
+      "name": {
+        "en": "Tool-using agent",
+        "zh": "使用工具的智能体"
+      },
+      "description": {
+        "en": "An IF-condition decides whether the request needs an external lookup. If it does, the local model turns it into a search term, the tool runs (auto-selected from the registry) and a summariser folds the result into the answer. If it does not, the model answers directly. Good template for action-oriented tasks.",
+        "zh": "由条件判断节点决定请求是否需要外部查询。如果需要，本地模型将其转换为搜索词，随后运行工具（从注册表中自动选择），并由汇总节点将结果整合到回答中。如果不需要，模型直接作答。适合行动导向型任务的优秀模板。"
+      },
+      "nodes": {
+        "input": {
+          "en": "Input",
+          "zh": "输入"
+        },
+        "needs_tool": {
+          "en": "Needs a lookup?",
+          "zh": "是否需要查询？"
+        },
+        "query_builder": {
+          "en": "Query Builder",
+          "zh": "查询构建"
+        },
+        "tool": {
+          "en": "Tool",
+          "zh": "工具调用"
+        },
+        "summary": {
+          "en": "Summariser",
+          "zh": "内容汇总"
+        },
+        "direct_answer": {
+          "en": "Direct Answer",
+          "zh": "直接回答"
+        },
+        "output": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Look up the population of Chile",
+          "zh": "查询智利的人口数量"
+        },
+        {
+          "en": "When was the Eiffel Tower opened?",
+          "zh": "埃菲尔铁塔是什么时候开放的？"
+        },
+        {
+          "en": "Who was Ada Lovelace?",
+          "zh": "阿达·洛夫莱斯是谁？"
+        }
+      ]
+    },
+    "virtual_companion_mood_router": {
+      "name": {
+        "en": "Virtual Companion (Mood Router)",
+        "zh": "虚拟伴侣（情绪路由）"
+      },
+      "description": {
+        "en": "A companion that senses your mood and shifts how it talks with you. Fully private, on-device.",
+        "zh": "能够感知你的情绪并调整对话语气的伴侣。完全私密，在设备端运行。"
+      },
+      "nodes": {
+        "node-1": {
+          "en": "Message",
+          "zh": "消息输入"
+        },
+        "node-2": {
+          "en": "Relationship Memory",
+          "zh": "关系记忆"
+        },
+        "node-3": {
+          "en": "Mood Triage",
+          "zh": "情绪识别分流"
+        },
+        "node-4": {
+          "en": "Casual",
+          "zh": "随性轻松"
+        },
+        "node-5": {
+          "en": "Affectionate",
+          "zh": "温柔深情"
+        },
+        "node-6": {
+          "en": "Supportive",
+          "zh": "理解支持"
+        },
+        "node-7": {
+          "en": "Playful",
+          "zh": "幽默俏皮"
+        },
+        "node-8": {
+          "en": "Intimate",
+          "zh": "亲密无间"
+        },
+        "node-9": {
+          "en": "Reply",
+          "zh": "回复"
+        }
+      },
+      "samplePrompts": [
+        {
+          "en": "Hey, I just got home",
+          "zh": "嗨，我刚回到家"
+        },
+        {
+          "en": "Rough day at work today",
+          "zh": "今天工作太心累了"
+        },
+        {
+          "en": "Guess what happened to me!",
+          "zh": "猜猜我今天遇到了什么事！"
+        }
+      ]
+    }
+  },
+  "prompts": {
+    "clarification_multiple_choice": {
+      "name": {
+        "en": "Multiple-choice question",
+        "zh": "多项选择追问"
+      },
+      "description": {
+        "en": "Emits a clarifying question with 2–4 concrete answer options for the user to tap.",
+        "zh": "提出一个带有 2 到 4 个具体选项的追问问题供用户点选。"
+      },
+      "tags": [
+        {
+          "en": "clarification",
+          "zh": "追问"
+        },
+        {
+          "en": "multiple-choice",
+          "zh": "多选"
+        },
+        {
+          "en": "json",
+          "zh": "json"
+        }
+      ]
+    },
+    "clarification_open_ended": {
+      "name": {
+        "en": "Open-ended clarifier",
+        "zh": "开放式追问"
+      },
+      "description": {
+        "en": "Asks a single open-ended clarifying question with no pre-baked answer options.",
+        "zh": "提出一个不带预设选项的开放式追问问题。"
+      },
+      "tags": [
+        {
+          "en": "clarification",
+          "zh": "追问"
+        },
+        {
+          "en": "open-ended",
+          "zh": "开放式"
+        },
+        {
+          "en": "json",
+          "zh": "json"
+        }
+      ]
+    },
+    "cloud_capable_analyst": {
+      "name": {
+        "en": "Capable analyst",
+        "zh": "资深分析师"
+      },
+      "description": {
+        "en": "Cloud-grade analytical reasoning for multi-faceted questions and structured comparisons.",
+        "zh": "针对多维度问题和结构化对比的云端级深度分析推理。"
+      },
+      "tags": [
+        {
+          "en": "analysis",
+          "zh": "分析"
+        },
+        {
+          "en": "cloud",
+          "zh": "云端"
+        },
+        {
+          "en": "depth",
+          "zh": "深度"
+        }
+      ]
+    },
+    "cloud_web_savvy_researcher": {
+      "name": {
+        "en": "Web-savvy researcher",
+        "zh": "网络调研专家"
+      },
+      "description": {
+        "en": "Cloud-grade researcher framing for tool-augmented pipelines and source-aware answers.",
+        "zh": "针对工具增强流程和标明信息来源的云端级调研框架。"
+      },
+      "tags": [
+        {
+          "en": "research",
+          "zh": "调研"
+        },
+        {
+          "en": "cloud",
+          "zh": "云端"
+        },
+        {
+          "en": "sources",
+          "zh": "信息来源"
+        }
+      ]
+    },
+    "decomposition_dependency_aware": {
+      "name": {
+        "en": "Dependency-aware subtasks",
+        "zh": "感知依赖的子任务拆解"
+      },
+      "description": {
+        "en": "JSON array of subtasks, each prefixed with its prerequisites so downstream nodes can sequence them.",
+        "zh": "子任务的 JSON 数组，每个子任务都带有前置条件前缀，方便下游节点按序编排。"
+      },
+      "tags": [
+        {
+          "en": "decomposition",
+          "zh": "任务拆解"
+        },
+        {
+          "en": "json",
+          "zh": "json"
+        },
+        {
+          "en": "dependencies",
+          "zh": "依赖关系"
+        }
+      ]
+    },
+    "decomposition_json_subtasks": {
+      "name": {
+        "en": "JSON subtasks",
+        "zh": "JSON 子任务列表"
+      },
+      "description": {
+        "en": "Strict JSON array of subtask strings — drop-in default for the queue processor.",
+        "zh": "由子任务字符串构成的严格 JSON 数组：队列处理器的开箱即用默认预设。"
+      },
+      "tags": [
+        {
+          "en": "decomposition",
+          "zh": "任务拆解"
+        },
+        {
+          "en": "json",
+          "zh": "json"
+        },
+        {
+          "en": "strict",
+          "zh": "严格"
+        }
+      ]
+    },
+    "evaluation_pass_fail_judge": {
+      "name": {
+        "en": "Pass/fail judge",
+        "zh": "通过/失败判定"
+      },
+      "description": {
+        "en": "Binary verdict — Pass or Fail, never Retry. Routes through the node's matching output port.",
+        "zh": "二元判定结果（通过或失败，绝无重试）。通过节点对应的输出端口分流。"
+      },
+      "tags": [
+        {
+          "en": "evaluation",
+          "zh": "评估"
+        },
+        {
+          "en": "binary",
+          "zh": "二元"
+        },
+        {
+          "en": "routing",
+          "zh": "路由分流"
+        }
+      ]
+    },
+    "evaluation_scored_critic": {
+      "name": {
+        "en": "Scored critic",
+        "zh": "打分评审"
+      },
+      "description": {
+        "en": "Pass / Retry / Fail verdict backed by a 0–10 score and one actionable improvement.",
+        "zh": "基于 0 到 10 分的评分并附带一条具体改进建议的通过/重试/失败判定。"
+      },
+      "tags": [
+        {
+          "en": "evaluation",
+          "zh": "评估"
+        },
+        {
+          "en": "scoring",
+          "zh": "评分"
+        },
+        {
+          "en": "routing",
+          "zh": "路由分流"
+        }
+      ]
+    },
+    "if_destructive_intent": {
+      "name": {
+        "en": "Destructive or sensitive action",
+        "zh": "破坏性或敏感操作"
+      },
+      "description": {
+        "en": "True when fulfilling the request would modify, delete, send, purchase, or otherwise mutate user data or external state.",
+        "zh": "当满足该请求需要修改、删除、发送、购买或以其他方式变更用户数据或外部状态时为 True。"
+      },
+      "tags": [
+        {
+          "en": "safety",
+          "zh": "安全"
+        },
+        {
+          "en": "destructive",
+          "zh": "破坏性"
+        },
+        {
+          "en": "starter",
+          "zh": "入门预设"
+        }
+      ]
+    },
+    "if_needs_external_info": {
+      "name": {
+        "en": "Needs external lookup",
+        "zh": "需要外部查询"
+      },
+      "description": {
+        "en": "True when answering the request requires live external information (web search, current events, fresh data) beyond the model's training cut-off.",
+        "zh": "当回答该请求需要超出模型训练截止日期的实时外部信息（网络搜索、时事新闻、最新数据）时为 True。"
+      },
+      "tags": [
+        {
+          "en": "routing",
+          "zh": "路由分流"
+        },
+        {
+          "en": "search",
+          "zh": "搜索"
+        },
+        {
+          "en": "tools",
+          "zh": "工具"
+        }
+      ]
+    },
+    "if_question_vs_command": {
+      "name": {
+        "en": "Is question, not command",
+        "zh": "是问题而非指令"
+      },
+      "description": {
+        "en": "True when the upstream text is an information-seeking question rather than an instruction to perform an action.",
+        "zh": "当上游文本是寻求信息的提问而非执行操作的指令时为 True。"
+      },
+      "tags": [
+        {
+          "en": "intent",
+          "zh": "意图"
+        },
+        {
+          "en": "question",
+          "zh": "疑问"
+        },
+        {
+          "en": "starter",
+          "zh": "入门预设"
+        }
+      ]
+    },
+    "litert_concise_assistant": {
+      "name": {
+        "en": "Concise assistant",
+        "zh": "简练助手"
+      },
+      "description": {
+        "en": "Single-paragraph, no-preamble answers. Best for quick factual questions when latency matters.",
+        "zh": "单段落、无开场白式的简明回答。最适合注重响应速度的快速事实性问答。"
+      },
+      "tags": [
+        {
+          "en": "concise",
+          "zh": "简明"
+        },
+        {
+          "en": "starter",
+          "zh": "入门预设"
+        },
+        {
+          "en": "offline",
+          "zh": "离线"
+        }
+      ]
+    },
+    "litert_memory_aware_reply": {
+      "name": {
+        "en": "Memory-aware reply",
+        "zh": "融合记忆的个性化回复"
+      },
+      "description": {
+        "en": "Personalises the answer using the agent's long-term memory summary.",
+        "zh": "利用智能体的长期记忆摘要对回答进行个性化定制。"
+      },
+      "tags": [
+        {
+          "en": "memory",
+          "zh": "记忆"
+        },
+        {
+          "en": "personalised",
+          "zh": "个性化"
+        },
+        {
+          "en": "offline",
+          "zh": "离线"
+        }
+      ]
+    },
+    "litert_step_by_step_reasoner": {
+      "name": {
+        "en": "Step-by-step reasoner",
+        "zh": "逐步推理分析"
+      },
+      "description": {
+        "en": "Walks through the problem with numbered intermediate steps before delivering the final answer.",
+        "zh": "在给出最终回答前，使用带编号的中间步骤逐步拆解分析问题。"
+      },
+      "tags": [
+        {
+          "en": "reasoning",
+          "zh": "推理"
+        },
+        {
+          "en": "cot",
+          "zh": "思维链"
+        },
+        {
+          "en": "offline",
+          "zh": "离线"
+        }
+      ]
+    },
+    "output_json_structured": {
+      "name": {
+        "en": "JSON-structured",
+        "zh": "JSON 结构化输出"
+      },
+      "description": {
+        "en": "Emits the answer as a strict JSON object for downstream tooling.",
+        "zh": "将回答输出为严格的 JSON 对象，供下游工具解析使用。"
+      },
+      "tags": [
+        {
+          "en": "json",
+          "zh": "json"
+        },
+        {
+          "en": "structured",
+          "zh": "结构化"
+        },
+        {
+          "en": "tooling",
+          "zh": "工具链"
+        }
+      ]
+    },
+    "output_markdown_with_sections": {
+      "name": {
+        "en": "Markdown with sections",
+        "zh": "分节 Markdown 格式"
+      },
+      "description": {
+        "en": "Renders the answer as well-structured markdown with headings, lists, and emphasis.",
+        "zh": "将回答呈现为结构清晰的 Markdown 格式，包含标题、列表和重点强调。"
+      },
+      "tags": [
+        {
+          "en": "markdown",
+          "zh": "markdown"
+        },
+        {
+          "en": "structured",
+          "zh": "结构化"
+        },
+        {
+          "en": "long-form",
+          "zh": "长文"
+        }
+      ]
+    },
+    "output_plain_conversational": {
+      "name": {
+        "en": "Plain conversational",
+        "zh": "自然对话式"
+      },
+      "description": {
+        "en": "Friendly, paragraph-style reply with no markdown decoration.",
+        "zh": "自然友好的段落式回复，不含任何 Markdown 格式修饰。"
+      },
+      "tags": [
+        {
+          "en": "plain",
+          "zh": "纯文本"
+        },
+        {
+          "en": "conversational",
+          "zh": "对话"
+        },
+        {
+          "en": "starter",
+          "zh": "入门预设"
+        }
+      ]
+    },
+    "router_keyword_classifier": {
+      "name": {
+        "en": "Keyword classifier",
+        "zh": "关键词分类器"
+      },
+      "description": {
+        "en": "Strict single-keyword router for a node wired with Simple / Data / Complex / Task ports.",
+        "zh": "连接了简单/数据/复杂/任务端口的节点的严格单关键词意图路由。"
+      },
+      "tags": [
+        {
+          "en": "routing",
+          "zh": "路由分流"
+        },
+        {
+          "en": "classifier",
+          "zh": "分类器"
+        },
+        {
+          "en": "strict",
+          "zh": "严格"
+        }
+      ]
+    },
+    "router_tool_first": {
+      "name": {
+        "en": "Tool-first router",
+        "zh": "工具优先路由"
+      },
+      "description": {
+        "en": "Biases a Simple / Data / Complex / Task router toward Task whenever a tool could plausibly help.",
+        "zh": "只要有工具可能提供帮助，就将简单/数据/复杂/任务路由器偏向分流至任务端口。"
+      },
+      "tags": [
+        {
+          "en": "routing",
+          "zh": "路由分流"
+        },
+        {
+          "en": "tools",
+          "zh": "工具"
+        },
+        {
+          "en": "task-bias",
+          "zh": "任务偏向"
+        }
+      ]
+    },
+    "summary_bullet_recap": {
+      "name": {
+        "en": "Bullet recap",
+        "zh": "要点列表汇总"
+      },
+      "description": {
+        "en": "Condenses upstream outputs into a tight bullet list of the key points.",
+        "zh": "将上游输出浓缩为简洁的核心要点列表。"
+      },
+      "tags": [
+        {
+          "en": "bullets",
+          "zh": "列表"
+        },
+        {
+          "en": "concise",
+          "zh": "简明"
+        },
+        {
+          "en": "recap",
+          "zh": "总结"
+        }
+      ]
+    },
+    "summary_detailed_narrative": {
+      "name": {
+        "en": "Detailed narrative",
+        "zh": "详尽叙述汇总"
+      },
+      "description": {
+        "en": "Weaves the upstream subtask outputs into a coherent multi-paragraph narrative.",
+        "zh": "将上游子任务输出编织为连贯的多段落叙述。"
+      },
+      "tags": [
+        {
+          "en": "narrative",
+          "zh": "叙述"
+        },
+        {
+          "en": "long-form",
+          "zh": "长文"
+        },
+        {
+          "en": "synthesis",
+          "zh": "汇总"
+        }
+      ]
+    }
+  }
+}
