@@ -74,6 +74,15 @@ jobs:
           echo "file=$out" >> "$GITHUB_OUTPUT"
           ls -la "$out"
 
+      - name: Print the signing certificate
+        id: cert
+        run: |
+          set -euo pipefail
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner"
+          "$apksigner" verify --print-certs "${{ steps.apk.outputs.file }}" | tee certs.txt
+          fp="$(sed -n 's/.*certificate SHA-256 digest: //p' certs.txt | head -1)"
+          echo "sha256=$fp" >> "$GITHUB_OUTPUT"
+
       - name: Upload the APK as a workflow artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -89,4 +98,4 @@ jobs:
           gh release create zh-latest "${{ steps.apk.outputs.file }}" \
             --prerelease --target "$GITHUB_SHA" \
             --title "Knotwork 简体中文版（自动构建）" \
-            --notes "非官方的简体中文构建，基于 ${GITHUB_SHA::7}。翻译分期进行中，未翻译的部分显示英文。"
+            --notes "非官方的简体中文构建，基于 ${GITHUB_SHA::7}。翻译分期进行中，未翻译的部分显示英文。签名证书 SHA-256：${{ steps.cert.outputs.sha256 }}"

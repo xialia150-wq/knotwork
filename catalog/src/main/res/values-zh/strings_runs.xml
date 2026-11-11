@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="knotwork_run_line">种子 %1$s · %2$s · %3$s · t %4$s</string>
+    <string name="knotwork_run_line_seed_only">种子 %1$s · t %2$s</string>
+    <string name="knotwork_run_line_cloud_suffix">%1$s · + 云端</string>
+    <string name="knotwork_run_line_cloud_only">仅限云端 · 无法复现</string>
+    <string name="knotwork_run_line_pre_version">无运行标头 · 记录于支持运行标头之前</string>
+    <string name="knotwork_run_line_a11y">运行标头，%1$s。连按两次以展开。</string>
+    <string name="knotwork_run_line_open_a11y">运行标头，已展开。连按两次以折叠。</string>
+    <string name="knotwork_run_title">本次运行</string>
+    <string name="knotwork_run_field_seed">种子</string>
+    <string name="knotwork_run_field_sampler">采样器</string>
+    <string name="knotwork_run_sampler_value">t %1$s · top-k %2$d · top-p %3$s</string>
+    <string name="knotwork_run_field_model">模型</string>
+    <string name="knotwork_run_model_value">%1$s · %2$s · 窗口 %3$s</string>
+    <string name="knotwork_run_model_none">此设备上无模型</string>
+    <string name="knotwork_run_field_sha">SHA-256</string>
+    <string name="knotwork_run_sha_not_recorded">未记录 · 当时文件尚未计算 SHA-256</string>
+    <string name="knotwork_run_field_cloud">云端</string>
+    <string name="knotwork_run_cloud_some">已使用 · 无法复现</string>
+    <string name="knotwork_run_cloud_all">响应了所有模型调用</string>
+    <string name="knotwork_run_field_app">应用</string>
+    <string name="knotwork_run_app_value">%1$s · %2$s</string>
+    <string name="knotwork_run_field_device">设备</string>
+    <string name="knotwork_run_field_digest">摘要</string>
+    <string name="knotwork_run_field_digest_a11y">运行摘要</string>
+    <string name="knotwork_run_digest_pending">运行完成后生成</string>
+    <string name="knotwork_run_now_tag">当前 %1$s</string>
+    <string name="knotwork_run_copy_seed_cd">复制种子</string>
+    <string name="knotwork_run_copy_sha_cd">复制模型 SHA-256</string>
+    <string name="knotwork_run_copy_digest_cd">复制运行摘要</string>
+    <string name="knotwork_run_hash_full_a11y">%1$s，64 个字符，开头为 %2$s</string>
+    <string name="knotwork_run_hash_model_a11y">模型 SHA-256</string>
+    <string name="knotwork_run_repro_head">在此设备上逐字节复现</string>
+    <string name="knotwork_run_repro_cpu">在 CPU 上，使用相同的模型文件、种子、采样器和输入。</string>
+    <string name="knotwork_run_repro_gpu">在 GPU 上，使用相同的模型文件、种子、采样器、输入和上下文窗口。</string>
+    <string name="knotwork_run_repro_head_mixed">设备端调用在此设备上逐字节复现</string>
+    <string name="knotwork_run_repro_mixed_cloud">云端回答无法复现。</string>
+    <string name="knotwork_run_repro_limit">在 NPU、其他设备或其他 LiteRT-LM 版本上无法保证复现。</string>
+    <string name="knotwork_run_repro_npu_head">无法保证：本次运行使用了 NPU</string>
+    <string name="knotwork_run_repro_npu_body">未校验 NPU 上的回答能否复现。如需可复现的运行，请在“设置”中选择 CPU 或 GPU。</string>
+    <string name="knotwork_run_repro_cloud_head">无法保证：所有回答均来自云端模型</string>
+    <string name="knotwork_run_repro_cloud_body">此应用无法复现云端模型的回答。上方版本信息仍记录了在此手机上运行的内容。</string>
+    <string name="knotwork_run_repro_image_head">无法保证：本次运行读取了图片</string>
+    <string name="knotwork_run_repro_image_body">读取图片的运行未校验能否复现。</string>
+    <string name="knotwork_run_repro_pre_version">记录于应用保存种子和哈希值之前，因此无法验证或复现本次运行。</string>
+    <string name="knotwork_run_action_verify">验证</string>
+    <plurals name="knotwork_run_action_verify_line">
+        <item quantity="other">重新运行 %1$d 次设备端调用 · 约 %2$s</item>
+    </plurals>
+    <plurals name="knotwork_run_action_verify_line_count">
+        <item quantity="other">重新运行 %1$d 次设备端调用</item>
+    </plurals>
+    <plurals name="knotwork_run_action_verify_line_npu">
+        <item quantity="other">%1$d 次调用在 NPU 上运行 · 均无法重新运行</item>
+    </plurals>
+    <string name="knotwork_run_action_seed">使用此种子重新运行</string>
+    <string name="knotwork_run_action_seed_line">相同的种子和采样器；仅当所有输入完全一致时，回答才会复现。</string>
+    <string name="knotwork_run_action_export">导出轨迹</string>
+    <string name="knotwork_run_action_export_line">JSON · 标头、记录、哈希值、运行摘要</string>
+    <string name="knotwork_run_action_export_line_pre">JSON · 仅记录，无种子或哈希值</string>
+    <string name="knotwork_run_action_busy">运行完成后可用。</string>
+    <string name="knotwork_run_kept_note">验证、重新运行和导出功能在保留此运行期间可用。运行历史的保留时长可在设置 → 隐私中配置。</string>
+    <string name="knotwork_run_action_dimmed_a11y">%1$s，不可用。%2$s</string>
+    <string name="knotwork_run_verify_no_local">无需重新运行：本次运行中没有任何回答来自设备端模型。</string>
+    <string name="knotwork_run_verify_pre_version">不可用：未记录种子。</string>
+    <string name="knotwork_run_verify_mismatch_runtime">记录于 %1$s；应用当前运行 %2$s。运行只能在记录它时的引擎版本上进行验证。</string>
+    <string name="knotwork_run_verify_mismatch_backend">记录于 %1$s；应用当前运行在 %2$s 上。如需验证，请在“设置”中选择 %1$s。</string>
+    <string name="knotwork_run_verify_mismatch_window">记录时窗口大小为 %1$s；应用当前使用 %2$s。如需验证，请在设置 → 生成中设置为 %1$s。</string>
+    <string name="knotwork_run_verify_mismatch_both">记录于 %1$s 且窗口大小为 %2$s；应用当前运行在 %3$s 上。如需验证，请在“设置”中选择 %1$s 并在设置 → 生成中将窗口设置为 %2$s。</string>
+    <string name="knotwork_run_verify_model_missing">%1$s，本次运行使用的模型已不在当前设备上。请重新下载以进行验证。</string>
+    <string name="knotwork_run_verify_model_changed">当前设备上的 %1$s 文件与本次运行使用的文件不一致：SHA-256 不同。</string>
+    <string name="knotwork_run_verify_hash_pending">模型文件的 SHA-256 计算完成后可用。</string>
+    <string name="knotwork_run_verify_open_settings">设置</string>
+    <string name="knotwork_run_verify_open_generation_settings">生成设置</string>
+    <string name="knotwork_run_seed_not_image">不适用于读取了图片的运行。</string>
+    <string name="knotwork_run_seed_not_background">不适用于由触发器启动的运行。</string>
+    <string name="knotwork_run_seed_not_pre_version">不可用：未记录种子。</string>
+    <string name="knotwork_run_seed_not_pipeline_deleted">不可用：本次运行使用的流程已被删除。</string>
+    <string name="knotwork_run_verify_confirm_title">验证本次运行？</string>
+    <plurals name="knotwork_run_verify_confirm_body">
+        <item quantity="other">将使用种子 %2$s 和记录的提示词重新运行设备端模型 %1$d 次，并逐字节比对每个回答。工具不会再次运行：以记录的输出为准。</item>
+    </plurals>
+    <plurals name="knotwork_run_verify_confirm_cloud">
+        <item quantity="other">已跳过 %1$d 次云端调用：它们无法被验证。</item>
+    </plurals>
+    <string name="knotwork_run_verify_confirm_time">约 %1$s，每次调用所需的时间与其对应节点大致相同。</string>
+    <string name="knotwork_run_verify_confirm_busy">在完成前，设备端模型将处于繁忙状态。你可以取消。</string>
+    <string name="knotwork_run_verify_confirm_ok">验证</string>
+    <string name="knotwork_run_dialog_cancel">取消</string>
+    <string name="knotwork_run_verify_title">验证运行</string>
+    <string name="knotwork_run_verify_sub">种子 %1$s · %2$s · %3$s</string>
+    <string name="knotwork_run_verify_close_cd">关闭</string>
+    <plurals name="knotwork_run_verify_progress">
+        <item quantity="other">%1$d / %2$d 次调用 · 剩余约 %3$s</item>
+    </plurals>
+    <plurals name="knotwork_run_verify_progress_count">
+        <item quantity="other">%1$d / %2$d 次调用</item>
+    </plurals>
+    <string name="knotwork_run_verify_cancel">取消</string>
+    <string name="knotwork_run_verify_node_waiting">等待中</string>
+    <string name="knotwork_run_verify_node_checking">正在重新运行第 %1$d / %2$d 次调用</string>
+    <plurals name="knotwork_run_verify_node_matched">
+        <item quantity="other">已匹配 · %1$d 次调用</item>
+    </plurals>
+    <string name="knotwork_run_verify_node_diverged">在第 %1$d / %2$d 次调用出现偏差</string>
+    <string name="knotwork_run_verify_node_unchecked">未检查</string>
+    <string name="knotwork_run_verify_hash_recorded">记录值 %1$s</string>
+    <string name="knotwork_run_verify_hash_replayed">回放值 %1$s</string>
+    <string name="knotwork_run_nv_tool">工具未重复运行 · 以记录的输出为准</string>
+    <string name="knotwork_run_nv_cloud">由云端模型回答 · 无法在此处重新运行</string>
+    <string name="knotwork_run_nv_no_call">无模型调用</string>
+    <string name="knotwork_run_nv_npu">在 NPU 上运行 · 未校验复现性</string>
+    <string name="knotwork_run_nv_image">读取了图片 · 未校验复现性</string>
+    <string name="knotwork_run_nv_model_not_recorded">模型文件当时尚未计算 SHA-256 · 无法重新运行</string>
+    <string name="knotwork_run_verify_node_a11y">%1$s，%2$s。</string>
+    <plurals name="knotwork_run_verify_all_head">
+        <item quantity="other">全部 %1$d 次调用均匹配</item>
+    </plurals>
+    <string name="knotwork_run_verify_all_body">每个设备端回答均与记录的内容完全一致（逐字节匹配）。</string>
+    <plurals name="knotwork_run_verify_all_body_nv">
+        <item quantity="other">%1$d 个节点无法验证；各自说明了原因。</item>
+    </plurals>
+    <plurals name="knotwork_run_verify_div_head">
+        <item quantity="other">%1$d 个节点出现偏差</item>
+    </plurals>
+    <string name="knotwork_run_verify_div_body">“%1$s”在第 %2$d / %3$d 次调用时给出了不同的回答。每次调用均根据各自记录的提示词重新运行，因此后续节点依然进行了独立检查。</string>
+    <string name="knotwork_run_verify_none_head">无可验证内容</string>
+    <string name="knotwork_run_verify_none_body">本次运行中没有任何调用可以重新运行并比对。各节点已说明原因。</string>
+    <plurals name="knotwork_run_verify_cancelled_head">
+        <item quantity="other">在完成 %1$d / %2$d 次调用后已取消</item>
+    </plurals>
+    <string name="knotwork_run_verify_cancelled_body">截至取消时检查的调用均已匹配。其余未检查。</string>
+    <string name="knotwork_run_verify_cancelled_body_diverged">其余未检查。</string>
+    <plurals name="knotwork_run_verify_stopped_head">
+        <item quantity="other">在完成 %1$d / %2$d 次调用后已停止</item>
+    </plurals>
+    <string name="knotwork_run_verify_failed_head">设备端模型无法加载</string>
+    <string name="knotwork_run_verify_failed_body">%1$s 未加载（%2$s），因此未进行任何比对。</string>
+    <string name="knotwork_run_verify_again">再次验证</string>
+    <string name="knotwork_run_not_signed">哈希值仅表明此导出记录与复现结果相符。它们不能证明生成者的身份，因为内容均未签名。</string>
+    <string name="knotwork_run_hash_in">输入 %1$s</string>
+    <string name="knotwork_run_hash_out">输出 %1$s</string>
+    <string name="knotwork_run_hash_input">输入</string>
+    <string name="knotwork_run_hash_output">输出</string>
+    <string name="knotwork_run_hash_short_a11y">%1$s 哈希值 %2$s。连按两次以复制完整 SHA-256。</string>
+    <string name="knotwork_run_seed_confirm_title">使用种子 %1$s 重新运行？</string>
+    <string name="knotwork_run_seed_confirm_body">基于当前输入对“%1$s”发起全新运行：记忆、聊天记录和工具结果将重新读取，工具也将在常规批准流程下再次运行。</string>
+    <string name="knotwork_run_seed_confirm_ok">运行</string>
+    <string name="knotwork_run_export_title">导出轨迹</string>
+    <string name="knotwork_run_export_file">%1$s · %2$s</string>
+    <string name="knotwork_run_export_body">该文件包含模型在本次运行中读取的全部内容：提示词、记忆摘要以及提示词内的聊天记录。除非你主动分享，否则它仅保存在此设备上。</string>
+    <string name="knotwork_run_export_share">分享</string>
+    <string name="knotwork_run_export_save">保存到文件</string>
+    <string name="knotwork_run_verify_failed_reason_unknown">未知错误</string>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="notifications_agent_status_initializing">正在初始化…</string>
+    <string name="notifications_agent_status_idle">智能体正在等待</string>
+    <string name="notifications_agent_status_loading">正在加载上下文…</string>
+    <string name="notifications_agent_status_queued">正在其他运行之后排队</string>
+    <string name="notifications_agent_status_thinking">智能体正在思考…</string>
+    <string name="notifications_agent_status_executing_tool">正在使用工具：%1$s…</string>
+    <string name="notifications_agent_status_approval">正在等待用户确认…</string>
+    <string name="notifications_agent_status_clarification">正在等待你回答追问…</string>
+    <string name="notifications_agent_status_ceiling">等待中：运行已达限制</string>
+    <string name="notifications_agent_status_suspended">正在后台等待用户回应</string>
+    <string name="notifications_agent_status_observation">正在处理工具结果…</string>
+    <string name="notifications_agent_status_answering">正在回答…</string>
+    <string name="notifications_agent_status_completed">任务已完成</string>
+    <string name="notifications_agent_status_stopped">运行已停止</string>
+    <string name="notifications_agent_status_stage">流程阶段：%1$s</string>
+    <string name="notifications_agent_status_trace">流程轨迹已更新</string>
+    <string name="notifications_agent_status_running">流程运行中…</string>
+</resources>

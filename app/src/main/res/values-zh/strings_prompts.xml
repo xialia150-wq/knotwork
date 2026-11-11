@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="prompts_screen_title">提示词库</string>
+    <string name="prompts_subtitle_format" tools:ignore="PluralsCandidate">%1$d 个分类 · %2$d 条提示词</string>
+    <string name="prompts_back_cd">返回</string>
+    <string name="prompts_fab_cd">添加提示词</string>
+    <string name="prompts_edit_cd">编辑提示词</string>
+    <string name="prompts_delete_cd">删除提示词</string>
+    <string name="prompts_preview_cd">预览提示词</string>
+    <string name="prompts_used_by_format" tools:ignore="PluralsCandidate">用于 %1$d 个流程</string>
+    <string name="prompts_duplicate_cd">创建提示词副本</string>
+    <string name="prompts_more_cd">更多操作</string>
+    <string name="prompts_empty_title">暂无提示词</string>
+    <string name="prompts_empty_subtitle">从 Markdown 文件导入提示词，或从头编写一条。</string>
+    <string name="prompts_empty_import_cta">导入提示词</string>
+    <string name="prompts_empty_new_cta">新建提示词</string>
+    <string name="prompts_empty_category_title">此处暂无内容</string>
+    <string name="prompts_empty_category_subtitle">此步骤类型的提示词将显示在此处。导入一条，或点按 + 编写。</string>
+    <string name="prompts_error_title">无法加载提示词</string>
+    <string name="prompts_import_cd">从文件导入提示词</string>
+    <string name="prompts_export_cd_format">导出“%1$s”到文件</string>
+    <string name="prompts_action_export">导出</string>
+    <string name="prompts_action_delete">删除</string>
+    <string name="prompts_import_success_format">已将“%1$s”导入至 %2$s。</string>
+    <string name="prompts_import_success_action">查看</string>
+    <string name="prompts_export_success_format">已导出“%1$s”。</string>
+    <string name="prompts_import_unchanged_format">“%1$s”已存在于你的库中，未作更改。</string>
+    <string name="prompts_import_unreadable">无法读取该文件。</string>
+    <string name="prompts_export_unwritable">无法保存该文件。</string>
+    <string name="prompts_import_left_out_heading">已忽略的项目</string>
+    <plurals name="prompts_import_left_out_more">
+        <item quantity="other">以及另外 %1$d 项</item>
+    </plurals>
+    <string name="prompts_import_mismatch_title">已导入（部分设置已忽略）</string>
+    <string name="prompts_import_mismatch_body_format">“%1$s”由不同版本的应用编写。提示词已成功导入；这些设置未能导入。</string>
+    <string name="prompts_import_unknown_keys_body_format">“%1$s”已存入你的库中。文件中的部分设置无法被当前应用识别，已被忽略。</string>
+    <string name="prompts_import_refused_title">仅导入了文本</string>
+    <string name="prompts_import_refused_body_format">“%1$s”现已加入你的库中。该文件还请求添加 %2$s，但提示词只能提供文本内容，因此该部分已被忽略。</string>
+    <string name="prompts_import_refused_asked_tools">工具</string>
+    <string name="prompts_import_refused_asked_steps">步骤</string>
+    <string name="prompts_import_refused_asked_scripts">脚本</string>
+    <string name="prompts_import_refused_tools_format">工具：%1$s</string>
+    <string name="prompts_import_refused_steps_format" tools:ignore="PluralsCandidate">步骤：%1$d</string>
+    <string name="prompts_import_refused_scripts_format" tools:ignore="PluralsCandidate">脚本：%1$d</string>
+    <string name="prompts_import_version_left_out_format">版本：%1$d</string>
+    <string name="prompts_import_failed_title">未能导入任何内容</string>
+    <string name="prompts_import_failed_frontmatter">文件顶部的设置块缺失或不完整。它必须位于两行三条短划线（---）之间。</string>
+    <string name="prompts_import_failed_duplicate_key">文件顶部的设置块中出现了重复设置，无法判断你想要保留哪一个。</string>
+    <string name="prompts_import_failed_missing_key_format">文件缺少必要内容：%1$s。</string>
+    <string name="prompts_import_failed_no_prompt">文件包含名称但没有提示词文本，无可保存内容。</string>
+    <string name="prompts_import_failed_unknown_type_format">此文件适用的步骤类型在此应用中不存在：%1$s。</string>
+    <string name="prompts_import_failed_not_llm_format">提示词仅归属于调用模型的步骤。此文件适用于 %1$s，该步骤并不调用模型。</string>
+    <string name="prompts_import_failed_name_too_long_format" tools:ignore="PluralsCandidate">文件中的名称超过了 %1$d 个字符。</string>
+    <string name="prompts_import_failed_prompt_too_long_format" tools:ignore="PluralsCandidate">文件中的提示词超过了 %1$d 个字符。</string>
+    <string name="prompts_import_collision_title_format">你的库中已存在“%1$s”</string>
+    <string name="prompts_import_collision_body">文件与已保存的提示词内容不一致。同时保留会将文件另存为独立提示词。</string>
+    <string name="prompts_import_collision_replace">替换</string>
+    <string name="prompts_import_collision_keep_both">保留两者</string>
+    <string name="prompts_editor_title_new">新建提示词</string>
+    <string name="prompts_editor_title_edit">编辑提示词</string>
+    <string name="prompts_editor_name_label">名称</string>
+    <string name="prompts_editor_name_placeholder">未命名</string>
+    <string name="prompts_editor_category_label">类别（节点类型）</string>
+    <string name="prompts_editor_category_placeholder">任务拆解</string>
+    <string name="prompts_editor_body_label">提示词内容</string>
+    <string name="prompts_editor_body_placeholder">在此输入提示词…</string>
+    <string name="prompts_editor_insert_label">插入</string>
+    <string name="prompts_editor_category_invalid">请选择 LLM 驱动的节点类型（LITE_RT、CLOUD、OUTPUT、SUMMARY、INTENT_ROUTER、DECOMPOSITION、EVALUATION、CLARIFICATION）。</string>
+    <string name="prompts_editor_footer_format" tools:ignore="PluralsCandidate">用于 %1$d 个流程 · 更改将在下次运行时生效</string>
+    <string name="prompts_editor_close_cd">关闭编辑器</string>
+</resources>

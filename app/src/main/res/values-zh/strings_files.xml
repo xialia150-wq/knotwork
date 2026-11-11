@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="files_share_chooser_title">分享文件</string>
+    <string name="files_message_import_failed">该文件未能导入：文件过大或工作区已满。</string>
+    <string name="files_message_export_failed">该文件无法导出保存。</string>
+    <string name="files_message_preview_failed">此文件没有可用的预览。</string>
+    <string name="files_message_delete_partial">部分文件未能成功删除。</string>
+    <string name="files_message_share_failed">未能准备好任何可用于分享的文件。</string>
+    <plurals name="files_message_share_partial">
+        <item quantity="other">仅准备好了 %2$d 个文件中的 %1$d 个以供分享。</item>
+    </plurals>
+    <string name="files_quota_full">已满</string>
+</resources>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="orchestrator_library_new_pipeline_title">新建流程</string>
+    <string name="orchestrator_library_rename_pipeline_title">重命名流程</string>
+    <string name="orchestrator_library_delete_pipeline_title">删除流程</string>
+    <string name="orchestrator_library_delete_confirm">删除流程“%1$s”？此操作无法撤销。</string>
+    <plurals name="orchestrator_library_delete_dependents_warning">
+        <item quantity="other">有 %1$d 个流程通过“流程”节点调用此流程。将其删除会导致这些节点悬空，在你重新指定或移除这些节点前，它们将显示验证错误。</item>
+    </plurals>
+    <string name="orchestrator_library_delete_dependents_header" tools:ignore="PluralsCandidate">将受影响 · %1$d</string>
+    <string name="orchestrator_library_delete_anyway">仍然删除</string>
+    <string name="orchestrator_library_delete_keep">保留</string>
+    <string name="orchestrator_library_name_field_label">名称</string>
+    <string name="orchestrator_feedback_default_pipeline_updated">默认流程已更新</string>
+    <string name="orchestrator_feedback_share_pipeline_bound">已设置用于分享的流程</string>
+    <string name="orchestrator_feedback_tile_pipeline_bound">已设置快捷设置磁贴的流程</string>
+    <string name="orchestrator_feedback_pipeline_renamed">流程已重命名</string>
+    <string name="orchestrator_feedback_pipeline_duplicated">流程已创建副本</string>
+    <string name="orchestrator_feedback_pipeline_deleted">流程已删除</string>
+    <string name="orchestrator_feedback_pipeline_created">流程已创建</string>
+    <string name="prompt_preset_picker_title">提示词预设</string>
+    <string name="prompt_preset_picker_subtitle">%1$s · 为此节点选择预设</string>
+    <string name="prompt_preset_picker_tab_bundled">内置</string>
+    <string name="prompt_preset_picker_tab_mine">我的</string>
+    <string name="prompt_preset_picker_all_chip">全部</string>
+    <string name="prompt_preset_picker_current_badge">当前</string>
+    <string name="prompt_preset_picker_tokens_suffix">tok</string>
+    <string name="prompt_preset_picker_empty_bundled">此节点类型无内置预设。</string>
+    <string name="prompt_preset_picker_empty_mine">你尚未保存适用于此节点类型的预设。</string>
+    <string name="prompt_preset_picker_empty_filtered">没有预设符合当前筛选条件。</string>
+    <string name="prompt_preset_picker_action_preview">预览</string>
+    <string name="prompt_preset_picker_action_use_prompt">使用提示词</string>
+    <string name="prompt_preset_picker_action_cancel">取消</string>
+    <string name="prompt_preset_save_dialog_title">另存为预设</string>
+    <string name="prompt_preset_save_dialog_subtitle">目标节点类型：%1$s</string>
+    <string name="prompt_preset_save_field_name">名称</string>
+    <string name="prompt_preset_save_field_description">描述（可选）</string>
+    <string name="prompt_preset_save_field_tags">标签（以逗号分隔，可选）</string>
+    <string name="prompt_preset_save_field_tags_hint">例如 concise, reasoning, json</string>
+    <string name="prompt_preset_save_action_save">保存</string>
+    <string name="prompt_preset_save_action_cancel">取消</string>
+    <string name="prompt_preset_save_error_blank_prompt">无法保存空的系统提示词。</string>
+    <string name="prompt_preset_save_error_name_too_long" tools:ignore="PluralsCandidate">名称最多为 %1$d 个字符</string>
+    <string name="orchestrator_context_section_title">输入数据</string>
+    <string name="orchestrator_context_previous_node_output_label">上一节点输出</string>
+    <string name="orchestrator_context_previous_node_output_hint">上一步骤的结果（始终启用）</string>
+    <string name="orchestrator_context_original_task_label">用户原始任务</string>
+    <string name="orchestrator_context_original_task_hint">触发本次运行的聊天消息</string>
+    <string name="orchestrator_context_chat_history_label">聊天记录</string>
+    <string name="orchestrator_context_chat_history_hint">当前会话中的所有先前消息</string>
+    <string name="orchestrator_context_long_term_memory_label">长期记忆</string>
+    <string name="orchestrator_context_long_term_memory_hint">来自智能体长期记忆的相关条目</string>
+    <string name="orchestrator_context_tool_results_label">工具执行结果</string>
+    <string name="orchestrator_context_tool_results_hint">当前步骤中工具返回的数据</string>
+    <string name="orchestrator_context_hint">减少输入可使节点运行更快且开销更低。请仅启用必要项。</string>
+    <string name="orchestrator_context_inherited_tag">继承</string>
+    <string name="orchestrator_context_overridden_tag">覆盖</string>
+    <string name="orchestrator_library_speed_dial_new">新建</string>
+    <string name="orchestrator_library_speed_dial_new_pipeline">新建流程</string>
+    <string name="orchestrator_library_speed_dial_from_preset">从预设创建</string>
+    <string name="orchestrator_preset_picker_title">选择预设</string>
+    <string name="orchestrator_preset_picker_tab_bundled">内置</string>
+    <string name="orchestrator_preset_picker_tab_mine">我的</string>
+    <string name="orchestrator_preset_picker_chip_all">全部</string>
+    <string name="orchestrator_preset_picker_empty">没有符合此筛选条件的预设。</string>
+    <string name="orchestrator_preset_picker_use">使用此预设</string>
+    <string name="orchestrator_preset_picker_loaded">预设已加载至编辑器</string>
+    <string name="orchestrator_preset_save_title">另存为预设</string>
+    <string name="orchestrator_preset_save_name_label">名称</string>
+    <string name="orchestrator_preset_save_description_label">描述</string>
+    <string name="orchestrator_preset_save_category_label">分类</string>
+    <string name="orchestrator_preset_save_tags_label">标签（以逗号分隔）</string>
+    <string name="orchestrator_preset_save_success">预设已保存</string>
+    <string name="orchestrator_prompt_preset_save_success">提示词预设已保存</string>
+    <string name="orchestrator_preset_category_local">本地</string>
+    <string name="orchestrator_preset_category_cloud">云端</string>
+    <string name="orchestrator_preset_category_hybrid">混合</string>
+    <string name="orchestrator_preset_category_tool">工具</string>
+    <string name="orchestrator_preset_category_research">研究</string>
+    <string name="orchestrator_preset_category_other">其他</string>
+    <string name="orchestrator_preset_manager_title">流程预设</string>
+    <string name="orchestrator_preset_manager_subtitle" tools:ignore="PluralsCandidate">%1$d 个内置 · %2$d 个已保存</string>
+    <string name="orchestrator_preset_manager_bundled_empty">暂无内置预设。</string>
+    <string name="orchestrator_preset_manager_user_empty">你尚未保存任何预设。可在编辑器或库的溢出菜单中将流程另存为预设。</string>
+    <string name="orchestrator_preset_manager_action_rename">重命名</string>
+    <string name="orchestrator_preset_manager_action_export">导出 JSON</string>
+    <string name="orchestrator_preset_manager_action_delete">删除</string>
+    <string name="orchestrator_preset_manager_rename_title">重命名预设</string>
+    <string name="orchestrator_preset_manager_rename_blank">预设名称不能为空</string>
+    <string name="orchestrator_preset_manager_renamed">预设已重命名</string>
+    <string name="orchestrator_preset_manager_deleted">预设已删除</string>
+    <string name="orchestrator_preset_manager_delete_title">删除预设？</string>
+    <string name="orchestrator_preset_manager_delete_confirm">删除预设“%1$s”？此操作无法撤销。</string>
+    <string name="orchestrator_library_import_unreadable">无法读取所选文件。</string>
+    <string name="orchestrator_library_import_too_large">此文件大于 %1$s，超出了流程导入支持的最大大小。</string>
+    <string name="orchestrator_library_import_schema_title">架构不匹配</string>
+    <string name="orchestrator_library_import_schema_body" tools:ignore="PluralsCandidate">此流程是针对架构 v%1$d 编写的，但当前版本预期为 v%2$d。部分配置可能无法完全正常导入。</string>
+    <string name="orchestrator_library_import_dropped_heading">以下设置存在于文件中，但无法被当前版本导入，将会丢失：</string>
+    <plurals name="orchestrator_library_import_dropped_more">
+        <item quantity="other">…以及另外 %1$d 项</item>
+    </plurals>
+    <plurals name="orchestrator_library_import_dropped_feedback">
+        <item quantity="other">导入成功。文件中有 %1$d 项设置无法被当前版本读取，未予保留。</item>
+    </plurals>
+    <string name="orchestrator_library_import_anyway">仍然导入</string>
+    <string name="orchestrator_library_import_collision_title_format">你的库中已存在“%1$s”</string>
+    <string name="orchestrator_library_import_collision_single_body">文件中将其命名为“%1$s”。“替换”会将其步骤替换为文件中的步骤；“作为副本导入”会同时保留两者。</string>
+    <string name="orchestrator_library_import_collision_bindings_heading">“替换”会保留所有调用它的项。替换后，以下项将运行文件中的步骤：</string>
+    <string name="orchestrator_library_import_collision_replace">替换</string>
+    <string name="orchestrator_library_import_collision_copy">作为副本导入</string>
+    <string name="orchestrator_library_import_orphan_title">此文件使用了你已删除流程的 ID</string>
+    <string name="orchestrator_library_import_orphan_body">文件中将其命名为“%1$s”。若“保留 ID”，仍在调用它的项将运行文件中的步骤；“作为副本导入”则不会影响它们。</string>
+    <string name="orchestrator_library_import_orphan_bindings_heading">以下项仍在调用该 ID。选择“保留 ID”后，它们将运行文件中的步骤：</string>
+    <string name="orchestrator_library_import_orphan_keep">保留 ID</string>
+    <string name="orchestrator_library_import_bundle_orphan_item">“%1$s”（已删除流程的 ID）</string>
+    <string name="orchestrator_library_import_bundle_title">导入文件包</string>
+    <plurals name="orchestrator_library_import_bundle_collision_title">
+        <item quantity="other">%2$d 个流程中有 %1$d 个已在你的库中</item>
+    </plurals>
+    <string name="orchestrator_library_import_bundle_collision_body">“替换”会将它们的步骤替换为文件中的步骤。“作为副本导入”会同时保留两者。</string>
+    <string name="orchestrator_library_import_bundle_collision_heading">“替换”会保留所有调用它们的项。已存在于库中：</string>
+    <plurals name="orchestrator_library_import_bundle_taken_title">
+        <item quantity="other">%2$d 个流程中有 %1$d 个使用了已被占用的 ID</item>
+    </plurals>
+    <string name="orchestrator_library_import_bundle_taken_heading">“替换”会保留所有调用它们的项。已被占用（存在于库中，或仍被已删除流程的聊天、触发器或调用方引用）：</string>
+    <string name="orchestrator_library_import_bundle_collision_item">“%1$s”</string>
+    <string name="orchestrator_library_binding_default">聊天的默认流程</string>
+    <string name="orchestrator_library_binding_share">系统分享目标</string>
+    <string name="orchestrator_library_binding_tile">快捷设置磁贴</string>
+    <string name="orchestrator_library_binding_external">来自其他应用的请求</string>
+    <plurals name="orchestrator_library_binding_triggers">
+        <item quantity="other">%1$d 个自动化触发器</item>
+    </plurals>
+    <plurals name="orchestrator_library_binding_chats">
+        <item quantity="other">%1$d 个聊天</item>
+    </plurals>
+    <string name="orchestrator_library_binding_caller">被“%1$s”调用</string>
+    <string name="orchestrator_library_import_bundle_schema_body">此文件包中的部分流程是针对不同架构版本编写的。部分配置可能无法完全正常导入。</string>
+    <string name="orchestrator_library_import_bundle_replace">替换</string>
+    <string name="orchestrator_library_import_bundle_copies">作为副本导入</string>
+    <plurals name="orchestrator_library_import_bundle_success">
+        <item quantity="other">已导入 %d 个流程</item>
+    </plurals>
+    <string name="orchestrator_library_export_bundle_failed">导出文件包失败：%1$s</string>
+    <string name="orchestrator_library_export_bundle_success">已导出 %1$s</string>
+    <string name="orchestrator_preset_exported">预设已导出</string>
+    <string name="orchestrator_preset_export_failed">导出失败</string>
+    <string name="pipeline_flow_empty">空图</string>
+    <string name="pipeline_library_unbound">未绑定</string>
+    <string name="pipeline_library_untitled">未命名</string>
+    <plurals name="pipeline_library_node_count">
+        <item quantity="other">%1$d 个节点</item>
+    </plurals>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="memory_msg_load_error">无法刷新记忆</string>
+    <string name="memory_msg_add_error">无法保存到记忆</string>
+    <string name="memory_msg_edit_error">无法保存修改</string>
+    <string name="memory_segment_auto">自动</string>
+    <string name="memory_segment_compaction">压缩</string>
+    <string name="memory_segment_manual">手动</string>
+    <string name="memory_header_compacted_ago">%1$s 前已压缩</string>
+    <string name="memory_header_compacted_just_now">刚刚已压缩</string>
+    <string name="memory_section_pinned">已置顶</string>
+    <string name="memory_section_today">今天</string>
+    <string name="memory_section_this_week">本周</string>
+    <string name="memory_section_earlier">较早</string>
+    <string name="memory_detail_learned_from_chat">聊天“%1$s”</string>
+    <string name="memory_detail_last_used_ago">上次使用：%1$s 前</string>
+    <string name="memory_detail_last_used_just_now">刚刚使用过</string>
+    <string name="memory_source_auto">自动提取</string>
+    <string name="memory_source_manual">手动保存</string>
+    <string name="memory_source_compaction">已压缩</string>
+    <string name="memory_source_unknown">未知</string>
+    <string name="memory_detail_tokens" tools:ignore="PluralsCandidate">%1$d tok</string>
+    <string name="memory_compact_seconds_approx">约 %1$d 秒</string>
+    <plurals name="memory_used_in_runs">
+        <item quantity="other">%1$d 次运行</item>
+    </plurals>
+</resources>

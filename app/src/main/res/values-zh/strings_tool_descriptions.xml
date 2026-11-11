@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="tool_description_append_file">将 UTF-8 文本追加到智能体私有工作区中文件的末尾。若文件或父目录不存在，将自动创建。现有内容始终得以保留（不覆盖）。可用于在日志或报告中累计记录；使用 write_file 创建或整体替换文件，或使用 edit_file 局部修改文件。</string>
+    <string name="tool_description_delegate_task">将复杂或专业任务委派给外部 LLM 并返回其答案。仅在需要云端推理时使用此工具。</string>
+    <string name="tool_description_delete_file">从智能体的私有工作区中删除单个文件。此操作不可逆，运行前始终需要用户确认。仅能删除常规文件。</string>
+    <string name="tool_description_edit_file">通过将单处出现的“oldText”替换为“newText”来编辑智能体私有工作区中的现有文本文件。“oldText”定位标记在文件中必须且仅出现一次，请包含足够的上下文以保证其唯一性，否则编辑将被拒绝。传入空的“newText”会删除匹配片段。使用 write_file 创建新文件或全量替换现有文件。</string>
+    <string name="tool_description_find_files">在智能体的私有工作区中查找相对路径符合 Glob 模式的文件。支持“*”（单层路径内）、“**”（跨目录）和“?”。示例：“*.md”、“reports/**”、“**/*.json”。返回匹配文件的列表及其大小和最后修改时间。</string>
+    <string name="tool_description_http_request">向远程 API 发起 HTTP 请求并返回状态码、响应头和（截断后的）响应体。支持 GET、POST、PUT 和 DELETE。仅能访问用户已明确添加到允许列表（设置 → 工具 → 允许的域名）中的域名；访问任何其他主机均会被拒绝。公共主机必须使用 HTTPS。严禁在请求头或请求体中填入已保存的 API 密钥，此类请求将被拒绝。GET 请求需要确认；POST/PUT/DELETE 则需要明确的破坏性操作确认。</string>
+    <string name="tool_description_list_files">列出智能体私有工作区中的文件，每行一个，附带大小和最后修改时间。可传入可选的“path”参数以仅列出特定子目录。可在读写文件之前使用此工具了解有哪些文件存在。</string>
+    <string name="tool_description_read_file" tools:ignore="TypographyEllipsis">从智能体的私有工作区读取 UTF-8 文本文件。返回文件内容，并截断在 token 预算内，以防止长文件超出上下文窗口。使用字节“offset”和“limit”参数对长文件进行分页读取：当结果以“[... truncated, N bytes remain — use offset M to continue]”标记结尾时，再次调用并将“offset”设为该标记中的具体值 M 即可读取下一页。</string>
+    <string name="tool_description_schedule_task">计划由智能体在后台执行的任务。intervalHours：大于 0 表示周期性任务，0 表示单次任务。delayMinutes：大于 0 表示延迟执行。</string>
+    <string name="tool_description_search_tool">在 Wikipedia 上搜索有关某个主题的最新信息。当需要事实或数据来回答用户的问题时使用此工具。</string>
+    <string name="tool_description_write_file">将 UTF-8 文本写入智能体私有工作区的文件中，并按需创建父目录。默认行为是创建新文件；若要替换现有文件，必须传入“overwrite”: true（若未传入，覆写现有文件的操作将被拒绝，以防意外覆盖内容）。对现有文件进行少量更改时请使用 edit_file。</string>
+</resources>
