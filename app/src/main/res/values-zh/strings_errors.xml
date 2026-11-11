@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="errors_generic_unexpected">发生了意外错误</string>
+    <string name="errors_chat_pipeline_removed">该流程已被删除。现已使用默认流程。</string>
+    <string name="errors_orchestrator_cycle_detected">无法连接：检测到循环回路</string>
+    <string name="errors_orchestrator_at_least_one_source">必须至少保留一个已启用的数据源</string>
+    <string name="errors_orchestrator_pipeline_not_found">未找到流程</string>
+    <string name="errors_orchestrator_validation_missing_input">缺少输入节点</string>
+    <string name="errors_orchestrator_validation_missing_output">缺少输出节点</string>
+    <string name="errors_orchestrator_validation_multiple_inputs">不允许存在多个输入节点</string>
+    <string name="errors_orchestrator_validation_multiple_outputs">不允许存在多个输出节点</string>
+    <string name="errors_orchestrator_validation_has_cycles">流程包含循环回路</string>
+    <string name="errors_orchestrator_validation_disconnected_input">输入节点未连接</string>
+    <string name="errors_orchestrator_validation_disconnected_output">输出节点未连接</string>
+    <string name="errors_orchestrator_validation_unreachable_node">部分节点无法从输入节点到达</string>
+    <string name="errors_orchestrator_validation_dead_end">部分节点无法到达输出节点</string>
+    <string name="errors_orchestrator_validation_node_no_sources">节点“%1$s”将收不到任何数据，请至少启用一个数据源</string>
+    <string name="errors_orchestrator_validation_missing_target_pipeline">流程节点“%1$s”未选择目标流程</string>
+    <string name="errors_orchestrator_validation_target_pipeline_not_found">流程节点“%1$s”引用的流程已不存在</string>
+    <string name="errors_orchestrator_validation_pipeline_cycle">流程之间存在循环引用：%1$s</string>
+    <string name="errors_orchestrator_validation_pipeline_nesting_too_deep">流程嵌套层级超过了 %1$d 层的限制</string>
+    <string name="errors_orchestrator_validation_missing_skill">技能节点“%1$s”未选择技能</string>
+    <string name="errors_orchestrator_validation_skill_not_found">技能节点“%1$s”引用的技能已不存在</string>
+    <string name="import_problem_too_deep" tools:ignore="PluralsCandidate">无效的 JSON：嵌套超过 %1$d 层</string>
+    <string name="import_problem_not_json">无效的 JSON：%1$s</string>
+    <string name="import_problem_malformed">格式错误的流程文档：%1$s</string>
+    <string name="import_problem_missing_field">缺少必填字段：%1$s</string>
+    <string name="import_problem_invalid_pipeline_id" tools:ignore="PluralsCandidate">无效的流程 ID：必须为单行且最多 %1$d 个字符</string>
+    <string name="import_problem_duplicate_node_id">重复的节点 ID “%1$s”</string>
+    <string name="import_problem_duplicate_connection_id">重复的连线 ID “%1$s”</string>
+    <string name="import_problem_node_without_id" tools:ignore="PluralsCandidate">节点 #%1$d 缺少 ID</string>
+    <string name="import_problem_node_without_type">节点“%1$s”缺少类型</string>
+    <string name="import_problem_unknown_node_type">节点“%1$s”包含未知类型“%2$s”</string>
+    <string name="import_problem_connection_without_id" tools:ignore="PluralsCandidate">连线 #%1$d 缺少 ID</string>
+    <string name="import_problem_connection_without_end">连线“%1$s”缺少 %2$s</string>
+    <string name="import_problem_connection_unknown_node">连线“%1$s”引用了未知节点“%2$s”</string>
+    <string name="import_problem_label_not_a_branch">来自 %2$s 节点“%3$s”的连线“%1$s”被标记为“%4$s”；其有效分支为 %5$s</string>
+    <string name="import_problem_context_flag">节点“%1$s”：contextConfig.%2$s 必须为 true 或 false</string>
+    <string name="import_problem_unknown_provider">节点“%1$s”指定了未知的云端服务商“%2$s”</string>
+    <string name="import_problem_empty_bundle">文件包中不包含任何流程</string>
+    <string name="import_problem_bundle_too_large" tools:ignore="PluralsCandidate">文件包包含 %1$d 个流程，超出了 %2$d 个的限制</string>
+    <string name="import_problem_bundle_entry_not_object">文件包中的流程 #%1$d 不是 JSON 对象</string>
+    <string name="import_problem_bundle_entry_invalid">文件包中的流程 #%1$d 无效：%2$s</string>
+    <string name="import_problem_duplicate_pipeline_ids">文件包中包含重复的流程 ID：%1$s</string>
+    <string name="import_problem_missing_pipelines">文件包引用的流程未包含在其中：%1$s</string>
+    <string name="import_problem_pipeline_fails_checks">流程“%1$s”无效：%2$s</string>
+    <string name="import_problem_too_many_memories" tools:ignore="PluralsCandidate">文件包含 %1$d 个记忆分块，超出记忆库最多可容纳的 %2$d 个</string>
+    <string name="import_problem_memory_entry_not_object">索引 %1$d 处的记忆分块格式错误</string>
+    <string name="import_problem_memory_entry_invalid" tools:ignore="PluralsCandidate">索引 %1$d 处的分块缺少必填字段或格式错误：text 必须为非空字符串，embedding 必须为有限数字的非空数组，timestamp 必须为正数毫秒时间戳</string>
+    <string name="import_problem_memory_history_invalid" tools:ignore="PluralsCandidate">索引 %1$d 处分块的历史版本格式错误：text 必须为非空字符串，capturedAt 与 replacedAt 必须为正数毫秒时间戳</string>
+    <string name="input_problem_blank_pipeline_name">流程名称不能为空</string>
+    <string name="input_problem_blank_preset_name">预设名称不能为空</string>
+    <string name="input_problem_long_pipeline_name" tools:ignore="PluralsCandidate">流程名称不能超过 %1$d 个字符</string>
+    <string name="input_problem_long_preset_name" tools:ignore="PluralsCandidate">预设名称最多为 %1$d 个字符</string>
+    <string name="input_problem_blank_system_prompt">系统提示词不能为空</string>
+    <string name="input_problem_long_system_prompt" tools:ignore="PluralsCandidate">系统提示词最多为 %1$d 个字符</string>
+    <string name="input_problem_no_prompt_for_node">节点类型 %1$s 非 LLM 驱动，无法配置提示词预设</string>
+    <string name="input_problem_pipeline_not_found">未找到流程</string>
+    <string name="input_problem_preset_not_found">未找到预设：%1$s</string>
+    <string name="input_problem_prompt_preset_not_found">未找到 ID 为 %1$s 的提示词预设</string>
+    <string name="input_problem_scenario_not_found">未知的引导场景：%1$s</string>
+    <string name="export_problem_root_not_found">未找到根流程“%1$s”。</string>
+    <string name="export_problem_reference_not_found">无法解析引用的流程“%1$s”以供导出。</string>
+    <string name="export_problem_too_many_pipelines" tools:ignore="PluralsCandidate">依赖闭包超出了 %1$d 个流程的限制。</string>
+    <string name="import_problem_quoted_value">“%1$s”</string>
+    <string name="import_problem_and_more" tools:ignore="PluralsCandidate">%1$s 及另外 %2$d 项</string>
+</resources>

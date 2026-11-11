@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="splash_starting">正在启动…</string>
+    <string name="splash_data_locked_title">无法解锁你的数据</string>
+    <string name="splash_data_locked_body">保护本地数据的加密密钥无法读取。这通常是暂时的，例如刚完成 Android 系统更新。先重试一次。如果问题仍然存在，继续使用应用的唯一方法是清除数据并重新开始。</string>
+    <string name="splash_data_locked_reset">清除数据</string>
+    <string name="splash_reset_dialog_title">清除你的数据？</string>
+    <string name="splash_reset_dialog_body">此操作将永久删除此设备上的聊天记录、长期记忆、流程、预设、工作区文件、附件以及计划任务。你的设置和已保存密钥将被保留。此操作无法撤销。输入 %1$s 确认。</string>
+    <string name="splash_reset_dialog_hint">输入 %1$s 确认</string>
+    <string name="splash_reset_dialog_confirm">清除数据</string>
+    <string name="splash_stage_preparing">正在准备应用…</string>
+    <string name="splash_stage_models">正在检查已下载模型…</string>
+    <string name="splash_stage_pipelines">正在读取流程…</string>
+    <string name="splash_stage_chats">正在读取聊天…</string>
+    <string name="splash_stage_memory">正在读取记忆…</string>
+    <string name="splash_stage_ready">就绪</string>
+</resources>

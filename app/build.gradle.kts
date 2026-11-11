@@ -409,7 +409,7 @@ android {
         // translated into falls back to English throughout. A new interface
         // language is added here AND gets its `values-<lang>` folders in `app` and
         // `catalog`; `TranslationCoverageTest` reads this list.
-        localeFilters += listOf("en", "ru", "es")
+        localeFilters += listOf("en", "ru", "es", "zh")
         // Lists the app's languages in the system's per-app language settings
         // (Android 13+) and gives the in-app picker its choices, through the
         // generated `LocaleConfig`. The default locale comes from
@@ -532,6 +532,8 @@ android {
         // this does not depend on the API floor). ChromeOS support is not in
         // scope for v0.1 — disable the lint check that demands an x86 binary.
         disable += "ChromeOsAbiSupport"
+        // zh: the Simplified Chinese translation is landing in phases (fork build).
+        disable += "MissingTranslation"
         // `MissingTranslation` stays an error here and in `:catalog`. While a new
         // language's translation lands over several changes, both scripts switch it off
         // (`disable` of that id) and `TranslationCoverageTest` reads the language's

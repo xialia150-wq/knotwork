@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="pipeline_editor_node_pipeline_target">→ %1$s</string>
+    <string name="pipeline_editor_node_pipeline_no_target">未指定目标流程</string>
+    <string name="pipeline_editor_node_pipeline_missing">未找到流程</string>
+    <string name="pipeline_editor_fab_add_node">添加节点</string>
+    <string name="pipeline_editor_validation_clean">流程无误</string>
+    <plurals name="pipeline_editor_validation_count">
+        <item quantity="other">%1$d 个问题，无法运行</item>
+    </plurals>
+    <string name="pipeline_editor_validation_auto_fix">自动修复</string>
+    <string name="pipeline_editor_validation_go">前往</string>
+    <string name="pipeline_editor_validation_auto_fix_none">暂无安全的自动修复方案，请手动处理这些问题。</string>
+    <string name="pipeline_editor_validation_auto_fix_done">已完成自动修复。</string>
+    <plurals name="pipeline_editor_multi_select_count">
+        <item quantity="other">已选 %1$d 项</item>
+    </plurals>
+    <string name="pipeline_editor_multi_select_cancel">取消选择</string>
+    <string name="pipeline_editor_multi_select_copy">复制所选节点</string>
+    <string name="pipeline_editor_multi_select_delete">删除所选节点</string>
+    <string name="pipeline_editor_overflow_paste">粘贴</string>
+    <string name="pipeline_editor_overflow_paste_empty">剪贴板为空，请先复制节点。</string>
+    <string name="pipeline_editor_overflow_rename">重命名节点…</string>
+    <string name="pipeline_editor_rename_title">重命名节点</string>
+    <string name="pipeline_editor_rename_field_label">节点名称</string>
+    <string name="pipeline_editor_rename_confirm">重命名</string>
+    <string name="pipeline_editor_rename_cancel">取消</string>
+    <string name="pipeline_editor_overflow_cookbook">流程手册</string>
+    <string name="pipeline_editor_overflow_find">查找节点…</string>
+    <string name="pipeline_editor_search_placeholder">搜索节点…</string>
+    <string name="pipeline_editor_search_close">关闭搜索</string>
+    <plurals name="pipeline_editor_search_count">
+        <item quantity="other">%1$d 条匹配</item>
+    </plurals>
+    <string name="pipeline_editor_empty_title">空流程</string>
+    <string name="pipeline_editor_empty_helper">点按 + 添加你的第一个节点，或长按画布上的目标位置添加。</string>
+    <string name="pipeline_editor_empty_cta_start">从输入节点开始</string>
+    <string name="pipeline_editor_empty_cta_template">从模板创建</string>
+    <string name="pipeline_editor_empty_info_pill">画布：%1$d × %2$d · %3$d dp 网格 · %4$s</string>
+    <string name="pipeline_editor_zoom_rail_zoom_in">放大</string>
+    <string name="pipeline_editor_zoom_rail_zoom_out">缩小</string>
+    <string name="pipeline_editor_zoom_rail_fit">使流程适应视图</string>
+    <string name="pipeline_editor_mini_map_title">概览</string>
+    <string name="pipeline_editor_mini_map_close">关闭小地图</string>
+    <string name="pipeline_editor_overflow_mini_map">小地图</string>
+    <string name="pipeline_editor_subtitle_overview">概览 · %1$s · %2$d 个节点</string>
+    <string name="pipeline_editor_subtitle_editing">编辑中 · %1$d 个节点 · %2$d 条连线</string>
+    <plurals name="pipeline_editor_subtitle_issues">
+        <item quantity="other">%1$d 个问题 · 无法保存</item>
+    </plurals>
+    <string name="pipeline_editor_overflow_undo">撤销</string>
+    <string name="pipeline_editor_overflow_redo">重做</string>
+    <string name="pipeline_editor_overflow_delete">删除所选内容</string>
+    <string name="pipeline_editor_overflow_auto_layout">自动排版</string>
+    <string name="pipeline_editor_overflow_save">保存流程</string>
+    <string name="pipeline_editor_overflow_save_as_preset">另存为预设…</string>
+    <string name="pipeline_editor_save_done">流程已保存。</string>
+    <string name="pipeline_editor_overflow_toggle_grid_show">显示网格</string>
+    <string name="pipeline_editor_overflow_toggle_grid_hide">隐藏网格</string>
+    <string name="pipeline_editor_edge_selected_hint">已选中连线。按 🗑 移除。</string>
+    <string name="pipeline_editor_connection_dropped_hint">如需连接节点，请从节点底部端口拖拽至另一个节点。</string>
+    <string name="pipeline_editor_unsaved_title">不保存直接退出？</string>
+    <string name="pipeline_editor_unsaved_text">此流程有尚未保存的更改。现在退出将丢失这些更改。</string>
+    <string name="pipeline_editor_unsaved_save">保存并退出</string>
+    <string name="pipeline_editor_unsaved_discard">放弃</string>
+    <string name="pipeline_editor_remove_connection_title">移除连线？</string>
+    <string name="pipeline_editor_remove_connection_text">这将删除两个节点之间的连线。你可以通过编辑器工具栏撤销此操作。</string>
+    <string name="pipeline_editor_remove_connection_confirm">移除</string>
+    <string name="pipeline_editor_remove_connection_cancel">取消</string>
+    <string name="pipeline_editor_skill_allowlist_all">所有工具</string>
+    <string name="pipeline_editor_skill_allowlist_none">无工具</string>
+    <plurals name="pipeline_editor_skill_allowlist_subset">
+        <item quantity="other">%d 个工具</item>
+    </plurals>
+</resources>

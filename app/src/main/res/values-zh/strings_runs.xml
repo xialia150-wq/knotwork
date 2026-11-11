@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="run_copied_seed">种子已复制</string>
+    <string name="run_copied_sha">模型 SHA-256 已复制</string>
+    <string name="run_copied_digest">运行摘要已复制</string>
+    <string name="run_copied_hash">已复制“%2$s”的 %1$s 哈希值</string>
+    <string name="run_hash_input">输入</string>
+    <string name="run_hash_output">输出</string>
+    <string name="run_copied_verification_hash">哈希值已复制</string>
+    <string name="run_again_snackbar">正在使用种子 %1$s 再次运行。仅当所有输入完全一致时，才会生成相同的回答。</string>
+    <string name="run_trace_export_chooser_title">分享运行轨迹</string>
+    <string name="run_trace_export_save_failed">无法保存运行轨迹</string>
+    <string name="run_trace_export_render_failed">无法读取运行轨迹</string>
+    <plurals name="run_trace_export_saved">
+        <item quantity="other">已保存 %1$d 条记录</item>
+    </plurals>
+</resources>

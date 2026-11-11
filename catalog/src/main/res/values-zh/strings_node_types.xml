@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="knotwork_node_type_input_name">输入</string>
+    <string name="knotwork_node_type_input_description">运行的起点：你的消息、分享的页面或触发器的提示词。</string>
+    <string name="knotwork_node_type_output_name">输出</string>
+    <string name="knotwork_node_type_output_description">运行的终点，将回答呈现给你。</string>
+    <string name="knotwork_node_type_lite_rt_name">LiteRT</string>
+    <string name="knotwork_node_type_lite_rt_description">在手机本地模型上执行单步推理。</string>
+    <string name="knotwork_node_type_cloud_name">云端</string>
+    <string name="knotwork_node_type_cloud_description">调用已配置的云端服务商执行单步推理。</string>
+    <string name="knotwork_node_type_intent_router_name">意图路由</string>
+    <string name="knotwork_node_type_intent_router_description">将输入的文本归入设定类别，并沿着对应分支继续运行。</string>
+    <string name="knotwork_node_type_if_condition_name">条件判断</string>
+    <string name="knotwork_node_type_if_condition_description">双向分支：根据输入判断是否满足条件，或检查是否附带图片。</string>
+    <string name="knotwork_node_type_clarification_name">追问</string>
+    <string name="knotwork_node_type_clarification_description">暂停运行并向你提问，你的回答将作为该节点的输出。</string>
+    <string name="knotwork_node_type_tool_name">工具</string>
+    <string name="knotwork_node_type_tool_description">调用一个内置工具或来自其他应用、MCP 服务器的工具，并把结果传递下去。</string>
+    <string name="knotwork_node_type_decomposition_name">任务拆解</string>
+    <string name="knotwork_node_type_decomposition_description">将一条指令拆解为子任务列表。</string>
+    <string name="knotwork_node_type_queue_processor_name">队列处理</string>
+    <string name="knotwork_node_type_queue_processor_description">依次将子任务送入 Item 分支处理，全部完成后进入 Done 分支。</string>
+    <string name="knotwork_node_type_evaluation_name">评估</string>
+    <string name="knotwork_node_type_evaluation_description">评估上一步的产出内容，并给出通过、重试或失败的判定。</string>
+    <string name="knotwork_node_type_summary_name">汇总</string>
+    <string name="knotwork_node_type_summary_description">将前面步骤的产出内容浓缩为一段文本，常用于循环之后。</string>
+    <string name="knotwork_node_type_pipeline_name">流程</string>
+    <string name="knotwork_node_type_pipeline_description">将另一个已保存的流程作为单步运行，并返回其结果。</string>
+    <string name="knotwork_node_type_skill_name">技能</string>
+    <string name="knotwork_node_type_skill_description">运行可复用的技能：包含固定指令以及该技能可调用的工具列表。</string>
+</resources>
