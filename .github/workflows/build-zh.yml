@@ -5,6 +5,8 @@ name: Build zh APK
 on:
   push:
     branches: [zh-build]
+    paths-ignore:
+      - 'tools/**'
   workflow_dispatch:
 
 permissions:
