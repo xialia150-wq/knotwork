@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-      The debug build installs alongside a release build under its own
-      applicationId, so it needs a launcher label that tells the two apart at a
-      glance — including in the app switcher and the notification shade, where
-      background runs of both would otherwise be indistinguishable.
-    -->
-    <string name="app_name">织问 Debug</string>
+    <string name="app_name">织问</string>
 </resources>

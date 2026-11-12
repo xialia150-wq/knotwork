@@ -280,9 +280,8 @@ android {
             // replacing it: separate applicationId means a separate data
             // directory, so dogfooding a work-in-progress build can no longer
             // migrate, corrupt or wipe the database of the build actually in
-            // daily use. The launcher label is overridden in `src/debug/res`
-            // and the version name is suffixed so About and bug reports say
-            // which of the two is talking.
+            // daily use. The version name is suffixed so About and bug
+            // reports say which of the two is talking.
             //
             // `src/debug/google-services.json` carries the same placeholder
             // values as the module-root file with the suffixed package name.
