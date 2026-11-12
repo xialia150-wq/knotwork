@@ -16,10 +16,10 @@ package app.knotwork.android.presentation.receivers
  */
 enum class ApprovalAction(val action: String) {
     /** User tapped "Approve" in the approval notification — proceed with the tool call. */
-    APPROVE("me.lcfuns.zhiwen.ACTION_APPROVE"),
+    APPROVE("app.knotwork.android.ACTION_APPROVE"),
 
     /** User tapped "Deny" in the approval notification — cancel the pending tool call. */
-    DENY("me.lcfuns.zhiwen.ACTION_DENY"),
+    DENY("app.knotwork.android.ACTION_DENY"),
 
     /**
      * Delete-intent of a persistent (parked-run) notification fired by a user
@@ -28,7 +28,7 @@ enum class ApprovalAction(val action: String) {
      * run's notification is its primary recovery surface and must persist
      * until the request is settled or expires.
      */
-    REPOST("me.lcfuns.zhiwen.ACTION_REPOST_PENDING"),
+    REPOST("app.knotwork.android.ACTION_REPOST_PENDING"),
     ;
 
     companion object {

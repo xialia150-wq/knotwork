@@ -4,6 +4,11 @@ This document captures how the on-device agent is built, signed, and shipped
 for distribution. It is intentionally a single-page playbook — every step
 should be runnable verbatim from a clean checkout.
 
+> **织问 distribution:** only the FOSS APK is currently built and published.
+> No AAB is published, and the release workflow does not use
+> `GOOGLE_SERVICES_JSON_BASE64`. The upstream `full` flavour and placeholder
+> configuration remain in the repository for future upstream merges.
+
 ## 1. Variants at a glance
 
 The app has two build types (`debug` / `release`) and a **`distribution`
@@ -12,8 +17,8 @@ product-flavour dimension** with two flavours, so a full build variant is
 
 | Flavour | Crash reporting          | Google/Firebase dependency | Intended channel        |
 |---------|--------------------------|----------------------------|-------------------------|
-| `full`  | Firebase Crashlytics (opt-in) | yes (`fullImplementation`) | Play Store / direct APK |
-| `foss`  | none (no-op)             | **none** — provably absent | **F-Droid** (§8)        |
+| `full`  | Firebase Crashlytics (opt-in) | yes (`fullImplementation`) | Retained upstream variant; not published by 织问 |
+| `foss`  | none (no-op)             | no Firebase SDK | 织问 FOSS APK (§8) |
 
 `full` is the default flavour (`isDefault = true`), so plain commands and
 Android Studio's variant selector resolve to it.
@@ -35,11 +40,7 @@ sideloading on a developer device but **not** acceptable for Play Store upload.
 export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 
 # Universal arm64-v8a APK (used for sideload smoke-tests).
-./gradlew :app:assembleFullRelease   # Play / direct-APK build (Firebase)
-./gradlew :app:assembleFossRelease   # F-Droid build (no Google/Firebase) — see §8
-
-# Android App Bundle (the Play Store upload format; full flavour only).
-./gradlew :app:bundleFullRelease
+./gradlew :app:assembleFossRelease   # 织问 FOSS APK — see §8
 ```
 
 A release build needs the Android NDK named by `ndk` in
@@ -54,13 +55,12 @@ names the command that installs the pinned version:
 sdkmanager "ndk;<version>"
 ```
 
-Debug builds and `./gradlew check` do not need it.
+Debug builds and the FOSS CI check do not need it. The debug applicationId is
+`me.lcfuns.zhiwen.debug` and its launcher label is `织问 Debug`.
 
 Outputs (the flavour name is part of the path):
 
-- `app/build/outputs/apk/full/release/app-full-release.apk`
 - `app/build/outputs/apk/foss/release/app-foss-release.apk`
-- `app/build/outputs/bundle/fullRelease/app-full-release.aab`
 
 The release variant strips every ABI except `arm64-v8a`
 (`build.gradle.kts → buildTypes.release.ndk.abiFilters`). The reason is the
@@ -137,13 +137,13 @@ transition.
 
 | Channel         | Flavour        | Signed with |
 |-----------------|----------------|-------------|
-| GitHub Releases | `full`, `foss` | This project's release key. |
-| F-Droid         | `foss`         | This project's release key. F-Droid publishes the APK from the GitHub release once its own build reproduces it (§8 *Reproducible builds*). |
-| Google Play     | `full`         | Keys Google Play holds, not this project's. The AAB uploaded to Play is signed with the release key, which Play records as the upload key; Play re-signs the APKs it delivers. |
+| GitHub Releases | `foss` | This project's release key. |
+| F-Droid         | `foss`         | A possible future channel; distribution and signing must be independently verified. |
+| Google Play     | — | 织问 does not currently publish an AAB. |
 
 Android updates an installed app only with a copy from the same signer. So the
-GitHub APKs and F-Droid update each other in place, and so do the two GitHub
-flavours. Between Google Play and either of them there is no update path:
+GitHub FOSS APKs and F-Droid builds update each other in place only when signed
+with the same key and using the same applicationId. Between Google Play and either of them there is no update path:
 switching means uninstalling first, which deletes the app's local data — see
 [troubleshooting.md](troubleshooting.md#installing-over-a-copy-from-google-play-fails).
 
@@ -187,9 +187,9 @@ above.
 ### Provisioning the keystore in CI
 
 `.github/workflows/release.yml` resolves the same four signing keys as above
-from the environment rather than from `local.properties`, so they — plus the
-real Firebase config — are injected as **repository secrets** instead of
-checked-in files. This is a one-time setup; §9 is the per-release procedure
+from the environment rather than from `local.properties`, so they are injected
+as **repository secrets** instead of checked-in files. FOSS releases do not use
+Firebase configuration or `GOOGLE_SERVICES_JSON_BASE64`. This is a one-time setup; §9 is the per-release procedure
 that uses it.
 
 Everything below is run **once**, on the machine that holds the keystore.
@@ -215,18 +215,7 @@ keytool -list -v -keystore app/release.keystore -alias agent-release \
 Colons and letter case are stripped before the comparison, so
 `A1:B2:C3:…`, `a1b2c3…` and `A1B2C3…` are all accepted.
 
-**3 — Base64-encode the real `google-services.json`.** The copy committed at
-`app/google-services.json` is a **placeholder**: it keeps a clean checkout
-building and keeps the real Firebase project id out of the repository, but a
-`full` build made with it has crash reporting pointed at a project that does
-not exist. Download the real file from the Firebase console (project settings →
-your Android app → `google-services.json`) and encode it the same way:
-
-```bash
-base64 < ~/Downloads/google-services.json | tr -d '\n' | pbcopy
-```
-
-**4 — Store them.** Repository → *Settings* → *Secrets and variables* →
+**3 — Store them.** Repository → *Settings* → *Secrets and variables* →
 *Actions*:
 
 | Name                          | Kind     | Value                                                    |
@@ -235,7 +224,6 @@ base64 < ~/Downloads/google-services.json | tr -d '\n' | pbcopy
 | `RELEASE_KEYSTORE_PASSWORD`   | secret   | Keystore (store) password.                               |
 | `RELEASE_KEY_ALIAS`           | secret   | Key alias, e.g. `agent-release`.                         |
 | `RELEASE_KEY_PASSWORD`        | secret   | Key password.                                            |
-| `GOOGLE_SERVICES_JSON_BASE64` | secret   | Output of step 3.                                        |
 | `RELEASE_CERT_SHA256`         | **variable** | Fingerprint from step 2, without the `SHA256:` label (colons and case are ignored). |
 
 The fingerprint is a **variable**, not a secret, on purpose. It is public
@@ -247,11 +235,9 @@ that is supposed to be readable into an unreadable one.
 `$RUNNER_TEMP`, never into the checkout, so nothing under the workspace can
 sweep it into an uploaded artefact, and it is deleted in a step that runs even
 when the build fails. Passwords reach `keytool` on stdin rather than in argv.
-The real `google-services.json` overwrites the placeholder for the `full`
-build only and is restored from Git afterwards; the `foss` build is a separate
-Gradle invocation that never loads the Google plugins at all (§8), and the
-`debug` build type keeps its own committed placeholder so dogfooding never
-reports into the real Firebase project.
+The FOSS build never loads the Google Services or Crashlytics plugins (§8).
+The committed placeholder files remain for upstream compatibility and are not
+used to publish 织问.
 
 **Why the setup is checked before the build, not after.** A missing or blank
 credential does not fail the build — `resolveReleaseSigning()` returns `null`
@@ -265,7 +251,11 @@ these secrets.
 
 ### The Firebase project behind the `full` build
 
-The published `full` APK carries the Firebase project's API key and project id.
+The following describes the retained upstream `full` variant only. 织问 does
+not currently publish it or use a Firebase project; these steps are not part of
+the FOSS release.
+
+An upstream `full` APK carries the Firebase project's API key and project id.
 That is how Firebase works — the key identifies the project and is not a secret —
 but it makes the key's restrictions and the products enabled on the project part
 of what the app exposes, and neither lives in this repository. They are checked
@@ -318,14 +308,14 @@ For an APK, use `apksigner` from the Android SDK build-tools:
 
 ```bash
 apksigner verify --print-certs --verbose --min-sdk-version 24 \
-    app/build/outputs/apk/full/release/app-full-release.apk
+    app/build/outputs/apk/foss/release/app-foss-release.apk
 ```
 
 Expect `Verified using v2 scheme … true` and `Verified using v3 scheme … true`.
 Keep `--min-sdk-version 24`: at the app's own `minSdk`, `apksigner` verifies the
 v3 signature alone and reports v2 as not verified even when it is there.
 
-An AAB carries only a v1 (JAR) signature, which `apksigner` does not read;
+For a future upstream AAB (not currently published by 织问), an AAB carries only a v1 (JAR) signature, which `apksigner` does not read;
 `keytool` prints the signer certificate of a signed JAR directly:
 
 ```bash
@@ -427,6 +417,9 @@ Future wins (left out of scope for now):
 
 ## 6. App Bundle build (Play Store upload)
 
+The instructions in this section describe the retained upstream full variant.
+织问 does not currently build or publish an AAB; use the FOSS APK in §2.
+
 ```bash
 ./gradlew :app:bundleFullRelease
 # Output: app/build/outputs/bundle/fullRelease/app-full-release.aab
@@ -450,42 +443,30 @@ bundletool get-size total --apks=app.apks
 
 ## 7. Quality gate before release
 
+The FOSS-only PR and release gate is defined in `.github/workflows/check.yml`:
+
 ```bash
-./gradlew check :buildSrc:test :app:lintFullRelease :app:bundleFullRelease
+./gradlew :app:check :app:assembleFossDebug :catalog:check :buildSrc:test \
+  :app:koverVerifyFossDebug :app:verifyRoborazziFossDebug \
+  -x :app:testFullDebugUnitTest -x :app:detektFullDebug -x :app:lintFullDebug \
+  -x :app:koverVerify -x :app:koverVerifyFullDebug -x :app:verifyRoborazziFullDebug \
+  -x :app:verifyFullReleaseMergedManifest -x :app:verifyFullReleaseNoSlf4jProvider
 ```
 
-- `check` aggregates `detekt` and the type-resolution detekt tasks,
-  `ktlintCheck`, lint, the unit-test suite for **both** flavours
-  (`testFullDebugUnitTest` + `testFossDebugUnitTest`), the design-system
-  screenshot comparison (`:catalog:verifyRoborazziDebug`), the translated app
-  screens' (`:app:verifyRoborazziFullDebug`),
-  `koverVerifyFullDebug` (coverage is measured on the representative `full`
-  variant; the flavours share every measured source), and the documentation,
-  version and store-listing gates, and the supply-chain gates — the actions and
-  the Gradle distribution pinned, and each release variant's merged manifest
-  matching its recorded entry surfaces. The full list, with what each one guards,
-  is in [`static-analysis.md`](static-analysis.md).
-- Every build, the release build included, verifies each dependency against
-  `gradle/verification-metadata.xml` before using it
-  ([`static-analysis.md`](static-analysis.md) § *Dependency verification*); a
-  release that bumps a dependency has to carry the metadata update with it.
-- `:buildSrc:test` runs the tests of the build logic behind those gates. It is a
-  separate build, so `check` cannot reach it.
-- `lintFullRelease` re-runs lint on the release configuration (catches issues
-  hidden by debug-only resources).
-- `bundleFullRelease` confirms R8 + resource shrinking still produce a valid AAB.
-
-CI gates every pull request into `main` on `check :buildSrc:test` only; the two
-release-configuration tasks run nowhere but here and in `release.yml`. The
-integration PR adds the instrumented emulator run
-([`testing.md`](testing.md) § *The instrumented gate*) and the manual smoke test
-on the reference device described in [`testing.md`](testing.md) § *What the
-automated gate does NOT cover*.
-
-`release.yml` (§9) runs `check` as its first job and gets the release-config
-lint through `lintVital<Variant>Release`, which AGP wires into every release
-assemble. That is the fatal-severity subset of `lintFullRelease`, so running the
-command above before tagging still buys something the release pipeline does not.
+- The app check aggregates detekt, ktlint, FOSS lint and unit tests, design-system
+  and FOSS app screenshot comparison, FOSS Kover coverage, documentation, version,
+  store-listing and supply-chain gates. Full-only tasks are excluded; a plain
+  `./gradlew check` is not the same gate and also builds the retained full flavour.
+  See [`static-analysis.md`](static-analysis.md) for the guards and their scope.
+- Every build, including release, verifies dependencies against
+  `gradle/verification-metadata.xml`; a dependency change must carry its metadata
+  update. `:buildSrc:test` covers build logic and is separate from the app check.
+- CI separately compiles FOSS instrumented tests. Emulator execution and manual
+  reference-device smoke tests are described in [`testing.md`](testing.md).
+- The release workflow runs the FOSS gate and builds `:app:assembleFossRelease`;
+  AGP wires `lintVitalFossRelease` into the release build. It verifies the APK's
+  signature, resources and native libraries. The pinned NDK and signing materials
+  are required (§3); no AAB or `GOOGLE_SERVICES_JSON_BASE64` is used.
 
 ### Guards on the minified artefact
 
@@ -776,28 +757,17 @@ git tag -a v0.7.0 -m "Knotwork 0.7.0"
 git push origin v0.7.0
 ```
 
-The tag push starts the workflow. It reuses the `check` gate, verifies the tag
-against `versionName`, materialises the keystore and the real
-`google-services.json`, builds `fullRelease` (APK + AAB) and — in a separate
-Gradle invocation, so the Google plugins stay out of it (§8) — `fossRelease`
-(APK), checks that both APKs ship the LiteRT-LM and MediaPipe Tasks libraries and
-not MediaPipe's excluded text-generation one (§5), re-verifies the signer of all
-three artefacts against `RELEASE_CERT_SHA256`, and attaches them plus a `SHA256SUMS.txt` to a **draft**
-GitHub Release. The R8 mapping files are uploaded as a workflow artefact (90-day
-retention) rather than as a public asset — they belong with the maintainer, for
-deobfuscating crash reports.
+The tag push starts the workflow. It reuses the FOSS check gate, verifies the
+tag against `versionName`, materialises the signing keystore and builds the
+`fossRelease` APK. It checks the APK's Firebase resource absence, native
+libraries and signer against `RELEASE_CERT_SHA256`, then attaches the APK and
+`SHA256SUMS.txt` to a **draft** GitHub Release. The FOSS R8 mapping is retained
+as a workflow artefact for 90 days. No AAB is built or published and no
+`GOOGLE_SERVICES_JSON_BASE64` secret is used.
 
-The name of the `foss` asset, `knotwork-<version>-foss-release.apk`, is part of
-the F-Droid build (§8): F-Droid downloads the APK by that name to check its own
-build against it. Rename it and F-Droid stops publishing new versions. A draft's
-assets cannot be downloaded, so F-Droid's check fails until the release is
-published.
-
-Note that the release build only *injects* the Crashlytics mapping-file id
-(`injectCrashlyticsMappingFileIdFullRelease`); it does not upload the mapping.
-Until `./gradlew :app:uploadCrashlyticsMappingFileFullRelease` is run against
-the same build, Crashlytics stack traces for that version stay obfuscated —
-which is what the archived workflow artefact is for.
+The FOSS asset is named `knotwork-<version>-foss-release.apk`. Upstream F-Droid
+recipes may depend on that name (§8); this does not assert that 织问 is
+currently published on F-Droid. Draft release assets are not public downloads.
 
 **Publishing**
 
@@ -836,10 +806,7 @@ same way merging a pull request is. Before pressing publish:
 
    A link that 404s here means the tag was not pushed, not that the registry is
    wrong.
-4. **Check the Firebase project behind the `full` build** (§3): key restrictions,
-   enabled products, and — after any change — successful requests from both
-   channels.
-5. Publish.
+4. Publish the FOSS release after the manual checks above pass.
 
 **Dry-running the workflow.** *Actions* → *Release* → *Run workflow* takes a tag
 as input and performs every step except creating the release, so the pipeline

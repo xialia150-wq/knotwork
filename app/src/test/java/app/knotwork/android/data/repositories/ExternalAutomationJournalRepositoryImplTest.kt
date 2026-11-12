@@ -65,7 +65,7 @@ class ExternalAutomationJournalRepositoryImplTest {
         action: String = ACTION,
         target: ExternalAutomationTarget? = ExternalAutomationTarget.ById("pipe-1"),
         declaredReturnPackage: String? = "com.example.caller",
-        returnAction: String = "me.lcfuns.zhiwen.action.RUN_RESULT",
+        returnAction: String = "app.knotwork.android.action.RUN_RESULT",
         attestedSenderPackage: String? = null,
         status: ExternalAutomationStatus = ExternalAutomationStatus.Accepted,
         runId: String? = "run-$id",
@@ -163,7 +163,7 @@ class ExternalAutomationJournalRepositoryImplTest {
                 targetKind = null,
                 targetValue = null,
                 declaredReturnPackage = null,
-                returnAction = "me.lcfuns.zhiwen.action.RUN_RESULT",
+                returnAction = "app.knotwork.android.action.RUN_RESULT",
                 attestedSenderPackage = null,
                 statusKind = "NotAStatus",
                 statusReason = null,
@@ -674,7 +674,7 @@ class ExternalAutomationJournalRepositoryImplTest {
         targetKind = targetKind,
         targetValue = targetValue,
         declaredReturnPackage = null,
-        returnAction = "me.lcfuns.zhiwen.action.RUN_RESULT",
+        returnAction = "app.knotwork.android.action.RUN_RESULT",
         attestedSenderPackage = null,
         statusKind = statusKind,
         statusReason = statusReason,
@@ -683,6 +683,6 @@ class ExternalAutomationJournalRepositoryImplTest {
     )
 
     private companion object {
-        const val ACTION = "me.lcfuns.zhiwen.action.RUN_PIPELINE"
+        const val ACTION = "app.knotwork.android.action.RUN_PIPELINE"
     }
 }

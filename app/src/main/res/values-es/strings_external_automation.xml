@@ -59,7 +59,7 @@
     <string name="external_automation_call_keys_label">Extras</string>
     <string name="external_automation_call_copy">Copiar</string>
     <string name="external_automation_call_expand_cd">Mostrar cómo la llama otra app</string>
-    <string name="external_automation_call_clip_label">Automatización externa de 织问</string>
+    <string name="external_automation_call_clip_label">Automatización externa de Knotwork</string>
     <string name="external_automation_key_pipeline_id">ID del pipeline que se ejecuta. Usa este o el nombre, nunca ambos.</string>
     <string name="external_automation_key_pipeline_name">Nombre del pipeline que se ejecuta, con coincidencia exacta.</string>
     <string name="external_automation_key_prompt">El mensaje con el que se ejecuta el pipeline.</string>
@@ -68,7 +68,7 @@
     <string name="external_automation_key_return_action">Acción con la que se envía la respuesta, de hasta 256 caracteres. Por defecto, la del propio contrato.</string>
     <string name="external_automation_key_return_package">Paquete al que se entrega la respuesta, de hasta 256 caracteres. Omítelo si no esperas respuesta.</string>
     <string name="external_automation_consent_title">¿Permitir que otras apps ejecuten un pipeline?</string>
-    <string name="external_automation_consent_intro">Las apps de automatización como Tasker o MacroDroid, y los scripts de shell por adb, podrán pedirle a 织问 que ejecute un pipeline para ellas.</string>
+    <string name="external_automation_consent_intro">Las apps de automatización como Tasker o MacroDroid, y los scripts de shell por adb, podrán pedirle a Knotwork que ejecute un pipeline para ellas.</string>
     <string name="external_automation_consent_any_app">Puede pedirlo cualquier app de este dispositivo que pueda enviar un broadcast. No hay una lista por app: el pipeline que elijas es todo el permiso.</string>
     <string name="external_automation_consent_one_pipeline">Solo se puede ejecutar ese pipeline. Una solicitud que nombre cualquier otro se rechaza; nunca se redirige al que elegiste.</string>
     <string name="external_automation_consent_approvals">Tu configuración de aprobaciones se sigue aplicando: una llamada a herramienta se detiene y te pregunta primero igual que en las ejecuciones en segundo plano de la propia app, y una peligrosa siempre lo hace.</string>

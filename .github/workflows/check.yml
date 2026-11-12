@@ -1,11 +1,17 @@
 name: Check
 
-# CI gate for the FOSS distribution. The aggregate app check contains several
-# full-only tasks, so those are explicitly excluded and FOSS coverage and
-# screenshot verification are requested in their place. The separate Foss task
-# also ensures the app does not apply the Google Services build plugins.
-# :catalog:check and :buildSrc:test retain the shared and build-logic checks.
-# Instrumented sources are compiled here and run by instrumented.yml.
+# Strict-mode CI gate.
+# The app aggregate still contains full-only tasks; the invocation below excludes
+# those and runs FOSS assembly, FOSS unit tests, lint, coverage and screenshot
+# verification instead. It also runs detekt, ktlintCheck,
+# verifyBrowserEditorConstants and the project-level checkNoInternalFqn.
+# `:buildSrc:test` is added explicitly because the build-logic module's own
+# tests are not reachable from the app aggregate and would otherwise drift.
+# Instrumented sources are compiled separately because `check` does not compile
+# them. The separate `Instrumented` workflow runs them on emulators without
+# making emulator infrastructure a prerequisite for a signed release.
+# Any failing gate blocks the merge. A FOSS task is included so that this
+# invocation does not apply Google Services or Crashlytics plugins.
 #
 # Triggers: every pull request targeting `main`, and every push to `main`
 # (so the badge reflects the head of the protected branch). `workflow_dispatch`
@@ -43,6 +49,11 @@ jobs:
   check:
     name: ./gradlew check
     runs-on: ubuntu-latest
+    # A pull request reads the Gradle cache seeded from main. Cold builds on
+    # a two-core runner can overrun shorter limits, especially with the
+    # instrumented-source compilation added to the gate. Keep the previous
+    # 75-minute budget even though this invocation builds only FOSS: a timeout
+    # kills the run and may leave no reports; unused time costs nothing.
     timeout-minutes: 75
     steps:
       - name: Checkout
@@ -152,7 +163,11 @@ jobs:
       # `Instrumented` workflow; whether they *compile* is a pure function of
       # the repository, so it belongs in the deterministic gate.
       #
-      # Keep the instrumented compilation in its own Gradle invocation.
+      # Its OWN Gradle invocation is intentional. Historically combining
+      # compile*DebugAndroidTestKotlin with the mixed-flavour check caused
+      # Robolectric failures because the default FirebaseApp was uninitialised.
+      # This gate now compiles only FOSS and keeps the separate invocation so
+      # its result remains independent of the unit-test task graph.
       #
       # `!cancelled()` rather than the default: otherwise a lint or unit-test
       # failure hides an instrumented compile break for a whole extra CI cycle.

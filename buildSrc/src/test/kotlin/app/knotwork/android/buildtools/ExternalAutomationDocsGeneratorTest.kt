@@ -24,7 +24,7 @@ class ExternalAutomationDocsGeneratorTest {
         object ExternalAutomationContract {
 
             /** Broadcast action a caller sends. */
-            const val ACTION_RUN_PIPELINE: String = "me.lcfuns.zhiwen.action.RUN_PIPELINE"
+            const val ACTION_RUN_PIPELINE: String = "app.knotwork.android.action.RUN_PIPELINE"
 
             /**
              * Request key: id of the pipeline. Mutually exclusive with [EXTRA_PIPELINE_NAME].
@@ -91,7 +91,7 @@ class ExternalAutomationDocsGeneratorTest {
 
         assertTrue(
             result,
-            result.contains("| `ACTION_RUN_PIPELINE` | `me.lcfuns.zhiwen.action.RUN_PIPELINE` |"),
+            result.contains("| `ACTION_RUN_PIPELINE` | `app.knotwork.android.action.RUN_PIPELINE` |"),
         )
         assertTrue(result, result.contains("| `EXTRA_PIPELINE_ID` | `pipeline_id` |"))
     }

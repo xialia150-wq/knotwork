@@ -21,9 +21,23 @@ name: Instrumented
 # still goes red for both — a gate that turns green when its environment
 # misbehaves has stopped being a gate.
 #
-# Test the FOSS flavour on API 36 and the supported minimum API 34.
-# AppFunctions device-only coverage is excluded by the test runner on emulators;
-# API 37 remains a manual reference-device check.
+# Matrix: FOSS on API 36 and API 34 (the supported minimum). The upstream
+# workflow also tested full on API 36 and 34; 织问 builds and tests FOSS only.
+# The earlier API 36 suite was green in three runs, and the API 34 leg covers
+# floor-specific resource resolution, startup and platform behaviour.
+#
+# The intended floor + targetSdk combination cannot currently use API 37:
+# in both observed attempts the image booted but the emulator action's own
+# post-boot unlock command failed with `Failure calling service input: Broken
+# pipe`. API 36.1 likewise failed across three attempts at the AVD disk,
+# keyguard and install-write stages. API 37 therefore remains a manual
+# reference-device check; API 36.1 adds only a patch level over API 36.
+#
+# These legs do NOT prove the AppFunctions runtime. Below API 36 no service is
+# published, and AppFunctionsEndToEndTest is on the device-only exclusion list:
+# Android 16 marks EXECUTE_APP_FUNCTIONS internal|privileged and an emulator
+# cannot grant it to a developer-installed app. No automated emulator leg covers
+# that runtime; retain the reference-device check.
 #
 # What this workflow deliberately does NOT do: cache the AVD between runs. The
 # documented snapshot-cache dance trades a few minutes of boot time for a class
@@ -90,6 +104,8 @@ jobs:
           - flavour: Foss
             api: '36'
             target: google_apis
+          # The floor leg checks the same FOSS suite at minSdk 34; it does
+          # not cover AppFunctions, which requires a suitable device.
           - flavour: Foss
             api: '34'
             target: google_apis

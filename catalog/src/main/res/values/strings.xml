@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    User-visible strings for the 织问 design-system catalog.
+    User-visible strings for the Knotwork design-system catalog.
 
     Naming convention: `knotwork_<surface>_<role>_<intent>` so a global text search
     locates every translation site at once. The catalog introduces the

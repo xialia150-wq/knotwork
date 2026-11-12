@@ -48,7 +48,7 @@ exported service androidx.work.impl.background.systemjob.SystemJobService permis
 
 # ── Package visibility ───────────────────────────────────────────────────────
 queries intent action=android.app.appfunctions.AppFunctionService
-queries intent action=me.lcfuns.zhiwen.action.RUN_RESULT
+queries intent action=app.knotwork.android.action.RUN_RESULT
 
 # ── What this flavour promises not to declare ────────────────────────────────
 # The classes of Google's data-transport library (and its CCT endpoint) still ship

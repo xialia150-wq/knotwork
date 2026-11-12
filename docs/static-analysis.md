@@ -2162,7 +2162,7 @@ What it deliberately leaves alone:
 - lines that start with `//` or `*` (line comments and the body of a KDoc
   block), where a fully-qualified name is prose;
 - **intent action strings.** Android namespaces an action by the application id
-  (`me.lcfuns.zhiwen.action.RUN_PIPELINE`), so it reads exactly like an
+  (`app.knotwork.android.action.RUN_PIPELINE`), so it reads exactly like an
   internal name while being wire data that other apps send — nothing an import
   could replace, and frozen once a caller uses it. The action prefix is scrubbed
   from the line before matching rather than exempting the line, so a real

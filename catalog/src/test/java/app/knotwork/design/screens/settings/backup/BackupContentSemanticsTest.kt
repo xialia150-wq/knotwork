@@ -82,7 +82,7 @@ class BackupContentSemanticsTest {
         }
 
         assertEquals(
-            listOf("Restoring… 织问 will restart in a few seconds."),
+            listOf("Restoring… Knotwork will restart in a few seconds."),
             liveRegionTexts(),
         )
     }

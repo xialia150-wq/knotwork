@@ -54,7 +54,10 @@ jobs:
     name: Build, sign and publish
     needs: check
     runs-on: ubuntu-latest
-    # Allow a cold release build to complete on the runner.
+    # Release runs a cold R8 build on a two-core runner and cannot reuse the
+    # check job's outputs: it has a separate checkout and tag runs read but do
+    # not write the main-branch Gradle cache. Retain the 90-minute budget so a
+    # slow FOSS build does not lose its reports to a premature timeout.
     timeout-minutes: 90
     permissions:
       contents: write
@@ -182,11 +185,21 @@ jobs:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        # A FOSS-only invocation keeps the Google Services plugins out.
+        # This must be a FOSS-only Gradle invocation: app/build.gradle.kts
+        # skips the Google Services and Crashlytics plugins only when at least
+        # one requested task contains Foss and none contains Full. A mixed
+        # invocation can otherwise stamp Firebase resources into the FOSS APK.
+        # The full APK/AAB and real Firebase-config steps from upstream are not
+        # part of 织问's current release; source flavours remain in the repo.
         run: |
           ./gradlew :app:assembleFossRelease :app:verifyFossReleaseKeepRules --no-daemon --stacktrace
 
       - name: Verify the foss APK carries no Firebase configuration
+        # Check the packaged resource table, not merely task selection: a mixed
+        # invocation could silently add google_app_id to FOSS. The upstream
+        # full APK once supplied a positive control; this FOSS-only release
+        # instead confirms that a known application resource is present before
+        # checking the Firebase names, so an empty dump cannot pass vacuously.
         run: |
           set -euo pipefail
           aapt2="$(find "$ANDROID_HOME/build-tools" -maxdepth 2 -name aapt2 -type f 2>/dev/null | sort -V | tail -1 || true)"
@@ -288,6 +301,9 @@ jobs:
             echo "   signature OK ($actual)"
           }
 
+          # The upstream workflow also checked the full APK and its AAB (the
+          # latter with keytool because an AAB uses a JAR signature). 织问 ships
+          # only this FOSS APK, so no full/AAB signature is checked here.
           verify_apk app/build/outputs/apk/foss/release/app-foss-release.apk
 
       - name: Collect the release assets

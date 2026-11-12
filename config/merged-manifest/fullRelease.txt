@@ -49,4 +49,4 @@ exported service androidx.work.impl.background.systemjob.SystemJobService permis
 
 # ── Package visibility ───────────────────────────────────────────────────────
 queries intent action=android.app.appfunctions.AppFunctionService
-queries intent action=me.lcfuns.zhiwen.action.RUN_RESULT
+queries intent action=app.knotwork.android.action.RUN_RESULT

@@ -193,7 +193,7 @@
     <string name="settings_reset_button">Настройки сброшены к значениям по умолчанию.</string>
     <string name="notifications_agent_foreground_channel_name">Служба агента</string>
     <string name="notifications_agent_foreground_channel_description">Показывает состояние, пока агент работает; исчезает само, когда он закончит.</string>
-    <string name="notifications_agent_foreground_title">Агент 织问</string>
+    <string name="notifications_agent_foreground_title">Агент Knotwork</string>
     <string name="notifications_scheduled_running_title">Запланированная задача</string>
     <string name="notifications_scheduled_running_body">Агент работает в фоне…</string>
     <string name="notifications_model_download_channel_name">Загрузка моделей</string>
@@ -279,7 +279,7 @@
     <string name="settings_usage_duration">%1$d:%2$02d</string>
     <string name="settings_usage_duration_none">—</string>
     <string name="settings_usage_export_filename">knotwork-usage.json</string>
-    <string name="settings_usage_share_title">Статистика использования 织问</string>
+    <string name="settings_usage_share_title">Статистика использования Knotwork</string>
     <string name="settings_usage_reset_title">Сбросить статистику использования?</string>
     <string name="settings_usage_reset_body">Все счётчики использования на устройстве будут удалены навсегда. Настройка записи не изменится.</string>
     <string name="settings_usage_reset_confirm">Сбросить</string>

@@ -74,8 +74,8 @@ Required toolchain:
 
 Debug and release install side by side:
 
-- The debug build uses the applicationId `app.knotwork.android.debug`
-  and the launcher label **Knotwork Debug**, so it never replaces (or
+- The debug build uses the applicationId `me.lcfuns.zhiwen.debug`
+  and the launcher label **织问 Debug**, so it never replaces (or
   shares data with) a release build already on the device. Its Firebase
   config is the placeholder in `app/src/debug/google-services.json`,
   which keeps a debug build off any real project even when the
@@ -97,21 +97,25 @@ Local configuration:
 Common commands:
 
 ```bash
-./gradlew assembleDebug   # build the debug APK
-./gradlew test            # run JVM unit tests
-./gradlew check           # full local quality gate (see below)
-./gradlew bundleFullRelease   # build the Play-Store-shaped AAB (R8-minified)
+./gradlew :app:assembleFossDebug       # build the FOSS debug APK
+./gradlew :app:testFossDebugUnitTest    # run FOSS JVM unit tests
+./gradlew :app:assembleFossRelease      # build the FOSS release APK
 ```
+
+织问 currently publishes **FOSS APKs only**: no AAB is published and the
+release workflow does not use `GOOGLE_SERVICES_JSON_BASE64`. The upstream
+`full` flavour remains in the source tree for future merges.
 
 The `release` variant runs through R8 + resource shrinking + Jansi-native
 stripping; the keep rules live in [`app/proguard-rules.pro`](app/proguard-rules.pro)
-and the full release playbook (signing, AAB build, APK size breakdown) lives in
+and the release playbook (signing and APK size breakdown) lives in
 [`docs/release.md`](docs/release.md). Published releases are built by
 `.github/workflows/release.yml` from a `v*` tag rather than by hand — see
 [`docs/release.md`](docs/release.md) §9.
 
-`./gradlew check :buildSrc:test` is the same gate CI runs on every pull
-request. `buildSrc` is a separate build, so its tests — the generators and
+The exact FOSS-only CI command is in `.github/workflows/check.yml`. It selects
+FOSS tasks and excludes full-variant checks from the aggregate; running plain
+`./gradlew check :buildSrc:test` is not equivalent and also builds `full`. `buildSrc` is a separate build, so its tests — the generators and
 scanners behind the documentation gates — cannot be reached from `check`, and
 running `check` alone is a narrower gate than the one that decides the merge.
 `check` aggregates:
@@ -119,8 +123,8 @@ running `check` alone is a narrower gate than the one that decides the merge.
 - **detekt** — Kotlin static analysis (configured in
   [`config/detekt/detekt.yml`](config/detekt/detekt.yml)).
 - **ktlint** — formatting.
-- **Android lint** (`lintFullDebug` + `lintFossDebug`, plus `:catalog:lint`).
-- **Unit tests** (`testFullDebugUnitTest` + `testFossDebugUnitTest`) — including
+- **Android lint** (`lintFossDebug`, plus `:catalog:lint`).
+- **Unit tests** (`testFossDebugUnitTest`) — including
   the **Konsist** architecture guard (Clean-Architecture layer boundaries; see
   [`docs/static-analysis.md`](docs/static-analysis.md)) and the **golden run
   traces** — every shipped pipeline run through the real engine and compared
@@ -129,8 +133,8 @@ running `check` alone is a narrower gate than the one that decides the merge.
   on purpose).
 - **Screenshot tests** — the design-system renders compared with their
   committed baselines (`:catalog:verifyRoborazziDebug`), and a few app screens
-  in a translation with theirs (`:app:verifyRoborazziFullDebug`).
-- **Kover** coverage verification (`koverVerifyFullDebug`).
+  in a translation with theirs (`:app:verifyRoborazziFossDebug`).
+- **Kover** coverage verification (`koverVerifyFossDebug`).
 - **Documentation gates** — dead internal links and `#anchors`
   (`verifyDocLinks`), Mermaid diagram structure (`verifyMermaidDiagrams`), the
   version number agreeing with every hand-written copy of it in `README.md`,
@@ -140,23 +144,22 @@ running `check` alone is a narrower gate than the one that decides the merge.
   are reported weekly by a separate workflow and never gate a merge. The full
   roster of gates lives in [`docs/static-analysis.md`](docs/static-analysis.md).
 
-Run `./gradlew check :buildSrc:test` **locally before pushing**. Pushing
-without running it just trades local feedback for slower CI feedback.
+Run the FOSS-only command from `.github/workflows/check.yml` **locally before
+pushing**. Pushing without running it trades local feedback for slower CI feedback.
 
 Beyond those two tasks, CI adds two things. It compiles the instrumented
 source set — as a separate Gradle invocation, since bundling it into
 `check` makes unrelated Robolectric tests fail:
 
 ```bash
-./gradlew :app:compileFullDebugAndroidTestKotlin :app:compileFossDebugAndroidTestKotlin
+./gradlew :app:compileFossDebugAndroidTestKotlin
 ```
 
 And it *runs* the instrumented suite on emulators, in a separate
-`Instrumented` workflow — three legs, all of them on every pull request
-into `main`, on every push to `main` and nightly: API 36 for both
-flavours (`full` and `foss`), plus `full` at API 34, the `minSdk` floor.
+`Instrumented` workflow — FOSS on API 36 and API 34, on every pull request
+into `main`, every push to `main` and nightly. API 34 is the `minSdk` floor.
 If you have a device or emulator attached,
-`./gradlew connectedFullDebugAndroidTest` is the local equivalent. See
+`./gradlew connectedFossDebugAndroidTest` is the local equivalent. See
 [`docs/testing.md`](docs/testing.md) § *The instrumented gate* for the
 matrix, the exclusion list, and how a failure is classified as a test
 failure or as infrastructure trouble.
@@ -249,10 +252,10 @@ Guidelines:
 Before requesting review, please confirm:
 
 - [ ] Tests added or updated for the change.
-- [ ] `./gradlew check :buildSrc:test` passes locally.
+- [ ] The FOSS-only gate in `.github/workflows/check.yml` passes locally.
 - [ ] If the change touches `app/src/androidTest/`, the instrumented
       sources compile
-      (`./gradlew :app:compileFullDebugAndroidTestKotlin`) and the suite
+      (`./gradlew :app:compileFossDebugAndroidTestKotlin`) and the suite
       was run on a device or emulator.
 - [ ] Public documentation is updated where the change affects user-
       facing behaviour, the public API surface, or the build / dev setup.
@@ -331,7 +334,7 @@ fail the third one, which is the point.
 - [`docs/static-analysis.md`](docs/static-analysis.md) — detekt / ktlint
   / lint configuration and severity policy.
 - [`docs/release.md`](docs/release.md) — release-build playbook (R8
-  keep rules, signing, AAB build, APK size breakdown, how a release is cut).
+  keep rules, signing, APK size breakdown, how a release is cut).
 - [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) — community standards.
 - [`SECURITY.md`](SECURITY.md) — threat model and how to report a
   vulnerability.

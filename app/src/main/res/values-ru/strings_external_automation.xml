@@ -60,7 +60,7 @@
     <string name="external_automation_call_keys_label">Параметры</string>
     <string name="external_automation_call_copy">Скопировать</string>
     <string name="external_automation_call_expand_cd">Показать, как другое приложение вызывает это</string>
-    <string name="external_automation_call_clip_label">Внешняя автоматизация 织问</string>
+    <string name="external_automation_call_clip_label">Внешняя автоматизация Knotwork</string>
     <string name="external_automation_key_pipeline_id">Id пайплайна для запуска. Укажите его или имя, но не оба.</string>
     <string name="external_automation_key_pipeline_name">Имя пайплайна для запуска, точное совпадение.</string>
     <string name="external_automation_key_prompt">Сообщение, на котором запускается пайплайн.</string>
@@ -69,7 +69,7 @@
     <string name="external_automation_key_return_action">Действие, с которым отправить ответ, до 256 символов. По умолчанию — собственное действие контракта.</string>
     <string name="external_automation_key_return_package">Пакет, которому доставить ответ, до 256 символов. Не указывайте, если ответ не нужен.</string>
     <string name="external_automation_consent_title">Разрешить другим приложениям запускать пайплайн?</string>
-    <string name="external_automation_consent_intro">Приложения автоматизации вроде Tasker или MacroDroid — и скрипты оболочки через adb — смогут попросить 织问 запустить для них один пайплайн.</string>
+    <string name="external_automation_consent_intro">Приложения автоматизации вроде Tasker или MacroDroid — и скрипты оболочки через adb — смогут попросить Knotwork запустить для них один пайплайн.</string>
     <string name="external_automation_consent_any_app">Попросить может любое приложение на этом устройстве, которое умеет отправлять broadcast. Списка приложений нет: выбранный вами пайплайн — это всё разрешение целиком.</string>
     <string name="external_automation_consent_one_pipeline">Запустить можно только этот один пайплайн. Запрос, называющий что-то другое, отклоняется и никогда не перенаправляется на выбранный.</string>
     <string name="external_automation_consent_approvals">Ваши настройки подтверждения продолжают действовать: вызов инструмента останавливается и сначала спрашивает вас — так же, как в фоновых прогонах самого приложения, — а опасный спрашивает всегда.</string>

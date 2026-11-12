@@ -111,7 +111,7 @@ object ExternalAutomationPreview {
     private fun base(): ExternalAutomationJournalViewState = ExternalAutomationJournalViewState(
         contractEnabled = true,
         boundPipelineName = "Morning digest",
-        callAction = "me.lcfuns.zhiwen.action.RUN_PIPELINE",
+        callAction = "app.knotwork.android.action.RUN_PIPELINE",
         callKeys = CALL_KEYS,
     )
 
