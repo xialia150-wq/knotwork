@@ -117,7 +117,7 @@ data class SettingsNavActions(
 
 /** Settings hub: search field, the five inline Basic controls and the category list. */
 @Composable
-fun SettingsHubScreen(viewModel: SettingsViewModel, nav: SettingsNavActions) {
+fun SettingsHubScreen(viewModel: SettingsViewModel, nav: SettingsNavActions, appearance: @Composable () -> Unit = {}) {
     val uiState by viewModel.uiState.collectAsState()
     val callbacks = rememberSettingsCallbacks(
         viewModel = viewModel,
@@ -130,9 +130,7 @@ fun SettingsHubScreen(viewModel: SettingsViewModel, nav: SettingsNavActions) {
         },
     )
     SettingsSurface(viewModel) {
-        SettingsHubContent(state = buildHubViewState(uiState), callbacks = callbacks, appearance = {
-            AppearanceSettingsSection()
-        })
+        SettingsHubContent(state = buildHubViewState(uiState), callbacks = callbacks, appearance = appearance)
     }
 }
 

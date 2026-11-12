@@ -39,6 +39,7 @@ import app.knotwork.android.presentation.ui.orchestrator.presets.PipelinePresets
 import app.knotwork.android.presentation.ui.pipeline.editor.PipelineEditorScreen
 import app.knotwork.android.presentation.ui.prompts.PromptLibraryScreen
 import app.knotwork.android.presentation.ui.settings.AboutSettingsScreen
+import app.knotwork.android.presentation.ui.settings.AppearanceSettingsSection
 import app.knotwork.android.presentation.ui.settings.BackgroundSettingsScreen
 import app.knotwork.android.presentation.ui.settings.GenerationSettingsScreen
 import app.knotwork.android.presentation.ui.settings.MemorySettingsScreen
@@ -368,7 +369,11 @@ fun AppNavGraph(
         navigation(startDestination = NavRoutes.SETTINGS_HUB, route = NavRoutes.SETTINGS) {
             val nav = settingsNavActions(navController)
             composable(NavRoutes.SETTINGS_HUB) { entry ->
-                SettingsHubScreen(viewModel = settingsGraphViewModel(navController, entry), nav = nav)
+                SettingsHubScreen(
+                    viewModel = settingsGraphViewModel(navController, entry),
+                    nav = nav,
+                    appearance = { AppearanceSettingsSection() },
+                )
             }
             composable(NavRoutes.SETTINGS_GENERATION) { entry ->
                 GenerationSettingsScreen(viewModel = settingsGraphViewModel(navController, entry), nav = nav)
