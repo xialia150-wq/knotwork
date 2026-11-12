@@ -14,11 +14,25 @@ class ThemePaletteTest {
             val y = b.luminance()
             return (maxOf(x, y) + 0.05f) / (minOf(x, y) + 0.05f)
         }
-        for (preset in themePresets) for (vivid in listOf(false, true)) for (dark in listOf(false, true)) {
-            val scheme = themedColorScheme(ThemeSeed(preset.hue, preset.chroma), vivid, dark, false)
-            assertTrue("${preset.id} background", contrast(scheme.background, scheme.onBackground) >= 4.5f)
-            assertTrue("${preset.id} primary", contrast(scheme.primary, scheme.onPrimary) >= 4.5f)
+        val seeds = themePresets.map { ThemeSeed(it.hue, it.chroma) } +
+            (0 until 360 step 10).map { ThemeSeed(it.toDouble(), 0.4) } +
+            listOf(themeSeed(Color.Black), themeSeed(Color.White))
+        for (seed in seeds) for (vivid in listOf(false, true)) for (dark in listOf(false, true)) {
+            val scheme = themedColorScheme(seed, vivid, dark, false)
+            assertTrue("$seed background", contrast(scheme.background, scheme.onBackground) >= 4.5f)
+            assertTrue("$seed primary", contrast(scheme.primary, scheme.onPrimary) >= 4.5f)
         }
+    }
+
+    @Test
+    fun redMatchesPublishedOklabReferenceAndRoundTrips() {
+        val seed = themeSeed(Color.Red)
+        assertEquals(29.2339, seed.hue, 0.02)
+        assertEquals(0.25768, seed.chroma, 0.0001)
+        val red = themeTone(0.627955, seed.chroma, seed.hue)
+        assertEquals(1f, red.red, 0.002f)
+        assertEquals(0f, red.green, 0.002f)
+        assertEquals(0f, red.blue, 0.002f)
     }
 
     @Test

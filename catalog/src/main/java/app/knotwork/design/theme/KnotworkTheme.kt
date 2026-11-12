@@ -22,11 +22,12 @@ import app.knotwork.design.tokens.LocalKnotworkMotion
 import app.knotwork.design.tokens.LocalKnotworkShapes
 import app.knotwork.design.tokens.LocalKnotworkSpacing
 import app.knotwork.design.tokens.MaterialKnotworkShapes
-import app.knotwork.design.tokens.knotworkDarkColorScheme
 import app.knotwork.design.tokens.knotworkExtendedColorsDark
 import app.knotwork.design.tokens.knotworkExtendedColorsLight
-import app.knotwork.design.tokens.knotworkLightColorScheme
 import app.knotwork.design.tokens.knotworkTypography
+import app.knotwork.design.tokens.ThemeSeed
+import app.knotwork.design.tokens.themedColorScheme
+import app.knotwork.design.tokens.themeTone
 
 /**
  * Root theme of the Knotwork design system.
@@ -41,11 +42,8 @@ import app.knotwork.design.tokens.knotworkTypography
  * mirror of the shape scale) into composition locals so they can be reached
  * via the [KnotworkTheme] accessor object below.
  *
- * Material You / dynamic colour is intentionally **not** exposed as a
- * parameter: the design system pins its own accent ramp
- * ("Material You disabled"). If a user ever asks for a
- * wallpaper-derived primary, that ships as a separate Settings flag, never
- * as a constructor parameter on this theme.
+ * Wallpaper-derived seeds and user selections share the same fixed-lightness palette derivation.
+ * The defaults are deterministic for previews and tests.
  *
  * @param darkTheme `true` to use the dark Knotwork palette; defaults to
  * [isSystemInDarkTheme]. Pinned to `false` / `true` in catalog previews to
@@ -53,9 +51,28 @@ import app.knotwork.design.tokens.knotworkTypography
  * @param content composable tree wrapped by the theme.
  */
 @Composable
-fun KnotworkTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colorScheme = if (darkTheme) knotworkDarkColorScheme() else knotworkLightColorScheme()
-    val extended = if (darkTheme) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
+fun KnotworkTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    seed: ThemeSeed = ThemeSeed(),
+    vivid: Boolean = false,
+    pureBlack: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = themedColorScheme(seed, vivid, darkTheme, pureBlack)
+    val original = if (darkTheme) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
+    val neutralChroma = minOf(seed.chroma.coerceAtLeast(0.025) * 0.12, 0.012)
+    fun neutral(lightness: Double) = themeTone(lightness, neutralChroma, seed.hue)
+    val extended = original.copy(
+        surface1 = colorScheme.surfaceContainerLow,
+        surface2 = colorScheme.surfaceContainer,
+        surface3 = colorScheme.surfaceContainerHigh,
+        surface4 = colorScheme.surfaceContainerHighest,
+        divider = colorScheme.outlineVariant,
+        outlineStrong = colorScheme.outline,
+        onSurface2 = colorScheme.onSurfaceVariant,
+        onSurfaceMuted = neutral(if (darkTheme) 0.72 else 0.45),
+        onSurfaceDim = neutral(if (darkTheme) 0.60 else 0.55),
+    )
     CompositionLocalProvider(
         LocalKnotworkExtendedColors provides extended,
         LocalKnotworkSpacing provides DefaultKnotworkSpacing,
