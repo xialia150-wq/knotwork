@@ -160,6 +160,7 @@ Paths below are relative to `src/main/java/app/knotwork/design/`.
     - `NodeTypeText.kt` - The string resources holding one node type's name and its one-line description — the app's own text for the type.
     - `PipelineEditorCatalogContent.kt` - scrollable harness exercising every pipeline-editor base component + theme previews.
     - `ProviderChoices.kt` - What the node sheet's provider fields know about this device: which providers are set up here and with which model, what *Auto* would pick, and the on-device model.
+    - `RouteTextResource.kt` - Display-only translations for built-in routes, preserving custom intent labels.
   - `prompt/` - prompt-facing components: the preview sheet that shows a rendered prompt with its placeholders resolved, and its unresolved ones marked as errors.
     - `PromptPreviewPreview.kt` - Preview fixtures for the prompt-preview sheet.
     - `PromptPreviewSheet.kt` - Bottom sheet displaying a prompt with its `$VARIABLES` already substituted.
@@ -520,6 +521,7 @@ matters.
   - `misc/` - components with no family of their own yet.
     - `KnotworkMiscSnapshotTest.kt` - Roborazzi snapshot baseline for `KnotworkMiscCatalogContent` in both themes.
   - `pipelineeditor/` - the node canvas and its configuration sheets — ports, validation rules, the toolbar roster, and the baselines for each.
+    - `CanvasHeadersSnapshotTest.kt` - Captures quiet and vivid node headers in both themes.
     - `EditorToolbarTest.kt` - Pins the editor toolbar's action roster.
     - `HeroSnapshotTest.kt` - Roborazzi baseline of the editor's node-card surface at the canonical 1080 × 2400 resolution, in both themes.
     - `NodeCardPortLayoutTest.kt` - `NodeCard` draws every outbound port where `NodePortGeometry` says it is — the positions the editor canvas starts its edges from and places its touch targets at.
@@ -532,6 +534,8 @@ matters.
     - `NodeTypeSearchTest.kt` - The picker's grouping and search rules, without Compose.
     - `NodeTypeTextTest.kt` - `NodeType.text` maps every node type to its own name and description.
     - `PipelineEditorCatalogPageSnapshotTest.kt` - Roborazzi snapshot baseline for `PipelineEditorCatalogContent` in both themes plus a reduced-motion variant that pins `FixedKnotworkA11y` so the NodeCard running pulse renders deterministically.
+    - `QuietHeaderContrastTest.kt` - Checks quiet header contrast for all fixed node colors.
+    - `RouteTextTest.kt` - Ensures display localization leaves routing keys and custom labels intact.
   - `prompt/` - baselines for the prompt-facing components.
     - `PromptPreviewSheetSnapshotTest.kt` - Roborazzi baselines for the prompt-preview sheet.
   - `TallTextLayoutTest.kt` - A text taller than a layout constraint can hold — about 262 000 px — is drawn, not thrown.
