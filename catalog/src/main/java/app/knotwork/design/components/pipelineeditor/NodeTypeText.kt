@@ -89,3 +89,23 @@ val NodeType.text: NodeTypeText
             R.string.knotwork_node_type_skill_description,
         )
     }
+
+/** Localized short name for the canvas and its node configuration header. */
+@get:StringRes
+val NodeType.canvasName: Int
+    get() = when (this) {
+        NodeType.INPUT -> R.string.canvas_node_input
+        NodeType.OUTPUT -> R.string.canvas_node_output
+        NodeType.LITE_RT -> R.string.canvas_node_lite_rt
+        NodeType.CLOUD -> R.string.canvas_node_cloud
+        NodeType.INTENT_ROUTER -> R.string.canvas_node_intent_router
+        NodeType.IF_CONDITION -> R.string.canvas_node_if_condition
+        NodeType.CLARIFICATION -> R.string.canvas_node_clarification
+        NodeType.TOOL -> R.string.canvas_node_tool
+        NodeType.DECOMPOSITION -> R.string.canvas_node_decomposition
+        NodeType.QUEUE_PROCESSOR -> R.string.canvas_node_queue_processor
+        NodeType.EVALUATION -> R.string.canvas_node_evaluation
+        NodeType.SUMMARY -> R.string.canvas_node_summary
+        NodeType.PIPELINE -> R.string.canvas_node_pipeline
+        NodeType.SKILL -> R.string.canvas_node_skill
+    }

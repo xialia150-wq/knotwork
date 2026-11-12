@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.knotwork.design.components.text.Text
@@ -36,7 +37,8 @@ private val EdgeLabelInnerPadding = 4.dp
  * @param modifier optional layout modifier applied to the chip root.
  */
 @Composable
-fun EdgeLabel(text: String, modifier: Modifier = Modifier) {
+fun EdgeLabel(text: String, modifier: Modifier = Modifier, translate: Boolean = true) {
+    val display = if (translate) routeTextResource(text)?.let { stringResource(it) } ?: text else text
     Box(
         modifier = modifier
             .clip(KnotworkTheme.shapes.sm)
@@ -51,7 +53,7 @@ fun EdgeLabel(text: String, modifier: Modifier = Modifier) {
             .padding(EdgeLabelInnerPadding),
     ) {
         Text(
-            text = text,
+            text = display,
             style = KnotworkTextStyles.LabelSm,
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -69,7 +71,7 @@ fun EdgeLabel(text: String, modifier: Modifier = Modifier) {
  */
 @Composable
 fun EdgeLabel(port: OutboundPort, modifier: Modifier = Modifier) {
-    EdgeLabel(text = port.label, modifier = modifier)
+    EdgeLabel(text = port.label, modifier = modifier, translate = port !is OutboundPort.Custom)
 }
 
 /** Light-theme preview rendering every canonical label kind. */

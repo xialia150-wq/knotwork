@@ -212,7 +212,7 @@ fun NodeConfigSheetBody(
 @Composable
 private fun SheetHeader(type: NodeType) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        KnotworkChip(label = type.displayLabel(), style = ChipStyle.Tonal)
+        KnotworkChip(label = stringResource(type.canvasName), style = ChipStyle.Tonal)
     }
 }
 

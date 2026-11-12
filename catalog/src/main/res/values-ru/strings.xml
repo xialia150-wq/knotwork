@@ -906,4 +906,25 @@
     <string name="appearance_preset_pink">Розовый</string>
     <string name="appearance_version">версия %1$s</string>
     <string name="appearance_subtitle_separator">" · "</string>
+    <string name="canvas_node_input">Вход</string>
+    <string name="canvas_node_output">Выход</string>
+    <string name="canvas_node_lite_rt">Локальная модель</string>
+    <string name="canvas_node_cloud">Облако</string>
+    <string name="canvas_node_intent_router">Маршрутизатор намерений</string>
+    <string name="canvas_node_if_condition">Условие</string>
+    <string name="canvas_node_clarification">Уточнение</string>
+    <string name="canvas_node_tool">Инструмент</string>
+    <string name="canvas_node_decomposition">Декомпозиция</string>
+    <string name="canvas_node_queue_processor">Обработчик очереди</string>
+    <string name="canvas_node_evaluation">Оценка</string>
+    <string name="canvas_node_summary">Сводка</string>
+    <string name="canvas_node_pipeline">Пайплайн</string>
+    <string name="canvas_node_skill">Навык</string>
+    <string name="canvas_route_true">Да</string>
+    <string name="canvas_route_false">Нет</string>
+    <string name="canvas_route_item">По элементам</string>
+    <string name="canvas_route_done">Готово</string>
+    <string name="canvas_route_pass">Пройдено</string>
+    <string name="canvas_route_retry">Повтор</string>
+    <string name="canvas_route_fail">Ошибка</string>
 </resources>

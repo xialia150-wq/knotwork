@@ -872,4 +872,25 @@
     <string name="appearance_preset_pink">Rosa</string>
     <string name="appearance_version">versión %1$s</string>
     <string name="appearance_subtitle_separator">" · "</string>
+    <string name="canvas_node_input">Entrada</string>
+    <string name="canvas_node_output">Salida</string>
+    <string name="canvas_node_lite_rt">Modelo local</string>
+    <string name="canvas_node_cloud">Nube</string>
+    <string name="canvas_node_intent_router">Enrutador de intención</string>
+    <string name="canvas_node_if_condition">Condición</string>
+    <string name="canvas_node_clarification">Aclaración</string>
+    <string name="canvas_node_tool">Herramienta</string>
+    <string name="canvas_node_decomposition">Descomposición</string>
+    <string name="canvas_node_queue_processor">Procesador de cola</string>
+    <string name="canvas_node_evaluation">Evaluación</string>
+    <string name="canvas_node_summary">Resumen</string>
+    <string name="canvas_node_pipeline">Pipeline</string>
+    <string name="canvas_node_skill">Habilidad</string>
+    <string name="canvas_route_true">Sí</string>
+    <string name="canvas_route_false">No</string>
+    <string name="canvas_route_item">Por elemento</string>
+    <string name="canvas_route_done">Listo</string>
+    <string name="canvas_route_pass">Aprobado</string>
+    <string name="canvas_route_retry">Reintentar</string>
+    <string name="canvas_route_fail">Error</string>
 </resources>
