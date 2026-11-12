@@ -25,6 +25,14 @@ class ThemePaletteTest {
     }
 
     @Test
+    fun vividRaisesChromaAtSameSeed() {
+        val seed = ThemeSeed()
+        val quiet = themeSeed(themedColorScheme(seed, false, false, false).primary)
+        val vivid = themeSeed(themedColorScheme(seed, true, false, false).primary)
+        assertTrue(vivid.chroma > quiet.chroma)
+    }
+
+    @Test
     fun redMatchesPublishedOklabReferenceAndRoundTrips() {
         val seed = themeSeed(Color.Red)
         assertEquals(29.2339, seed.hue, 0.02)

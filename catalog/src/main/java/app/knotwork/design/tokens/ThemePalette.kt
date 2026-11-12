@@ -75,7 +75,7 @@ fun themeTone(lightness: Double, chroma: Double, hue: Double): Color {
 
 /** Fixed-lightness surface and accent roles; semantic signal and node colours remain untouched. */
 fun themedColorScheme(seed: ThemeSeed, vivid: Boolean, dark: Boolean, pureBlack: Boolean): ColorScheme {
-    val chroma = if (vivid) seed.chroma.coerceIn(0.08, 0.20) else seed.chroma.coerceIn(0.025, 0.09)
+    val chroma = if (vivid) (seed.chroma * 2).coerceIn(0.08, 0.20) else (seed.chroma * 0.55).coerceIn(0.025, 0.09)
     fun tone(l: Double, c: Double = chroma) = themeTone(l, c, seed.hue)
     fun neutral(l: Double) = tone(l, minOf(chroma * 0.12, 0.012))
     val base = if (dark) knotworkDarkColorScheme() else knotworkLightColorScheme()
