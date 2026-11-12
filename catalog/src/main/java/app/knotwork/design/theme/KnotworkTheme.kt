@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import app.knotwork.design.a11y.KnotworkA11y
 import app.knotwork.design.a11y.LocalKnotworkA11y
 import app.knotwork.design.tokens.DefaultKnotworkElevation
@@ -27,6 +28,9 @@ import app.knotwork.design.tokens.ThemeSeed
 import app.knotwork.design.tokens.knotworkTypography
 import app.knotwork.design.tokens.themedColorScheme
 import app.knotwork.design.tokens.themedExtendedColors
+
+/** Whether the user selected the vivid appearance intensity. */
+val LocalThemeVivid = staticCompositionLocalOf { false }
 
 /**
  * Root theme of the Knotwork design system.
@@ -64,6 +68,7 @@ fun KnotworkTheme(
         themedExtendedColors(seed, colorScheme, darkTheme)
     }
     CompositionLocalProvider(
+        LocalThemeVivid provides vivid,
         LocalKnotworkExtendedColors provides extended,
         LocalKnotworkSpacing provides DefaultKnotworkSpacing,
         LocalKnotworkShapes provides DefaultKnotworkShapes,

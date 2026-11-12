@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.em
 import app.knotwork.design.components.text.Text
 import app.knotwork.design.icons.AppIcons
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.theme.LocalThemeVivid
 import app.knotwork.design.tokens.KnotworkTextStyles
 
 /** Minimum NodeCard surface height — body wraps within this floor. */
@@ -135,7 +138,6 @@ fun NodeCard(
     modifier: Modifier = Modifier,
 ) {
     val headerColor = type.headerTint()
-    val onHeader = headerOnColor(strip = headerColor)
     val borderColor = nodeBorderColor(
         selected = selected,
         multiSelected = multiSelected,
@@ -149,6 +151,11 @@ fun NodeCard(
         selected -> KnotworkTheme.elevation.el3
         else -> KnotworkTheme.elevation.el1
     }
+    val vivid = LocalThemeVivid.current
+    val strip = if (vivid) headerColor else {
+        quietHeaderBackground(headerColor, MaterialTheme.colorScheme.surfaceColorAtElevation(elevation))
+    }
+    val onHeader = if (vivid) headerOnColor(strip) else quietHeaderForeground(headerColor, strip)
     val showOutboundLabels = ports.outbound.size > 1
     val topInset = if (ports.inbound > 0) PortDotRadius else 0.dp
     val labelLineHeight = nodePortLabelLineHeight()
@@ -178,7 +185,7 @@ fun NodeCard(
             ) {
                 HeaderStrip(
                     type = type,
-                    strip = headerColor,
+                    strip = strip,
                     onStrip = onHeader,
                     error = error,
                     alpha = HEADER_STRIP_ALPHA,
@@ -230,7 +237,7 @@ private fun HeaderStrip(type: NodeType, strip: Color, onStrip: Color, error: Nod
             )
         } else {
             Text(
-                text = type.displayLabel(),
+                text = stringResource(type.canvasName),
                 style = KnotworkTextStyles.LabelSm.copy(
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = HEADER_LABEL_TRACKING_EM.em,
@@ -330,7 +337,7 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
             if (showLabels) {
                 Spacer(modifier = Modifier.size(PortLabelGap))
                 Text(
-                    text = port.label,
+                    text = port.displayText(),
                     // Exactly one line tall at the current font scale: a single LabelSm line can
                     // measure short of it (13 dp of 14, measured) or, at 200 %, past the 14 dp the
                     // inset used to hold, which pushed the dots up onto the card's text.

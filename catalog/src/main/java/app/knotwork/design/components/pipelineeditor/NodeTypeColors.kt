@@ -6,8 +6,44 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.OklchColorMath
+import app.knotwork.design.tokens.Srgb
+
+/** Quiet header background, composed before contrast is measured. */
+fun quietHeaderBackground(tint: Color, surface: Color): Color = tint.copy(alpha = 0.14f).compositeOver(surface)
+
+/** Retains the node hue, adjusting lightness only when the original cannot reach 4.5:1. */
+fun quietHeaderForeground(tint: Color, background: Color): Color {
+    fun contrast(a: Color, b: Color): Double {
+        val x = a.luminance().toDouble()
+        val y = b.luminance().toDouble()
+        return (maxOf(x, y) + 0.05) / (minOf(x, y) + 0.05)
+    }
+    if (contrast(tint, background) >= 4.5) return tint
+    val rgb = Srgb(tint.red.toDouble(), tint.green.toDouble(), tint.blue.toDouble())
+    val lab = OklchColorMath.toOklab(OklchColorMath.toLinear(rgb))
+    val original = OklchColorMath.toOklch(lab)
+    val target = if (background.luminance() < 0.18f) 1.0 else 0.0
+    var low = 0.0
+    var high = 1.0
+    var result = tint
+    repeat(24) {
+        val amount = (low + high) / 2.0
+        val lightness = original.lightness + (target - original.lightness) * amount
+        val color = OklchColorMath.gamutMap(original.copy(lightness = lightness))
+        val candidate = Color(color.red.toFloat(), color.green.toFloat(), color.blue.toFloat())
+        if (contrast(candidate, background) >= 4.51) {
+            result = candidate
+            high = amount
+        } else {
+            low = amount
+        }
+    }
+    return result
+}
 
 /**
  * Reads the header-strip tint for [this] node type from the
