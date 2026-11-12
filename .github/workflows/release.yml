@@ -202,6 +202,11 @@ jobs:
           # and under `pipefail` the pipeline then reports failure on the very
           # case that succeeded — i.e. a match reads as "no match".
           foss_dump="$("$aapt2" dump resources "$foss")"
+          # A successful but empty or unrelated dump cannot prove absence.
+          if ! grep -q 'string/app_name' <<< "$foss_dump"; then
+            echo "::error::Could not find the app name in the FOSS resource table."
+            exit 1
+          fi
 
           if grep -E "$pattern" <<< "$foss_dump"; then
             echo "::error::The foss APK contains Firebase configuration. The foss build must be its own Gradle invocation with no Full task in it, or the google-services plugin applies to it too."
