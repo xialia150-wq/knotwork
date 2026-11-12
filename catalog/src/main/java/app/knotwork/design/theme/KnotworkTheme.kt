@@ -23,18 +23,16 @@ import app.knotwork.design.tokens.LocalKnotworkMotion
 import app.knotwork.design.tokens.LocalKnotworkShapes
 import app.knotwork.design.tokens.LocalKnotworkSpacing
 import app.knotwork.design.tokens.MaterialKnotworkShapes
-import app.knotwork.design.tokens.knotworkExtendedColorsDark
-import app.knotwork.design.tokens.knotworkExtendedColorsLight
 import app.knotwork.design.tokens.knotworkTypography
 import app.knotwork.design.tokens.ThemeSeed
 import app.knotwork.design.tokens.themedColorScheme
-import app.knotwork.design.tokens.themeTone
+import app.knotwork.design.tokens.themedExtendedColors
 
 /**
  * Root theme of the Knotwork design system.
  *
  * Wires the Knotwork tokens into a [MaterialTheme]:
- *  - `colorScheme` ← `knotworkLightColorScheme()` / `knotworkDarkColorScheme()`
+ *  - `colorScheme` ← fixed-lightness roles derived from the selected seed
  *  - `typography`  ← `knotworkTypography()`
  *  - `shapes`      ← `MaterialKnotworkShapes`
  *
@@ -62,20 +60,9 @@ fun KnotworkTheme(
     val colorScheme = remember(seed, vivid, darkTheme, pureBlack) {
         themedColorScheme(seed, vivid, darkTheme, pureBlack)
     }
-    val original = if (darkTheme) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
-    val neutralChroma = minOf(seed.chroma.coerceAtLeast(0.025) * 0.12, 0.012)
-    fun neutral(lightness: Double) = themeTone(lightness, neutralChroma, seed.hue)
-    val extended = original.copy(
-        surface1 = colorScheme.surfaceContainerLow,
-        surface2 = colorScheme.surfaceContainer,
-        surface3 = colorScheme.surfaceContainerHigh,
-        surface4 = colorScheme.surfaceContainerHighest,
-        divider = colorScheme.outlineVariant,
-        outlineStrong = colorScheme.outline,
-        onSurface2 = colorScheme.onSurfaceVariant,
-        onSurfaceMuted = neutral(if (darkTheme) 0.72 else 0.45),
-        onSurfaceDim = neutral(if (darkTheme) 0.60 else 0.55),
-    )
+    val extended = remember(seed, colorScheme, darkTheme) {
+        themedExtendedColors(seed, colorScheme, darkTheme)
+    }
     CompositionLocalProvider(
         LocalKnotworkExtendedColors provides extended,
         LocalKnotworkSpacing provides DefaultKnotworkSpacing,

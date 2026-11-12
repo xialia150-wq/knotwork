@@ -55,6 +55,7 @@ fun themedColorScheme(seed: ThemeSeed, vivid: Boolean, dark: Boolean, pureBlack:
     val onContainer = tone(if (dark) 0.92 else 0.22, chroma * 0.45)
     return base.copy(
         primary = primary, onPrimary = onPrimary, primaryContainer = container, onPrimaryContainer = onContainer,
+        error = KnotworkPalette.SignalError,
         secondary = primary, onSecondary = onPrimary, secondaryContainer = neutral(if (dark) 0.30 else 0.93),
         onSecondaryContainer = on, background = bg, onBackground = on, surface = bg, onSurface = on,
         surfaceVariant = neutral(if (dark) 0.28 else 0.94), onSurfaceVariant = onVariant,
@@ -64,5 +65,28 @@ fun themedColorScheme(seed: ThemeSeed, vivid: Boolean, dark: Boolean, pureBlack:
         surfaceContainerLowest = bg, surfaceContainerLow = neutral(if (dark) 0.22 else 0.97),
         surfaceContainer = neutral(if (dark) 0.25 else 0.95), surfaceContainerHigh = neutral(if (dark) 0.28 else 0.93),
         surfaceContainerHighest = neutral(if (dark) 0.32 else 0.91),
+    )
+}
+
+/** Theme surfaces follow the seed while signals and all node hues remain fixed. */
+fun themedExtendedColors(seed: ThemeSeed, scheme: ColorScheme, dark: Boolean): KnotworkExtendedColors {
+    val original = if (dark) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
+    val neutralChroma = minOf(seed.chroma.coerceAtLeast(0.025) * 0.12, 0.012)
+    fun neutral(lightness: Double) = themeTone(lightness, neutralChroma, seed.hue)
+    return original.copy(
+        surface1 = scheme.surfaceContainerLow,
+        surface2 = scheme.surfaceContainer,
+        surface3 = scheme.surfaceContainerHigh,
+        surface4 = scheme.surfaceContainerHighest,
+        divider = scheme.outlineVariant,
+        outlineStrong = scheme.outline,
+        onSurface2 = scheme.onSurfaceVariant,
+        onSurfaceMuted = neutral(if (dark) 0.72 else 0.45),
+        onSurfaceDim = neutral(if (dark) 0.60 else 0.55),
+        signalSuccess = KnotworkPalette.SignalSuccess,
+        signalWarn = KnotworkPalette.SignalWarn,
+        signalError = KnotworkPalette.SignalError,
+        riskSensitive = KnotworkPalette.SignalWarn,
+        riskDestructive = KnotworkPalette.SignalError,
     )
 }

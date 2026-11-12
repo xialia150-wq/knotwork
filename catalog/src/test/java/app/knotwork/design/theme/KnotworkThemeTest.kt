@@ -6,7 +6,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.knotwork.design.components.pipelineeditor.NodeType
+import app.knotwork.design.components.pipelineeditor.headerTint
 import app.knotwork.design.tokens.KnotworkPalette
+import app.knotwork.design.tokens.themePresets
+import app.knotwork.design.tokens.ThemeSeed
+import app.knotwork.design.tokens.themedColorScheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -30,17 +35,15 @@ class KnotworkThemeTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `given KnotworkTheme light when read MaterialTheme primary then equals Accent600`() {
-        // Spec §1: light primary = accent-600 (L 0.58) so white on-primary clears
-        // the 3:1 UI-contrast floor on filled buttons; accent-500 fell short.
+    fun `given KnotworkTheme light when read MaterialTheme primary then equals derived primary`() {
         val captured = captureInTheme(darkTheme = false) { MaterialTheme.colorScheme.primary }
-        assertEquals(KnotworkPalette.Accent600, captured)
+        assertEquals(themedColorScheme(ThemeSeed(), false, false, false).primary, captured)
     }
 
     @Test
-    fun `given KnotworkTheme dark when read MaterialTheme primary then equals Accent300`() {
+    fun `given KnotworkTheme dark when read MaterialTheme primary then equals derived primary`() {
         val captured = captureInTheme(darkTheme = true) { MaterialTheme.colorScheme.primary }
-        assertEquals(KnotworkPalette.Accent300, captured)
+        assertEquals(themedColorScheme(ThemeSeed(), false, true, false).primary, captured)
     }
 
     @Test
@@ -84,18 +87,60 @@ class KnotworkThemeTest {
     }
 
     @Test
-    fun `given KnotworkTheme light when read MaterialTheme surfaceContainer then equals light Surface2`() {
-        // Guards the expanded surface ramp wiring (M3 1.1+) — without an
-        // explicit assignment, surfaceContainer would inherit the Material
-        // baseline tint instead of Knotwork Surface2.
+    fun `given KnotworkTheme light when read MaterialTheme surfaceContainer then equals derived light surface`() {
         val captured = captureInTheme(darkTheme = false) { MaterialTheme.colorScheme.surfaceContainer }
-        assertEquals(Color(0xFFF6F2ED), captured)
+        assertEquals(themedColorScheme(ThemeSeed(), false, false, false).surfaceContainer, captured)
     }
 
     @Test
-    fun `given KnotworkTheme dark when read MaterialTheme surfaceContainerHighest then equals dark Surface4`() {
+    fun `given KnotworkTheme dark when read MaterialTheme surfaceContainerHighest then equals derived dark surface`() {
         val captured = captureInTheme(darkTheme = true) { MaterialTheme.colorScheme.surfaceContainerHighest }
-        assertEquals(Color(0xFF39342F), captured)
+        assertEquals(themedColorScheme(ThemeSeed(), false, true, false).surfaceContainerHighest, captured)
+    }
+
+    @Test
+    fun `every node header tint stays fixed across all theme settings`() {
+        val expected = mapOf(
+            NodeType.INPUT to KnotworkPalette.NodeInput,
+            NodeType.OUTPUT to KnotworkPalette.NodeOutput,
+            NodeType.LITE_RT to KnotworkPalette.NodeLiteRt,
+            NodeType.CLOUD to KnotworkPalette.NodeCloud,
+            NodeType.INTENT_ROUTER to KnotworkPalette.NodeIntentRouter,
+            NodeType.IF_CONDITION to KnotworkPalette.NodeIfCondition,
+            NodeType.CLARIFICATION to KnotworkPalette.NodeClarification,
+            NodeType.TOOL to KnotworkPalette.NodeTool,
+            NodeType.DECOMPOSITION to KnotworkPalette.NodeDecomposition,
+            NodeType.QUEUE_PROCESSOR to KnotworkPalette.NodeQueueProcessor,
+            NodeType.EVALUATION to KnotworkPalette.NodeEvaluation,
+            NodeType.SUMMARY to KnotworkPalette.NodeSummary,
+            NodeType.PIPELINE to KnotworkPalette.NodePipeline,
+            NodeType.SKILL to KnotworkPalette.Accent600,
+        )
+        val observed = mutableMapOf<String, Map<NodeType, Color>>()
+        val signals = mutableMapOf<String, List<Color>>()
+        composeTestRule.setContent {
+            for (preset in themePresets) for (dark in listOf(false, true)) {
+                for (vivid in listOf(false, true)) for (black in listOf(false, true)) {
+                    KnotworkTheme(darkTheme = dark, seed = ThemeSeed(preset.hue, preset.chroma), vivid = vivid, pureBlack = black) {
+                        val key = "${preset.id}/$dark/$vivid/$black"
+                        observed[key] = NodeType.entries.associateWith { it.headerTint() }
+                        signals[key] = listOf(
+                            KnotworkTheme.extended.signalSuccess, KnotworkTheme.extended.signalWarn,
+                            KnotworkTheme.extended.signalError, MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+            }
+        }
+        composeTestRule.waitForIdle()
+        assertEquals(themePresets.size * 8, observed.size)
+        observed.forEach { (name, colors) -> assertEquals(name, expected, colors) }
+        val expectedSignals = listOf(
+            KnotworkPalette.SignalSuccess, KnotworkPalette.SignalWarn,
+            KnotworkPalette.SignalError, KnotworkPalette.SignalError,
+        )
+        assertEquals(observed.size, signals.size)
+        signals.forEach { (name, colors) -> assertEquals(name, expectedSignals, colors) }
     }
 
     /**

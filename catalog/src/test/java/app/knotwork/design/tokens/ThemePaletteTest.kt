@@ -43,11 +43,42 @@ class ThemePaletteTest {
     }
 
     @Test
+    fun signalsAndAllThirteenNodeColorsNeverFollowTheThemeSeedOrMode() {
+        val nodes = listOf(
+            KnotworkPalette.NodeInput, KnotworkPalette.NodeIntentRouter, KnotworkPalette.NodeIfCondition,
+            KnotworkPalette.NodeClarification, KnotworkPalette.NodeLiteRt, KnotworkPalette.NodeCloud,
+            KnotworkPalette.NodeTool, KnotworkPalette.NodeDecomposition, KnotworkPalette.NodeQueueProcessor,
+            KnotworkPalette.NodeEvaluation, KnotworkPalette.NodeSummary, KnotworkPalette.NodeOutput,
+            KnotworkPalette.NodePipeline,
+        )
+        val seeds = themePresets.map { ThemeSeed(it.hue, it.chroma) } +
+            listOf(Color.White, Color.Black, Color.Yellow, Color.Blue).map(::themeSeed)
+        for (seed in seeds) for (vivid in listOf(false, true)) for (dark in listOf(false, true)) {
+            for (black in listOf(false, true)) {
+                val scheme = themedColorScheme(seed, vivid, dark, black)
+                val extended = themedExtendedColors(seed, scheme, dark)
+                assertEquals(KnotworkPalette.SignalSuccess, extended.signalSuccess)
+                assertEquals(KnotworkPalette.SignalWarn, extended.signalWarn)
+                assertEquals(KnotworkPalette.SignalError, extended.signalError)
+                assertEquals(KnotworkPalette.SignalWarn, extended.riskSensitive)
+                assertEquals(KnotworkPalette.SignalError, extended.riskDestructive)
+                assertEquals(KnotworkPalette.SignalError, scheme.error)
+                assertEquals(nodes, listOf(
+                    extended.nodeInput, extended.nodeIntentRouter, extended.nodeIfCondition,
+                    extended.nodeClarification, extended.nodeLiteRt, extended.nodeCloud,
+                    extended.nodeTool, extended.nodeDecomposition, extended.nodeQueueProcessor,
+                    extended.nodeEvaluation, extended.nodeSummary, extended.nodeOutput, extended.nodePipeline,
+                ))
+            }
+        }
+    }
+
+    @Test
     fun blackModeOnlyChangesDarkBackgroundAndSignalsArePreserved() {
         val seed = ThemeSeed()
         val dark = themedColorScheme(seed, false, true, true)
         assertEquals(Color.Black, dark.background)
-        assertEquals(knotworkDarkColorScheme().error, dark.error)
+        assertEquals(KnotworkPalette.SignalError, dark.error)
         assertTrue(themedColorScheme(seed, false, false, true).background != Color.Black)
     }
 }
