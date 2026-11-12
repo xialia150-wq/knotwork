@@ -1,19 +1,17 @@
 name: Check
 
 # Strict-mode CI gate.
-# Runs the aggregate `./gradlew check` task, which itself triggers detekt,
-# ktlintCheck, lint, the unit tests for both distribution flavours
-# (testFullDebugUnitTest + testFossDebugUnitTest), koverVerifyFullDebug,
-# verifyBrowserEditorConstants, and the project-level `checkNoInternalFqn`.
+# The app aggregate still contains full-only tasks; the invocation below excludes
+# those and runs FOSS assembly, FOSS unit tests, lint, coverage and screenshot
+# verification instead. It also runs detekt, ktlintCheck,
+# verifyBrowserEditorConstants and the project-level checkNoInternalFqn.
 # `:buildSrc:test` is added explicitly because the build-logic module's own
-# unit tests (e.g. the browser-editor constants generator) are not reachable
-# from the app's `check` aggregate and would otherwise drift unnoticed.
-# Compiling the instrumented source set is added for the same reason: `check`
-# does not compile it either, so a broken instrumented test would leave every
-# gate green. The instrumented tests are *run* by the separate `Instrumented`
-# workflow, which stays out of this one so that an emulator cannot block a
-# signed release (see the header of `instrumented.yml`).
-# Any one of them failing blocks the merge.
+# tests are not reachable from the app aggregate and would otherwise drift.
+# Instrumented sources are compiled separately because `check` does not compile
+# them. The separate `Instrumented` workflow runs them on emulators without
+# making emulator infrastructure a prerequisite for a signed release.
+# Any failing gate blocks the merge. A FOSS task is included so that this
+# invocation does not apply Google Services or Crashlytics plugins.
 #
 # Triggers: every pull request targeting `main`, and every push to `main`
 # (so the badge reflects the head of the protected branch). `workflow_dispatch`
@@ -51,20 +49,11 @@ jobs:
   check:
     name: ./gradlew check
     runs-on: ubuntu-latest
-    # The `distribution` flavour dimension makes `check` compile and test two
-    # variants (`full` + `foss`) in one invocation. On a PR the Gradle cache is
-    # read-only and seeded from `main`, so the first run after a cache-key change
-    # (e.g. when the FOSS flavour first reaches `main`) builds the whole `foss`
-    # variant cold on the 2-core runner — which overran the previous 30-minute
-    # cap. The push-to-`main` job (same cap) must also finish cold to *write* the
-    # warm cache that makes subsequent PRs fast again, so the budget has to cover
-    # one cold doubled-flavour build, not the warm steady state.
-    #
-    # Raised 60 → 75 when the instrumented-compile step was added: the previous
-    # cap had already been forced up once by a cold doubled-flavour build that
-    # overran it, and adding work to a job whose budget is tuned to its worst
-    # case is how that happens again. A timeout kills the run outright and
-    # produces no reports; a cap that is never reached costs nothing.
+    # A pull request reads the Gradle cache seeded from main. Cold builds on
+    # a two-core runner can overrun shorter limits, especially with the
+    # instrumented-source compilation added to the gate. Keep the previous
+    # 75-minute budget even though this invocation builds only FOSS: a timeout
+    # kills the run and may leave no reports; unused time costs nothing.
     timeout-minutes: 75
     steps:
       - name: Checkout
@@ -150,8 +139,20 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: Run ./gradlew check
-        run: ./gradlew check :buildSrc:test --stacktrace --no-daemon
+      - name: Build and check FOSS
+        run: >
+          ./gradlew
+          :app:check :app:assembleFossDebug :catalog:check :buildSrc:test
+          :app:koverVerifyFossDebug :app:verifyRoborazziFossDebug
+          -x :app:testFullDebugUnitTest
+          -x :app:detektFullDebug
+          -x :app:lintFullDebug
+          -x :app:koverVerify
+          -x :app:koverVerifyFullDebug
+          -x :app:verifyRoborazziFullDebug
+          -x :app:verifyFullReleaseMergedManifest
+          -x :app:verifyFullReleaseNoSlf4jProvider
+          --stacktrace --no-daemon
 
       # `check` neither runs NOR COMPILES the instrumented source set, so an
       # instrumented test could stop compiling and every gate would stay green —
@@ -162,11 +163,11 @@ jobs:
       # `Instrumented` workflow; whether they *compile* is a pure function of
       # the repository, so it belongs in the deterministic gate.
       #
-      # Its OWN Gradle invocation on purpose: bundling
-      # `compile*DebugAndroidTestKotlin` into the same invocation as `check`
-      # makes dozens of unrelated Robolectric unit tests fail with
-      # "Default FirebaseApp is not initialized in this process". Run
-      # separately, both are green.
+      # Its OWN Gradle invocation is intentional. Historically combining
+      # compile*DebugAndroidTestKotlin with the mixed-flavour check caused
+      # Robolectric failures because the default FirebaseApp was uninitialised.
+      # This gate now compiles only FOSS and keeps the separate invocation so
+      # its result remains independent of the unit-test task graph.
       #
       # `!cancelled()` rather than the default: otherwise a lint or unit-test
       # failure hides an instrumented compile break for a whole extra CI cycle.
@@ -174,7 +175,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: >
           ./gradlew
-          :app:compileFullDebugAndroidTestKotlin
           :app:compileFossDebugAndroidTestKotlin
           --stacktrace --no-daemon
 
@@ -324,8 +324,6 @@ jobs:
         with:
           name: lint-report
           path: |
-            app/build/reports/lint-results-fullDebug.html
-            app/build/reports/lint-results-fullDebug.xml
             app/build/reports/lint-results-fossDebug.html
             app/build/reports/lint-results-fossDebug.xml
             catalog/build/reports/lint-results-debug.html

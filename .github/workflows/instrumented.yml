@@ -21,45 +21,23 @@ name: Instrumented
 # still goes red for both — a gate that turns green when its environment
 # misbehaves has stopped being a gate.
 #
-# Matrix: API 36 x both distribution flavours. The second axis is the flavour
-# rather than a second API level, and that was decided by measurement rather
-# than taste.
+# Matrix: FOSS on API 36 and API 34 (the supported minimum). The upstream
+# workflow also tested full on API 36 and 34; 织问 builds and tests FOSS only.
+# The earlier API 36 suite was green in three runs, and the API 34 leg covers
+# floor-specific resource resolution, startup and platform behaviour.
 #
-# The intended shape was floor + `targetSdk`, API 36 and API 37. Neither
-# alternative API level survives contact with this app:
+# The intended floor + targetSdk combination cannot currently use API 37:
+# in both observed attempts the image booted but the emulator action's own
+# post-boot unlock command failed with `Failure calling service input: Broken
+# pipe`. API 36.1 likewise failed across three attempts at the AVD disk,
+# keyguard and install-write stages. API 37 therefore remains a manual
+# reference-device check; API 36.1 adds only a patch level over API 36.
 #
-#   * **API 37** never reaches our script. The image boots, and then the
-#     emulator action's own post-boot `adb shell input keyevent 82` — which no
-#     input can disable — dies with `Failure calling service input: Broken pipe`.
-#     0 of 2 runs.
-#   * **API 36.1** failed 0 of 3 runs, at a different layer each time: the AVD
-#     disk, then the keyguard, then `install-write`. The first two produced real
-#     fixes that hardened the API 36 leg as well, which is most of what a matrix
-#     is for; the third has no fix in sight, and 36.1 is still Android 16, so
-#     what it would add over API 36 is a patch level rather than an API surface.
-#
-# API 36 has been green 3 runs out of 3 with the full suite. So the honest
-# second configuration is the one we actually ship twice: `full` and `foss`.
-# `foss` is what F-Droid builds and shares every `main` source with `full`, and
-# nothing automated had ever exercised it on a device.
-#
-# A third leg was added when `minSdk` moved from 36 to 34: API 34 × `full`. The
-# first two legs sit at the API *ceiling* we support, so until this leg existed
-# the ~10k-line suite had never run at the floor at all — anything that breaks
-# specifically at API 34 (resource resolution, startup, a platform behaviour
-# difference) had nothing to surface it.
-#
-# What this leg does NOT buy, stated so nobody assumes otherwise: AppFunctions.
-# Below API 36 the app publishes none — its entry point extends the platform
-# service added in API 36 — and the only test that reaches the AppFunctions
-# runtime, `AppFunctionsEndToEndTest`, is on the device-only exclusion list
-# because Android 16 declares `EXECUTE_APP_FUNCTIONS` at `internal|privileged`
-# and an emulator cannot grant it to a developer-installed app. The runtime
-# remains covered by nothing automated, at any API level.
-#
-# The cost is named rather than papered over: **the app targets API 37 and no
-# emulator run covers it.** That gap belongs to the manual reference-device
-# pass until the action makes its unlock step optional.
+# These legs do NOT prove the AppFunctions runtime. Below API 36 no service is
+# published, and AppFunctionsEndToEndTest is on the device-only exclusion list:
+# Android 16 marks EXECUTE_APP_FUNCTIONS internal|privileged and an emulator
+# cannot grant it to a developer-installed app. No automated emulator leg covers
+# that runtime; retain the reference-device check.
 #
 # What this workflow deliberately does NOT do: cache the AVD between runs. The
 # documented snapshot-cache dance trades a few minutes of boot time for a class
@@ -123,21 +101,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - flavour: Full
-            api: '36'
-            target: google_apis
           - flavour: Foss
             api: '36'
             target: google_apis
-          # The floor leg. `minSdk` is 34, and until this leg existed nothing
-          # automated ran there — the suite only ever saw API 36, which is the
-          # ceiling of what we support, not the edge where things break.
-          # It buys the whole suite at the floor; it does NOT buy AppFunctions
-          # (see the header note — the app publishes none below API 36, and the
-          # only test that reaches the runtime is excluded from emulator runs). `full` rather than `foss` because the
-          # flavour axis is already covered at 36 and the two share every
-          # measured source.
-          - flavour: Full
+          # The floor leg checks the same FOSS suite at minSdk 34; it does
+          # not cover AppFunctions, which requires a suitable device.
+          - flavour: Foss
             api: '34'
             target: google_apis
     steps:

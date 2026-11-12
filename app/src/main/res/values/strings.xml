@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Knotwork</string>
+    <string name="app_name">织问</string>
 
     <!-- Approval notification (Human-in-the-loop fallback when chat is not visible) -->
     <string name="approval_channel_sensitive_name">Agent Approvals</string>

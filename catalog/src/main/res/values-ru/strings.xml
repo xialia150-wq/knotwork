@@ -710,7 +710,7 @@
     <string name="knotwork_memory_add_title">Добавить воспоминание</string>
     <string name="knotwork_memory_add_placeholder">Что агенту запомнить?</string>
     <string name="knotwork_memory_add_save">Сохранить</string>
-    <string name="knotwork_onboarding_brand_title">Knotwork</string>
+    <string name="knotwork_onboarding_brand_title">织问</string>
     <string name="knotwork_onboarding_skip">Пропустить</string>
     <string name="knotwork_onboarding_continue">Продолжить</string>
     <string name="knotwork_onboarding_welcome_headline">Личный AI-агент, который работает на вашем телефоне.</string>

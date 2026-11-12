@@ -20,14 +20,11 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
 
-        // A prefix, deliberately, not equality against the bare `applicationId`.
-        // Debug builds carry `applicationIdSuffix = ".debug"` so a debug install can
-        // sit beside a release one, and instrumented tests only ever run on a debug
-        // variant — so asserting the unsuffixed id fails on every real run. Pinning
-        // the suffixed id instead would just move the breakage to the next variant.
+        // BuildConfig.APPLICATION_ID is the final ID for this build variant,
+        // including the debug suffix, so it must equal the target context package.
         assertTrue(
             "Unexpected target package: ${appContext.packageName}",
-            appContext.packageName.startsWith("app.knotwork.android"),
+            appContext.packageName == BuildConfig.APPLICATION_ID,
         )
     }
 }

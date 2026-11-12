@@ -49,7 +49,7 @@
     <string name="tools_mcp_status_connecting">подключение…</string>
     <string name="tools_mcp_status_ok">работает</string>
     <string name="tools_mcp_status_interrupted">Попытка подключения прервана</string>
-    <string name="app_name">Knotwork</string>
+    <string name="app_name">织问</string>
     <string name="approval_channel_sensitive_name">Подтверждения агента</string>
     <string name="approval_channel_sensitive_description">Запросы подтверждения для вызовов инструментов уровня «Осторожно».</string>
     <string name="approval_channel_destructive_name">Подтверждения агента — опасные действия</string>

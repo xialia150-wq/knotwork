@@ -31,8 +31,8 @@ uses-permission android.permission.RECORD_AUDIO
 uses-permission android.permission.WAKE_LOCK
 
 # ── Declared by androidx.core for its non-exported dynamic receivers ─────────
-permission app.knotwork.android.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION protectionLevel=signature
-uses-permission app.knotwork.android.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+permission me.lcfuns.zhiwen.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION protectionLevel=signature
+uses-permission me.lcfuns.zhiwen.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 
 # ── Exported by the app — reachable by any installed app when permission=none ─
 exported activity app.knotwork.android.presentation.share.ShareReceiverActivity permission=none

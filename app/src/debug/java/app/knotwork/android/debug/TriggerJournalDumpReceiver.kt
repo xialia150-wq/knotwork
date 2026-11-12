@@ -36,8 +36,8 @@ import javax.inject.Inject
  * ```
  * adb shell am broadcast \
  *   -a app.knotwork.android.debug.DUMP_TRIGGER_JOURNAL \
- *   -n app.knotwork.android/app.knotwork.android.debug.TriggerJournalDumpReceiver
- * adb pull /sdcard/Android/data/app.knotwork.android/files/soak/
+ *   -n me.lcfuns.zhiwen.debug/app.knotwork.android.debug.TriggerJournalDumpReceiver
+ * adb pull /sdcard/Android/data/me.lcfuns.zhiwen.debug/files/soak/
  * ```
  *
  * This class is compiled only into the `debug` build type (it lives in the

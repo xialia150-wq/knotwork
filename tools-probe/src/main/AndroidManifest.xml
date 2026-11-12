@@ -15,7 +15,8 @@
         `search_tool` metadata when the user taps the probe's invoke button.
     -->
     <queries>
-        <package android:name="app.knotwork.android" />
+        <package android:name="me.lcfuns.zhiwen" />
+        <package android:name="me.lcfuns.zhiwen.debug" />
     </queries>
 
     <application

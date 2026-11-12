@@ -136,7 +136,7 @@ Three callers, one broadcast. Two things are true of all of them:
   woken by one. Every example below sets the package for that reason, not for
   tidiness.
 - **The package is also which build you are calling.** A debug build installs
-  alongside the release one as `app.knotwork.android.debug`, and the action
+  alongside the release one as `me.lcfuns.zhiwen.debug`, and the action
   string is identical in both. If you have both installed, the package field is
   the only thing deciding which of them runs your pipeline.
 
@@ -149,7 +149,7 @@ A task action of **System → Send Intent**:
 | Action | `app.knotwork.android.action.RUN_PIPELINE` |
 | Extra | `pipeline_name:Morning brief` |
 | Extra | `prompt:%SOMEVARIABLE` |
-| Package | `app.knotwork.android` |
+| Package | `me.lcfuns.zhiwen` |
 | Target | **Broadcast Receiver** |
 
 Leave *Cat*, *Mime Type*, *Data* and *Class* empty.
@@ -183,7 +183,7 @@ An action of **Send Intent** with *Intent target* set to **Broadcast**:
 | Field | Value |
 | --- | --- |
 | Action | `app.knotwork.android.action.RUN_PIPELINE` |
-| Package | `app.knotwork.android` |
+| Package | `me.lcfuns.zhiwen` |
 | Extra 1 | `pipeline_name` = `Morning brief` (String) |
 | Extra 2 | `prompt` = `Summarise today's calendar` (String) |
 | Extra 3 | `request_id` = `md-0001` (String) |
@@ -212,13 +212,13 @@ keeps the inner quotes intact all the way to the device.
 The minimum call, from a shell:
 
 ```bash
-adb shell "am broadcast -a app.knotwork.android.action.RUN_PIPELINE -p app.knotwork.android --es pipeline_name 'Morning brief' --es prompt 'What is on my calendar today?'"
+adb shell "am broadcast -a app.knotwork.android.action.RUN_PIPELINE -p me.lcfuns.zhiwen --es pipeline_name 'Morning brief' --es prompt 'What is on my calendar today?'"
 ```
 
 When the text fights your shell's quoting, send it base64-encoded instead:
 
 ```bash
-adb shell "am broadcast -a app.knotwork.android.action.RUN_PIPELINE -p app.knotwork.android --es pipeline_name 'Morning brief' --es prompt_b64 '$(printf %s 'Anything with "quotes", $signs and newlines' | base64 | tr -d '\n')'"
+adb shell "am broadcast -a app.knotwork.android.action.RUN_PIPELINE -p me.lcfuns.zhiwen --es pipeline_name 'Morning brief' --es prompt_b64 '$(printf %s 'Anything with "quotes", $signs and newlines' | base64 | tr -d '\n')'"
 ```
 
 The `$(...)` still runs on your own machine — the device never sees it — so the
