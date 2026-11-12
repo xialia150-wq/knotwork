@@ -35,7 +35,7 @@ import javax.inject.Inject
  *
  * ```
  * adb shell am broadcast \
- *   -a me.lcfuns.zhiwen.debug.DUMP_TRIGGER_JOURNAL \
+ *   -a app.knotwork.android.debug.DUMP_TRIGGER_JOURNAL \
  *   -n me.lcfuns.zhiwen.debug/app.knotwork.android.debug.TriggerJournalDumpReceiver
  * adb pull /sdcard/Android/data/me.lcfuns.zhiwen.debug/files/soak/
  * ```
@@ -116,7 +116,7 @@ class TriggerJournalDumpReceiver : BroadcastReceiver() {
         const val TAG = "TriggerJournalDump"
 
         /** Broadcast action this receiver answers; matched in the debug manifest overlay. */
-        const val ACTION_DUMP = "me.lcfuns.zhiwen.debug.DUMP_TRIGGER_JOURNAL"
+        const val ACTION_DUMP = "app.knotwork.android.debug.DUMP_TRIGGER_JOURNAL"
 
         /** External-files subdirectory the soak dumps are written into. */
         const val SOAK_DIR = "soak"
