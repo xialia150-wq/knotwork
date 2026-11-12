@@ -2,8 +2,8 @@ name: Release
 
 # Builds, signs and publishes the release artefacts for a `v*` tag.
 #
-# Why this exists: the release used to be assembled by hand — three artefacts
-# (full APK, full AAB, foss APK) plus signing plus a hand-written GitHub Release.
+# Why this exists: the FOSS release APK, signing and GitHub Release used
+# to be assembled by hand.
 # Every step of that is a place where a mistake stays invisible until somebody
 # has already downloaded the result. In particular, the build falls back to the
 # *debug* signing identity whenever release credentials are missing
@@ -21,8 +21,7 @@ name: Release
 #
 # What the maintainer has to provision once (see `docs/release.md` §3):
 #   secrets: RELEASE_KEYSTORE_BASE64, RELEASE_KEYSTORE_PASSWORD,
-#            RELEASE_KEY_ALIAS, RELEASE_KEY_PASSWORD,
-#            GOOGLE_SERVICES_JSON_BASE64
+#            RELEASE_KEY_ALIAS, RELEASE_KEY_PASSWORD
 #   variables: RELEASE_CERT_SHA256
 
 on:
@@ -55,10 +54,7 @@ jobs:
     name: Build, sign and publish
     needs: check
     runs-on: ubuntu-latest
-    # Higher than check.yml's 60. This job runs TWO cold R8 release builds (the
-    # expensive part) on a 2-core runner and cannot reuse the check job's
-    # outputs — separate runner, and the Gradle cache is read-only on a tag. A
-    # timeout here kills a release mid-flight, which is worse than a slow one.
+    # Allow a cold release build to complete on the runner.
     timeout-minutes: 90
     permissions:
       contents: write
@@ -180,72 +176,17 @@ jobs:
           fi
           echo "Keystore fingerprint matches RELEASE_CERT_SHA256."
 
-      - name: Materialise the real google-services.json
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${GOOGLE_SERVICES_JSON_BASE64:-}" ]]; then
-            echo "::error::Secret GOOGLE_SERVICES_JSON_BASE64 is not set. The committed app/google-services.json is a placeholder, so the full flavour would ship with crash reporting wired to a Firebase project that does not exist. See docs/release.md §3."
-            exit 1
-          fi
-          printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
-          # The plugin's own "No matching client found for package name" error is
-          # the real gate, but it only fires deep into configuration; check the
-          # obvious mistakes (wrong project, still-a-placeholder) up front.
-          # Whitespace-tolerant: a re-serialised or minified copy of the same
-          # file is still the right file, and a false failure here blocks a
-          # release for nothing.
-          if ! grep -qE '"package_name"[[:space:]]*:[[:space:]]*"me\.lcfuns\.zhiwen"' app/google-services.json; then
-            echo "::error::The decoded google-services.json has no client for me.lcfuns.zhiwen — wrong Firebase project or a truncated secret."
-            exit 1
-          fi
-          if grep -q 'placeholder' app/google-services.json; then
-            echo "::error::The decoded google-services.json is the placeholder file, not the real one."
-            exit 1
-          fi
-          # Only the debug build type keeps its committed placeholder: it points
-          # at a suffixed package id on purpose so dogfooding never reports into
-          # the real project.
-          echo "Real google-services.json in place for the full flavour."
-
-      - name: Assemble the full flavour (APK + AAB)
-        env:
-          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
-          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        # `verifyFullReleaseKeepRules` already runs as a `finalizedBy` of both
-        # packaging tasks; naming it here keeps the release-critical R8 gate
-        # visible on the command line rather than implied.
-        run: |
-          ./gradlew :app:assembleFullRelease :app:bundleFullRelease \
-            :app:verifyFullReleaseKeepRules --no-daemon --stacktrace
-
       - name: Assemble the foss flavour (APK)
         env:
           RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        # A SEPARATE Gradle invocation, and it must stay separate. The
-        # `fossOnlyBuild` guard in `app/build.gradle.kts` skips the proprietary
-        # `google-services` / `firebase-crashlytics` plugins only when no `Full`
-        # task is present in the same invocation. Folding this into the step
-        # above would apply those plugins to the foss variant and stamp the
-        # Firebase `google_app_id` into the artefact that exists precisely to
-        # carry no Google build-time tooling.
+        # A FOSS-only invocation keeps the Google Services plugins out.
         run: |
           ./gradlew :app:assembleFossRelease :app:verifyFossReleaseKeepRules --no-daemon --stacktrace
 
       - name: Verify the foss APK carries no Firebase configuration
-        # The separate invocation above is load-bearing but its violation is
-        # silent: a mixed invocation still produces a working foss APK, just one
-        # with `google_app_id` and `gcm_defaultSenderId` baked into its resource
-        # table. Measured on this repo — `./gradlew check` generates
-        # `processFossReleaseGoogleServices/values/values.xml`, the foss-only
-        # build does not. So assert the property on the artefact itself rather
-        # than trusting the invocation to stay split.
         run: |
           set -euo pipefail
           aapt2="$(find "$ANDROID_HOME/build-tools" -maxdepth 2 -name aapt2 -type f 2>/dev/null | sort -V | tail -1 || true)"
@@ -254,24 +195,13 @@ jobs:
             exit 1
           fi
           foss=app/build/outputs/apk/foss/release/app-foss-release.apk
-          full=app/build/outputs/apk/full/release/app-full-release.apk
           pattern='google_app_id|gcm_defaultSenderId|firebase_database_url'
 
           # Each dump is captured whole before it is filtered. Piping straight
           # into `grep -q` makes grep exit on the first match, SIGPIPEs aapt2,
           # and under `pipefail` the pipeline then reports failure on the very
           # case that succeeded — i.e. a match reads as "no match".
-          full_dump="$("$aapt2" dump resources "$full")"
           foss_dump="$("$aapt2" dump resources "$foss")"
-
-          # Sanity-check the detector against the artefact that MUST contain
-          # these resources. Without this, a broken dump command would let the
-          # foss check pass vacuously — which is the same failure the R8
-          # keep-rule guard exists to avoid.
-          if ! grep -qE "$pattern" <<< "$full_dump"; then
-            echo "::error::The full APK does not contain the Firebase resources, so this check cannot distinguish a clean foss build from a broken detector."
-            exit 1
-          fi
 
           if grep -E "$pattern" <<< "$foss_dump"; then
             echo "::error::The foss APK contains Firebase configuration. The foss build must be its own Gradle invocation with no Full task in it, or the google-services plugin applies to it too."
@@ -290,8 +220,7 @@ jobs:
         # dies at the first native call, and nothing before a device would say so.
         run: |
           set -euo pipefail
-          for apk in app/build/outputs/apk/full/release/app-full-release.apk \
-                     app/build/outputs/apk/foss/release/app-foss-release.apk; do
+          for apk in app/build/outputs/apk/foss/release/app-foss-release.apk; do
             # Captured whole before filtering, for the SIGPIPE reason given above.
             entries="$(unzip -Z1 "$apk")"
             for required in lib/arm64-v8a/liblitertlm_jni.so lib/arm64-v8a/libmediapipe_tasks_jni.so; do
@@ -305,7 +234,7 @@ jobs:
               exit 1
             fi
           done
-          echo "Both APKs ship the inference and embedding libraries and not the unused text-generation one."
+          echo "The FOSS APK ships the inference and embedding libraries and not the unused text-generation one."
 
       - name: Verify the signature of every artefact
         env:
@@ -354,24 +283,7 @@ jobs:
             echo "   signature OK ($actual)"
           }
 
-          verify_apk app/build/outputs/apk/full/release/app-full-release.apk
           verify_apk app/build/outputs/apk/foss/release/app-foss-release.apk
-
-          # An AAB carries only a v1 (JAR) signature, which apksigner does not
-          # read; keytool prints the signer certificate of a signed JAR directly.
-          aab=app/build/outputs/bundle/fullRelease/app-full-release.aab
-          echo "── $aab"
-          aab_out="$(keytool -printcert -jarfile "$aab")"
-          if grep -qi 'CN=Android Debug' <<< "$aab_out"; then
-            echo "::error::$aab is signed with the ANDROID DEBUG key — Play would reject it."
-            exit 1
-          fi
-          aab_actual="$(grep -m1 'SHA256:' <<< "$aab_out" | tr -d ' ' | cut -d: -f2- | tr -d ':' | tr 'A-F' 'a-f')"
-          if [[ "$aab_actual" != "$expected" ]]; then
-            echo "::error::$aab is signed by $aab_actual, expected $expected."
-            exit 1
-          fi
-          echo "   signature OK ($aab_actual)"
 
       - name: Collect the release assets
         id: assets
@@ -380,9 +292,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p release-assets
-          cp app/build/outputs/apk/full/release/app-full-release.apk "release-assets/knotwork-$VERSION-full-release.apk"
           cp app/build/outputs/apk/foss/release/app-foss-release.apk "release-assets/knotwork-$VERSION-foss-release.apk"
-          cp app/build/outputs/bundle/fullRelease/app-full-release.aab "release-assets/knotwork-$VERSION-full-release.aab"
           # Checksums travel with the artefacts: the direct-APK channel has no
           # store to vouch for a download, so a published digest is the only way
           # a user can tell a mirrored copy from a modified one. Globbed by the
@@ -399,7 +309,6 @@ jobs:
         with:
           name: r8-mapping-${{ steps.version.outputs.version }}
           path: |
-            app/build/outputs/mapping/fullRelease/mapping.txt
             app/build/outputs/mapping/fossRelease/mapping.txt
           if-no-files-found: error
           retention-days: 90
@@ -451,8 +360,7 @@ jobs:
         run: |
           echo "Dry run for $RELEASE_TAG: built, signed and verified. No GitHub Release was created."
 
-      - name: Remove the keystore and restore the placeholder config
+      - name: Remove the keystore
         if: always()
         run: |
           rm -f "$RUNNER_TEMP/release.keystore"
-          git checkout -- app/google-services.json || true
