@@ -5,6 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
+/** Ensures display localization leaves routing keys and custom labels intact. */
 class RouteTextTest {
     @Test
     fun `built in routes map to display strings and unknown names remain unchanged`() {

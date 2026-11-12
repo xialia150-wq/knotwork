@@ -4,6 +4,7 @@ import app.knotwork.android.domain.models.ConnectionModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+/** Verifies incoming, outgoing and self connections in a selection. */
 class RelatedEdgesTest {
     @Test
     fun `selects incoming outgoing and self edges only`() {

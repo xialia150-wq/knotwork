@@ -15,8 +15,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.knotwork.android.domain.models.ConnectionModel
@@ -225,31 +225,30 @@ internal fun EditorEdges(
     transform: CanvasTransform,
     connectionDraft: ConnectionDraftDrawData?,
     selectedEdgeId: String?,
-    selectedNodeId: String? = null,
     modifier: Modifier = Modifier,
+    selectedNodeId: String? = null,
     measuredCards: Map<String, CardMeasure> = emptyMap(),
 ) {
     val density = LocalDensity.current
     val accentColor = KnotworkTheme.extended.outlineStrong
     val strokeWidth = with(density) { 2.dp.toPx() }
-    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val dark = MaterialTheme.colorScheme.background.luminance() < DARK_LUMINANCE_CUTOFF
     val related = remember(connections, selectedNodeId) { relatedEdges(connections, selectedNodeId) }
     val styles = connections.map { connection ->
-        val source = nodesById[connection.sourceNodeId]
-        val color = source?.let { NodeTypeMapper.toCatalog(it.type).headerTint() } ?: Color.Transparent
+        val color = sourceEdgeColor(connection, nodesById)
         val highlighted = selectedNodeId != null && connection.id in related
         val selected = connection.id == selectedEdgeId
         val opacity = when {
             highlighted || selected -> 1f
-            selectedNodeId != null -> 0.15f
-            dark -> 0.65f
-            else -> 0.55f
+            selectedNodeId != null -> EDGE_DIM_ALPHA
+            dark -> EDGE_DARK_ALPHA
+            else -> EDGE_LIGHT_ALPHA
         }
-        val animatedAlpha = animateFloatAsState(opacity, tween(150), label = "edge alpha")
+        val animatedAlpha = animateFloatAsState(opacity, tween(EDGE_ANIMATION_MS), label = "edgeAlpha")
         val animatedWidth = animateFloatAsState(
-            if (highlighted || selected) 3.5f else 2.5f,
-            tween(150),
-            label = "edge width",
+            if (highlighted || selected) EDGE_HIGHLIGHT_WIDTH_DP else EDGE_WIDTH_DP,
+            tween(EDGE_ANIMATION_MS),
+            label = "edgeWidth",
         )
         remember(connection.id, color, highlighted) { EdgeStyle(color, animatedAlpha, animatedWidth, highlighted) }
     }
@@ -292,11 +291,17 @@ internal fun EditorEdges(
                 if (length > 0f) {
                     val ux = dx / length
                     val uy = dy / length
-                    val size = width * 2.5f
+                    val size = width * ARROW_LENGTH_FACTOR
                     val arrow = Path().apply {
                         moveTo(tx, ty)
-                        lineTo(tx - ux * size - uy * size * 0.45f, ty - uy * size + ux * size * 0.45f)
-                        lineTo(tx - ux * size + uy * size * 0.45f, ty - uy * size - ux * size * 0.45f)
+                        lineTo(
+                            tx - ux * size - uy * size * ARROW_HALF_WIDTH_FACTOR,
+                            ty - uy * size + ux * size * ARROW_HALF_WIDTH_FACTOR,
+                        )
+                        lineTo(
+                            tx - ux * size + uy * size * ARROW_HALF_WIDTH_FACTOR,
+                            ty - uy * size - ux * size * ARROW_HALF_WIDTH_FACTOR,
+                        )
                         close()
                     }
                     drawPath(path = arrow, color = color)
@@ -413,6 +418,10 @@ private data class EdgeStyle(
     val highlighted: Boolean,
 )
 
+@Composable
+internal fun sourceEdgeColor(connection: ConnectionModel, nodesById: Map<String, NodeModel>): Color =
+    nodesById[connection.sourceNodeId]?.let { NodeTypeMapper.toCatalog(it.type).headerTint() } ?: Color.Transparent
+
 internal fun relatedEdges(connections: List<ConnectionModel>, selectedNodeId: String?): Set<String> =
     if (selectedNodeId == null) {
         emptySet()
@@ -422,3 +431,13 @@ internal fun relatedEdges(connections: List<ConnectionModel>, selectedNodeId: St
     }
 
 private const val EDGE_PREVIEW_STROKE_FACTOR = 1.5f
+
+private const val DARK_LUMINANCE_CUTOFF = 0.5f
+private const val EDGE_DIM_ALPHA = 0.15f
+private const val EDGE_DARK_ALPHA = 0.65f
+private const val EDGE_LIGHT_ALPHA = 0.55f
+private const val EDGE_ANIMATION_MS = 150
+private const val EDGE_WIDTH_DP = 2.5f
+private const val EDGE_HIGHLIGHT_WIDTH_DP = 3.5f
+private const val ARROW_LENGTH_FACTOR = 2.5f
+private const val ARROW_HALF_WIDTH_FACTOR = 0.45f

@@ -8,6 +8,7 @@ import app.knotwork.design.tokens.themedColorScheme
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Checks quiet header contrast for all fixed node colors. */
 class QuietHeaderContrastTest {
     @Test
     fun `all fixed node colors remain readable on quiet headers`() {
