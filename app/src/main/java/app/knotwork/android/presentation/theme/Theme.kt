@@ -25,11 +25,21 @@ fun KnotworkAppTheme(
         "preset" -> themePresets.firstOrNull { it.id == appearance.preset }
             ?.let { ThemeSeed(it.hue, it.chroma) } ?: ThemeSeed()
         "custom" -> themeSeed(Color(appearance.customColor))
-        else -> runCatching {
+        else -> wallpaperThemeSeed {
             val id = context.resources.getIdentifier("system_accent1_500", "color", "android")
-            if (id == 0) ThemeSeed() else themeSeed(Color(context.getColor(id)))
-        }.getOrDefault(ThemeSeed())
+            if (id == 0) null else Color(context.getColor(id))
+        }
     }
-    val dark = when (appearance.mode) { "light" -> false; "dark" -> true; else -> darkTheme }
-    KnotworkTheme(darkTheme = dark, seed = seed, vivid = appearance.vivid, pureBlack = appearance.pureBlack, content = content)
+    val dark = when (appearance.mode) {
+        "light" -> false
+        "dark" -> true
+        else -> darkTheme
+    }
+    KnotworkTheme(
+        darkTheme = dark,
+        seed = seed,
+        vivid = appearance.vivid,
+        pureBlack = appearance.pureBlack,
+        content = content,
+    )
 }

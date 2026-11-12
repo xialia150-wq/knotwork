@@ -1,9 +1,8 @@
 package app.knotwork.android.di
 
 import app.knotwork.android.data.local.SettingsManager
-import app.knotwork.android.data.local.settings.AppearancePreferencesStore
-import app.knotwork.android.domain.repositories.AppearanceSettingsRepository
 import app.knotwork.android.data.local.settings.AppStateSettingsStore
+import app.knotwork.android.data.local.settings.AppearancePreferencesStore
 import app.knotwork.android.data.local.settings.EntryPointSettingsStore
 import app.knotwork.android.data.local.settings.GenerationSettingsStore
 import app.knotwork.android.data.local.settings.MemorySettingsStore
@@ -13,6 +12,7 @@ import app.knotwork.android.data.local.settings.RunSettingsStore
 import app.knotwork.android.data.local.settings.SettingsResetStore
 import app.knotwork.android.data.local.settings.ToolSettingsStore
 import app.knotwork.android.domain.repositories.AppStateSettings
+import app.knotwork.android.domain.repositories.AppearanceSettingsRepository
 import app.knotwork.android.domain.repositories.EntryPointSettings
 import app.knotwork.android.domain.repositories.GenerationSettings
 import app.knotwork.android.domain.repositories.MemorySettings

@@ -14,6 +14,7 @@ import kotlin.math.sqrt
 data class Srgb(val red: Double, val green: Double, val blue: Double)
 data class LinearSrgb(val red: Double, val green: Double, val blue: Double)
 data class Oklab(val lightness: Double, val a: Double, val b: Double)
+
 /** Polar OKLab coordinates: lightness, chroma, and hue in degrees. */
 data class Oklch(val lightness: Double, val chroma: Double, val hue: Double)
 

@@ -1,8 +1,8 @@
 package app.knotwork.android.data.local.settings
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.MutablePreferences
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -15,7 +15,8 @@ import javax.inject.Singleton
 
 /** Persists the appearance settings in the shared preferences DataStore. */
 @Singleton
-class AppearancePreferencesStore @Inject constructor(private val dataStore: DataStore<Preferences>) : AppearanceSettingsRepository {
+class AppearancePreferencesStore @Inject constructor(private val dataStore: DataStore<Preferences>) :
+    AppearanceSettingsRepository {
     private object Keys {
         val SOURCE = stringPreferencesKey("appearance_source")
         val PRESET = stringPreferencesKey("appearance_preset")
@@ -51,9 +52,14 @@ class AppearancePreferencesStore @Inject constructor(private val dataStore: Data
 
     override suspend fun update(change: (AppearanceSettings) -> AppearanceSettings) {
         dataStore.edit { p ->
+            val defaults = AppearanceSettings()
             val current = AppearanceSettings(
-                p[Keys.SOURCE] ?: "wallpaper", p[Keys.PRESET] ?: "mist_blue", p[Keys.CUSTOM] ?: -8943361,
-                p[Keys.VIVID] ?: false, p[Keys.MODE] ?: "system", p[Keys.BLACK] ?: false,
+                p[Keys.SOURCE] ?: defaults.source,
+                p[Keys.PRESET] ?: defaults.preset,
+                p[Keys.CUSTOM] ?: defaults.customColor,
+                p[Keys.VIVID] ?: defaults.vivid,
+                p[Keys.MODE] ?: defaults.mode,
+                p[Keys.BLACK] ?: defaults.pureBlack,
             )
             val next = change(current)
             p[Keys.SOURCE] = next.source

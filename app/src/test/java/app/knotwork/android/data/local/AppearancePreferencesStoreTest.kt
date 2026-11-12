@@ -22,10 +22,20 @@ class AppearancePreferencesStoreTest {
     fun defaultsAndUpdatesSurviveNewStoreInstances() = runTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         try {
-            val data = PreferenceDataStoreFactory.create(scope = scope, produceFile = { folder.newFile("appearance.preferences_pb") })
+            val data = PreferenceDataStoreFactory.create(scope = scope, produceFile = {
+                folder.newFile("appearance.preferences_pb")
+            })
             val store = AppearancePreferencesStore(data)
             assertEquals(AppearanceSettings(), store.settings.first())
-            val updated = AppearanceSettings(source = "custom", preset = "blue", customColor = -12, vivid = true, mode = "dark", pureBlack = true)
+            val updated =
+                AppearanceSettings(
+                    source = "custom",
+                    preset = "blue",
+                    customColor = -12,
+                    vivid = true,
+                    mode = "dark",
+                    pureBlack = true,
+                )
             store.update { updated }
             assertEquals(updated, AppearancePreferencesStore(data).settings.first())
         } finally {

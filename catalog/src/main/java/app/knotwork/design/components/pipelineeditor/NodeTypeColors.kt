@@ -8,7 +8,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import app.knotwork.design.theme.KnotworkTheme
-import app.knotwork.design.tokens.KnotworkPalette
 
 /**
  * Reads the header-strip tint for [this] node type from the
@@ -36,8 +35,10 @@ fun NodeType.headerTint(): Color {
         NodeType.EVALUATION -> extended.nodeEvaluation
         NodeType.SUMMARY -> extended.nodeSummary
         NodeType.PIPELINE -> extended.nodePipeline
-        // Skills retain the original light-theme primary amber, independent of the selected theme.
-        NodeType.SKILL -> KnotworkPalette.Accent600
+        // Skills have no dedicated node hue: they are branded with the amber
+        // `primary` everywhere in the app (Skill library, AppIcons.Skill), so
+        // the editor header strip reuses it rather than introducing a 13th hue.
+        NodeType.SKILL -> MaterialTheme.colorScheme.primary
     }
 }
 

@@ -23,8 +23,8 @@ import app.knotwork.design.tokens.LocalKnotworkMotion
 import app.knotwork.design.tokens.LocalKnotworkShapes
 import app.knotwork.design.tokens.LocalKnotworkSpacing
 import app.knotwork.design.tokens.MaterialKnotworkShapes
-import app.knotwork.design.tokens.knotworkTypography
 import app.knotwork.design.tokens.ThemeSeed
+import app.knotwork.design.tokens.knotworkTypography
 import app.knotwork.design.tokens.themedColorScheme
 import app.knotwork.design.tokens.themedExtendedColors
 

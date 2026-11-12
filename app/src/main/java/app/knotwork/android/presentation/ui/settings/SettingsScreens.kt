@@ -130,7 +130,9 @@ fun SettingsHubScreen(viewModel: SettingsViewModel, nav: SettingsNavActions) {
         },
     )
     SettingsSurface(viewModel) {
-        SettingsHubContent(state = buildHubViewState(uiState), callbacks = callbacks, appearance = { AppearanceSettingsSection() })
+        SettingsHubContent(state = buildHubViewState(uiState), callbacks = callbacks, appearance = {
+            AppearanceSettingsSection()
+        })
     }
 }
 

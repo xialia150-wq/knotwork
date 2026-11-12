@@ -2,26 +2,34 @@
 
 package app.knotwork.design.tokens
 
+import androidx.annotation.StringRes
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
+import app.knotwork.design.R
 
 /** A named hue and its maximum chroma. IDs are stable for stored preferences. */
-data class ThemePreset(val id: String, val label: String, val group: String, val hue: Double, val chroma: Double)
+data class ThemePreset(
+    val id: String,
+    @StringRes val label: Int,
+    @StringRes val group: Int,
+    val hue: Double,
+    val chroma: Double,
+)
 
 /** One registry is shared by the theme and its picker. */
 val themePresets = listOf(
-    ThemePreset("mist_blue", "雾蓝", "低饱和", 240.0, 0.09),
-    ThemePreset("slate_cyan", "黛青", "低饱和", 210.0, 0.09),
-    ThemePreset("dusk_purple", "暮紫", "低饱和", 300.0, 0.09),
-    ThemePreset("turquoise", "松石", "低饱和", 180.0, 0.09),
-    ThemePreset("amber", "琥珀", "低饱和", 75.0, 0.09),
-    ThemePreset("graphite", "石墨", "低饱和", 250.0, 0.025),
-    ThemePreset("blue", "蓝", "鲜亮", 260.0, 0.19),
-    ThemePreset("green", "绿", "鲜亮", 150.0, 0.19),
-    ThemePreset("orange", "橙", "鲜亮", 55.0, 0.19),
-    ThemePreset("red", "红", "鲜亮", 25.0, 0.19),
-    ThemePreset("purple", "紫", "鲜亮", 310.0, 0.19),
-    ThemePreset("pink", "粉", "鲜亮", 350.0, 0.19),
+    ThemePreset("mist_blue", R.string.appearance_preset_mist_blue, R.string.appearance_group_muted, 240.0, 0.09),
+    ThemePreset("slate_cyan", R.string.appearance_preset_slate_cyan, R.string.appearance_group_muted, 210.0, 0.09),
+    ThemePreset("dusk_purple", R.string.appearance_preset_dusk_purple, R.string.appearance_group_muted, 300.0, 0.09),
+    ThemePreset("turquoise", R.string.appearance_preset_turquoise, R.string.appearance_group_muted, 180.0, 0.09),
+    ThemePreset("amber", R.string.appearance_preset_amber, R.string.appearance_group_muted, 75.0, 0.09),
+    ThemePreset("graphite", R.string.appearance_preset_graphite, R.string.appearance_group_muted, 250.0, 0.025),
+    ThemePreset("blue", R.string.appearance_preset_blue, R.string.appearance_group_vivid, 260.0, 0.19),
+    ThemePreset("green", R.string.appearance_preset_green, R.string.appearance_group_vivid, 150.0, 0.19),
+    ThemePreset("orange", R.string.appearance_preset_orange, R.string.appearance_group_vivid, 55.0, 0.19),
+    ThemePreset("red", R.string.appearance_preset_red, R.string.appearance_group_vivid, 25.0, 0.19),
+    ThemePreset("purple", R.string.appearance_preset_purple, R.string.appearance_group_vivid, 310.0, 0.19),
+    ThemePreset("pink", R.string.appearance_preset_pink, R.string.appearance_group_vivid, 350.0, 0.19),
 )
 
 /** Chroma and hue are independent from the fixed lightness of each role. */
@@ -55,11 +63,11 @@ fun themedColorScheme(seed: ThemeSeed, vivid: Boolean, dark: Boolean, pureBlack:
     val onContainer = tone(if (dark) 0.92 else 0.22, chroma * 0.45)
     return base.copy(
         primary = primary, onPrimary = onPrimary, primaryContainer = container, onPrimaryContainer = onContainer,
-        error = KnotworkPalette.SignalError,
         secondary = primary, onSecondary = onPrimary, secondaryContainer = neutral(if (dark) 0.30 else 0.93),
         onSecondaryContainer = on, background = bg, onBackground = on, surface = bg, onSurface = on,
         surfaceVariant = neutral(if (dark) 0.28 else 0.94), onSurfaceVariant = onVariant,
-        surfaceTint = primary, outline = neutral(if (dark) 0.48 else 0.65),
+        surfaceTint = primary, outline = neutral(if (dark) 0.60 else 0.55),
+        inversePrimary = tone(if (dark) 0.48 else 0.80),
         outlineVariant = neutral(if (dark) 0.32 else 0.89),
         surfaceDim = neutral(if (dark) 0.19 else 0.92), surfaceBright = neutral(if (dark) 0.34 else 0.98),
         surfaceContainerLowest = bg, surfaceContainerLow = neutral(if (dark) 0.22 else 0.97),
@@ -83,10 +91,5 @@ fun themedExtendedColors(seed: ThemeSeed, scheme: ColorScheme, dark: Boolean): K
         onSurface2 = scheme.onSurfaceVariant,
         onSurfaceMuted = neutral(if (dark) 0.72 else 0.45),
         onSurfaceDim = neutral(if (dark) 0.60 else 0.55),
-        signalSuccess = KnotworkPalette.SignalSuccess,
-        signalWarn = KnotworkPalette.SignalWarn,
-        signalError = KnotworkPalette.SignalError,
-        riskSensitive = KnotworkPalette.SignalWarn,
-        riskDestructive = KnotworkPalette.SignalError,
     )
 }

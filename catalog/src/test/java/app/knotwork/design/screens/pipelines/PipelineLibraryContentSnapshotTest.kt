@@ -62,6 +62,28 @@ class PipelineLibraryContentSnapshotTest {
     }
 
     @Test
+    fun library_filtering_light() = filteringSnapshot(false, false)
+
+    @Test
+    fun library_filtering_dark() = filteringSnapshot(true, false)
+
+    @Test
+    fun library_filtering_no_matches_light() = filteringSnapshot(false, true)
+
+    @Test
+    fun library_filtering_no_matches_dark() = filteringSnapshot(true, true)
+
+    private fun filteringSnapshot(dark: Boolean, noMatches: Boolean) {
+        val populated = PipelineLibraryPreview.populated()
+        val filtered = populated.copy(
+            pipelines = if (noMatches) emptyList() else populated.pipelines.take(1),
+            activeFilter = PipelineLibraryFilter.Mine,
+        )
+        val name = if (noMatches) "filtering_no_matches" else "filtering"
+        snapshot(name, dark) { PipelineLibraryContent(state = filtered) }
+    }
+
+    @Test
     fun library_badged_light() = snapshot(name = "badged", dark = false) {
         PipelineLibraryContent(state = PipelineLibraryPreview.badged())
     }

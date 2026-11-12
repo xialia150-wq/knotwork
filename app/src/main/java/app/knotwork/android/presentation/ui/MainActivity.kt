@@ -20,10 +20,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import app.knotwork.android.domain.repositories.AppearanceSettings
-import app.knotwork.android.domain.repositories.AppearanceSettingsRepository
 import app.knotwork.android.data.services.AgentForegroundService
 import app.knotwork.android.domain.repositories.AppStateSettings
+import app.knotwork.android.domain.repositories.AppearanceSettings
+import app.knotwork.android.domain.repositories.AppearanceSettingsRepository
 import app.knotwork.android.presentation.startup.StartupMaintenance
 import app.knotwork.android.presentation.state.AppRestartRequest
 import app.knotwork.android.presentation.state.ChatEntryRequestRelay

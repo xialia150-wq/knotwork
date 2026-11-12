@@ -16,10 +16,20 @@ class ThemePaletteTest {
         val seeds = themePresets.map { ThemeSeed(it.hue, it.chroma) } +
             (0 until 360 step 10).map { ThemeSeed(it.toDouble(), 0.4) } +
             listOf(Color.Black, Color.White, Color.Yellow, Color.Blue).map(::themeSeed)
-        for (seed in seeds) for (vivid in listOf(false, true)) for (dark in listOf(false, true)) {
-            val scheme = themedColorScheme(seed, vivid, dark, false)
-            assertTrue("$seed background", contrast(scheme.background, scheme.onBackground) >= 4.5f)
-            assertTrue("$seed primary", contrast(scheme.primary, scheme.onPrimary) >= 4.5f)
+        for (seed in seeds) {
+            for (vivid in listOf(false, true)) {
+                for (dark in listOf(false, true)) {
+                    for (black in listOf(false, true)) {
+                        val scheme = themedColorScheme(seed, vivid, dark, black)
+                        val extended = themedExtendedColors(seed, scheme, dark)
+                        assertTrue("$seed background", contrast(scheme.background, scheme.onBackground) >= 4.5f)
+                        assertTrue("$seed primary", contrast(scheme.primary, scheme.onPrimary) >= 4.5f)
+                        // Dim text is deliberately de-emphasized; outlines are non-text UI boundaries.
+                        assertTrue("$seed dim", contrast(scheme.background, extended.onSurfaceDim) >= 3f)
+                        assertTrue("$seed outline", contrast(scheme.background, scheme.outline) >= 3f)
+                    }
+                }
+            }
         }
     }
 
@@ -29,6 +39,25 @@ class ThemePaletteTest {
         val quiet = themeSeed(themedColorScheme(seed, false, false, false).primary)
         val vivid = themeSeed(themedColorScheme(seed, true, false, false).primary)
         assertTrue(vivid.chroma > quiet.chroma)
+    }
+
+    @Test
+    fun inversePrimaryTracksTheSeedAndUsesTheOppositeTone() {
+        val blue = ThemeSeed(240.0, 0.15)
+        val orange = ThemeSeed(55.0, 0.15)
+        for (dark in listOf(false, true)) {
+            val first = themedColorScheme(blue, false, dark, false)
+            val second = themedColorScheme(orange, false, dark, false)
+            assertTrue(first.inversePrimary != second.inversePrimary)
+            fun luminance(color: Color) = OklchColorMath.relativeLuminance(
+                Srgb(color.red.toDouble(), color.green.toDouble(), color.blue.toDouble()),
+            )
+            if (dark) {
+                assertTrue(luminance(first.inversePrimary) < luminance(first.primary))
+            } else {
+                assertTrue(luminance(first.inversePrimary) > luminance(first.primary))
+            }
+        }
     }
 
     @Test
@@ -43,7 +72,7 @@ class ThemePaletteTest {
     }
 
     @Test
-    fun signalsAndAllThirteenNodeColorsNeverFollowTheThemeSeedOrMode() {
+    fun signalsMatchOriginalModeAndThirteenNodeColorsNeverFollowTheSeed() {
         val nodes = listOf(
             KnotworkPalette.NodeInput, KnotworkPalette.NodeIntentRouter, KnotworkPalette.NodeIfCondition,
             KnotworkPalette.NodeClarification, KnotworkPalette.NodeLiteRt, KnotworkPalette.NodeCloud,
@@ -53,24 +82,38 @@ class ThemePaletteTest {
         )
         val seeds = themePresets.map { ThemeSeed(it.hue, it.chroma) } +
             listOf(Color.White, Color.Black, Color.Yellow, Color.Blue).map(::themeSeed)
-        for (seed in seeds) for (vivid in listOf(false, true)) for (dark in listOf(false, true)) {
-            for (black in listOf(false, true)) {
-                val scheme = themedColorScheme(seed, vivid, dark, black)
-                val extended = themedExtendedColors(seed, scheme, dark)
-                assertEquals(KnotworkPalette.SignalSuccess, extended.signalSuccess)
-                assertEquals(KnotworkPalette.SignalWarn, extended.signalWarn)
-                assertEquals(KnotworkPalette.SignalError, extended.signalError)
-                assertEquals(KnotworkPalette.SignalWarn, extended.riskSensitive)
-                assertEquals(KnotworkPalette.SignalError, extended.riskDestructive)
-                assertEquals(KnotworkPalette.SignalError, scheme.error)
-                assertEquals(nodes, listOf(
-                    extended.nodeInput, extended.nodeIntentRouter, extended.nodeIfCondition,
-                    extended.nodeClarification, extended.nodeLiteRt, extended.nodeCloud,
-                    extended.nodeTool, extended.nodeDecomposition, extended.nodeQueueProcessor,
-                    extended.nodeEvaluation, extended.nodeSummary, extended.nodeOutput, extended.nodePipeline,
-                ))
+        for (seed in seeds) {
+            for (vivid in listOf(false, true)) {
+                for (dark in listOf(false, true)) {
+                    for (black in listOf(false, true)) {
+                        assertFixedColors(seed, vivid, dark, black, nodes)
+                    }
+                }
             }
         }
+    }
+
+    private fun assertFixedColors(seed: ThemeSeed, vivid: Boolean, dark: Boolean, black: Boolean, nodes: List<Color>) {
+        val scheme = themedColorScheme(seed, vivid, dark, black)
+        val extended = themedExtendedColors(seed, scheme, dark)
+        val original = if (dark) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
+        val base = if (dark) knotworkDarkColorScheme() else knotworkLightColorScheme()
+        assertEquals(original.signalSuccess, extended.signalSuccess)
+        assertEquals(original.signalWarn, extended.signalWarn)
+        assertEquals(original.signalError, extended.signalError)
+        assertEquals(original.riskSensitive, extended.riskSensitive)
+        assertEquals(original.riskDestructive, extended.riskDestructive)
+        assertEquals(base.error, scheme.error)
+        assertEquals(
+            nodes,
+            listOf(
+                extended.nodeInput, extended.nodeIntentRouter, extended.nodeIfCondition,
+                extended.nodeClarification, extended.nodeLiteRt, extended.nodeCloud,
+                extended.nodeTool, extended.nodeDecomposition, extended.nodeQueueProcessor,
+                extended.nodeEvaluation, extended.nodeSummary, extended.nodeOutput,
+                extended.nodePipeline,
+            ),
+        )
     }
 
     @Test
@@ -78,7 +121,7 @@ class ThemePaletteTest {
         val seed = ThemeSeed()
         val dark = themedColorScheme(seed, false, true, true)
         assertEquals(Color.Black, dark.background)
-        assertEquals(KnotworkPalette.SignalError, dark.error)
+        assertEquals(knotworkDarkColorScheme().error, dark.error)
         assertTrue(themedColorScheme(seed, false, false, true).background != Color.Black)
     }
 }

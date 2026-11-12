@@ -911,6 +911,7 @@ Only Kotlin files appear inside the generated blocks.
     - `KnotworkFontsBootstrap.kt` - Builds the bundled Inter / JetBrains Mono `FontFamily` instances from `R.font.*` and installs them into `:catalog`'s `KnotworkFonts`. Called once from `App.onCreate()` so the design-system typography renders against the brand fonts on the first frame.
     - `Theme.kt` - App theme definition. Reads the static fallback palette from `res/values/colors.xml` via `colorResource(...)`; dynamic color (Android 12+) takes precedence on supported devices.
     - `Type.kt` - Typography settings.
+    - `WallpaperThemeSeed.kt` - Converts wallpaper color to a seed, falling back to mist blue when it is unavailable.
   - `tile/` - Quick Settings tile entry point.
     - `DutyPipelineTileService.kt` - `TileService` running the bound duty pipeline in the background (`LaunchTilePipelineUseCase`); reflects bound/unbound on the tile and opens the app when unbound.
     - `TileAddRequest.kt` - `requestAddDutyTile(context)` — Android 13+ `StatusBarManager.requestAddTileService` prompt, called in-context after the user binds a tile pipeline.
@@ -1096,6 +1097,7 @@ Only Kotlin files appear inside the generated blocks.
     - `settings/` - Settings surface as a nested navigation graph: a category **hub** (inline Basic controls + eight category rows) routing to eight per-category sub-screens, each with an in-category "Advanced — change deliberately" disclosure. Catalog `SettingsHubContent` + `<Category>SettingsContent` render the slices; re-organisation only — every setting keeps its meaning, range, default, validation and gating 1:1.
       - `AboutSettingsDelegate.kt` - About category: read-only identity card load + the Reset-all-settings action.
       - `AppearanceSettingsSection.kt` - Renders appearance controls and forwards changes to the settings repository.
+      - `AppearanceSettingsViewModel.kt` - Exposes persisted appearance choices and atomically applies edits.
       - `AppLanguageLabels.kt` - How the interface-language picker names a language.
       - `BackgroundSettingsDelegate.kt` - Background & triggers category: notification toggles, resume / background-approval windows, the three entry-surface pipeline bindings, and the external-automation consent switch. That switch is the one setting here that does not write through: moving it **on** only stages `pendingExternalAutomationConsent` and `confirmExternalAutomationConsent` persists it, while moving it **off** writes immediately — a confirmation on the way out would falsify the consent copy's "one tap turns it off". Also folds the newest external-request journal row (only the newest: that table's write rate is set by a third-party app) into the Background row subtitle.
       - `backup/` - Settings → Privacy → *Backup & restore*: the screen and its ViewModel.

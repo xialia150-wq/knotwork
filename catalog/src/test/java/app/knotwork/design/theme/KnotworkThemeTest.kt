@@ -9,8 +9,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.knotwork.design.components.pipelineeditor.NodeType
 import app.knotwork.design.components.pipelineeditor.headerTint
 import app.knotwork.design.tokens.KnotworkPalette
-import app.knotwork.design.tokens.themePresets
 import app.knotwork.design.tokens.ThemeSeed
+import app.knotwork.design.tokens.knotworkDarkColorScheme
+import app.knotwork.design.tokens.knotworkExtendedColorsDark
+import app.knotwork.design.tokens.knotworkExtendedColorsLight
+import app.knotwork.design.tokens.knotworkLightColorScheme
+import app.knotwork.design.tokens.themePresets
 import app.knotwork.design.tokens.themedColorScheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -114,20 +118,32 @@ class KnotworkThemeTest {
             NodeType.EVALUATION to KnotworkPalette.NodeEvaluation,
             NodeType.SUMMARY to KnotworkPalette.NodeSummary,
             NodeType.PIPELINE to KnotworkPalette.NodePipeline,
-            NodeType.SKILL to KnotworkPalette.Accent600,
         )
         val observed = mutableMapOf<String, Map<NodeType, Color>>()
         val signals = mutableMapOf<String, List<Color>>()
         composeTestRule.setContent {
-            for (preset in themePresets) for (dark in listOf(false, true)) {
-                for (vivid in listOf(false, true)) for (black in listOf(false, true)) {
-                    KnotworkTheme(darkTheme = dark, seed = ThemeSeed(preset.hue, preset.chroma), vivid = vivid, pureBlack = black) {
-                        val key = "${preset.id}/$dark/$vivid/$black"
-                        observed[key] = NodeType.entries.associateWith { it.headerTint() }
-                        signals[key] = listOf(
-                            KnotworkTheme.extended.signalSuccess, KnotworkTheme.extended.signalWarn,
-                            KnotworkTheme.extended.signalError, MaterialTheme.colorScheme.error,
-                        )
+            for (preset in themePresets) {
+                for (dark in listOf(false, true)) {
+                    for (vivid in listOf(false, true)) {
+                        for (black in listOf(false, true)) {
+                            KnotworkTheme(
+                                darkTheme = dark,
+                                seed = ThemeSeed(preset.hue, preset.chroma),
+                                vivid = vivid,
+                                pureBlack = black,
+                            ) {
+                                val key = "${preset.id}/$dark/$vivid/$black"
+                                observed[key] =
+                                    NodeType.entries.filter { it != NodeType.SKILL }.associateWith { it.headerTint() }
+                                check(NodeType.SKILL.headerTint() == MaterialTheme.colorScheme.primary)
+                                signals[key] = listOf(
+                                    KnotworkTheme.extended.signalSuccess,
+                                    KnotworkTheme.extended.signalWarn,
+                                    KnotworkTheme.extended.signalError,
+                                    MaterialTheme.colorScheme.error,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -135,12 +151,17 @@ class KnotworkThemeTest {
         composeTestRule.waitForIdle()
         assertEquals(themePresets.size * 8, observed.size)
         observed.forEach { (name, colors) -> assertEquals(name, expected, colors) }
-        val expectedSignals = listOf(
-            KnotworkPalette.SignalSuccess, KnotworkPalette.SignalWarn,
-            KnotworkPalette.SignalError, KnotworkPalette.SignalError,
-        )
         assertEquals(observed.size, signals.size)
-        signals.forEach { (name, colors) -> assertEquals(name, expectedSignals, colors) }
+        signals.forEach { (name, colors) ->
+            val dark = name.split("/")[1].toBoolean()
+            val original = if (dark) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
+            val base = if (dark) knotworkDarkColorScheme() else knotworkLightColorScheme()
+            assertEquals(
+                name,
+                listOf(original.signalSuccess, original.signalWarn, original.signalError, base.error),
+                colors,
+            )
+        }
     }
 
     /**
