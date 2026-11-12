@@ -14,6 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
+/** Verifies default appearance values and persistence. */
 class AppearancePreferencesStoreTest {
     @get:Rule val folder = TemporaryFolder()
 

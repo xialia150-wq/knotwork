@@ -35,6 +35,7 @@ class AppearanceSettingsViewModel @Inject constructor(private val store: Appeara
     fun update(change: (AppearanceSettings) -> AppearanceSettings) { viewModelScope.launch { store.update(change) } }
 }
 
+/** Displays appearance controls and applies edits to the settings repository. */
 @Composable
 fun AppearanceSettingsSection(viewModel: AppearanceSettingsViewModel = hiltViewModel()) {
     val value by viewModel.settings.collectAsState()

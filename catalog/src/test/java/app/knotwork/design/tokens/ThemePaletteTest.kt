@@ -1,22 +1,21 @@
 package app.knotwork.design.tokens
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Checks contrast and intensity for presets and extreme custom colors. */
 class ThemePaletteTest {
     @Test
     fun textAndPrimaryRemainReadableForEveryPresetAndIntensity() {
         fun contrast(a: Color, b: Color): Float {
-            val x = a.luminance()
-            val y = b.luminance()
-            return (maxOf(x, y) + 0.05f) / (minOf(x, y) + 0.05f)
+            fun rgb(c: Color) = Srgb(c.red.toDouble(), c.green.toDouble(), c.blue.toDouble())
+            return OklchColorMath.contrast(rgb(a), rgb(b)).toFloat()
         }
         val seeds = themePresets.map { ThemeSeed(it.hue, it.chroma) } +
             (0 until 360 step 10).map { ThemeSeed(it.toDouble(), 0.4) } +
-            listOf(themeSeed(Color.Black), themeSeed(Color.White))
+            listOf(Color.Black, Color.White, Color.Yellow, Color.Blue).map(::themeSeed)
         for (seed in seeds) for (vivid in listOf(false, true)) for (dark in listOf(false, true)) {
             val scheme = themedColorScheme(seed, vivid, dark, false)
             assertTrue("$seed background", contrast(scheme.background, scheme.onBackground) >= 4.5f)

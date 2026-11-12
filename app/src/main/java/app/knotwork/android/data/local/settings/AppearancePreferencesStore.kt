@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Persists the appearance settings in the shared preferences DataStore. */
 @Singleton
 class AppearancePreferencesStore @Inject constructor(private val dataStore: DataStore<Preferences>) : AppearanceSettingsRepository {
     private object Keys {
