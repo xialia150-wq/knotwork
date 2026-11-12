@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.dp
 import kotlin.math.sqrt
 
 /** Paints the editor's cubic connection and its optional tangent-aligned arrow. */
@@ -17,6 +18,7 @@ fun DrawScope.drawCanvasEdge(
     color: Color,
     width: Float,
     highlighted: Boolean,
+    portScale: Float = 1f,
 ) {
     val path = Path().apply {
         moveTo(start.x, start.y)
@@ -31,15 +33,18 @@ fun DrawScope.drawCanvasEdge(
             val ux = dx / length
             val uy = dy / length
             val size = width * ARROW_LENGTH_FACTOR
+            val setback = NodePortGeometry.DOT_RADIUS.dp.toPx() * portScale + width
+            val tipX = end.x - ux * setback
+            val tipY = end.y - uy * setback
             val arrow = Path().apply {
-                moveTo(end.x, end.y)
+                moveTo(tipX, tipY)
                 lineTo(
-                    end.x - ux * size - uy * size * ARROW_HALF_WIDTH_FACTOR,
-                    end.y - uy * size + ux * size * ARROW_HALF_WIDTH_FACTOR,
+                    tipX - ux * size - uy * size * ARROW_HALF_WIDTH_FACTOR,
+                    tipY - uy * size + ux * size * ARROW_HALF_WIDTH_FACTOR,
                 )
                 lineTo(
-                    end.x - ux * size + uy * size * ARROW_HALF_WIDTH_FACTOR,
-                    end.y - uy * size - ux * size * ARROW_HALF_WIDTH_FACTOR,
+                    tipX - ux * size + uy * size * ARROW_HALF_WIDTH_FACTOR,
+                    tipY - uy * size - ux * size * ARROW_HALF_WIDTH_FACTOR,
                 )
                 close()
             }

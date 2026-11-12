@@ -282,6 +282,7 @@ internal fun EditorEdges(
                 color = style.color.copy(alpha = style.alpha.value),
                 width = style.width.value.dp.toPx(),
                 highlighted = style.highlighted,
+                portScale = transform.scale,
             )
         }
         if (connectionDraft != null) {
