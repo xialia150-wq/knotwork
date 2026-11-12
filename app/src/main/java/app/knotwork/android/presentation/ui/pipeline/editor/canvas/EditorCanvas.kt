@@ -314,6 +314,7 @@ internal fun EditorCanvas(
             transform = editor.transform,
             connectionDraft = draftDraw,
             selectedEdgeId = editor.selectedEdgeId,
+            selectedNodeId = if (editor.multiSelectMode) null else editor.selection.singleOrNull(),
             measuredCards = editor.measuredCards,
         )
 

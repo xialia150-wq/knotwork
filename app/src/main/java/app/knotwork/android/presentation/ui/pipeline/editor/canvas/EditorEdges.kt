@@ -1,8 +1,12 @@
 package app.knotwork.android.presentation.ui.pipeline.editor.canvas
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -10,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -28,7 +34,9 @@ import app.knotwork.design.components.pipelineeditor.IntentRouterConfig
 import app.knotwork.design.components.pipelineeditor.NodePortGeometry
 import app.knotwork.design.components.pipelineeditor.NodePorts
 import app.knotwork.design.components.pipelineeditor.OutboundPort
+import app.knotwork.design.components.pipelineeditor.headerTint
 import app.knotwork.design.theme.KnotworkTheme
+import kotlin.math.sqrt
 
 /**
  * Canvas-space coordinates of one port anchor (inbound or one of N outbound ports).
@@ -217,13 +225,34 @@ internal fun EditorEdges(
     transform: CanvasTransform,
     connectionDraft: ConnectionDraftDrawData?,
     selectedEdgeId: String?,
+    selectedNodeId: String? = null,
     modifier: Modifier = Modifier,
     measuredCards: Map<String, CardMeasure> = emptyMap(),
 ) {
     val density = LocalDensity.current
-    val edgeColor = KnotworkTheme.extended.divider
     val accentColor = KnotworkTheme.extended.outlineStrong
     val strokeWidth = with(density) { 2.dp.toPx() }
+    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val related = remember(connections, selectedNodeId) { relatedEdges(connections, selectedNodeId) }
+    val styles = connections.map { connection ->
+        val source = nodesById[connection.sourceNodeId]
+        val color = source?.let { NodeTypeMapper.toCatalog(it.type).headerTint() } ?: Color.Transparent
+        val highlighted = selectedNodeId != null && connection.id in related
+        val selected = connection.id == selectedEdgeId
+        val opacity = when {
+            highlighted || selected -> 1f
+            selectedNodeId != null -> 0.15f
+            dark -> 0.65f
+            else -> 0.55f
+        }
+        val animatedAlpha = animateFloatAsState(opacity, tween(150), label = "edge alpha")
+        val animatedWidth = animateFloatAsState(
+            if (highlighted || selected) 3.5f else 2.5f,
+            tween(150),
+            label = "edge width",
+        )
+        remember(connection.id, color, highlighted) { EdgeStyle(color, animatedAlpha, animatedWidth, highlighted) }
+    }
     // A node's ports come from its decoded config and its edges. Work them out once per graph
     // change rather than for both ends of every edge on every frame of the run-trace animation.
     val portsById = remember(nodesById, connections) {
@@ -231,9 +260,9 @@ internal fun EditorEdges(
     }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        connections.forEach { c ->
-            val source = nodesById[c.sourceNodeId] ?: return@forEach
-            val target = nodesById[c.targetNodeId] ?: return@forEach
+        connections.forEachIndexed { index, c ->
+            val source = nodesById[c.sourceNodeId] ?: return@forEachIndexed
+            val target = nodesById[c.targetNodeId] ?: return@forEachIndexed
             // Per-port anchors: edges originate at the dot matching the connection label
             // (e.g. Item / Done on QUEUE, True / False on IF) rather than the node centre.
             val srcAnchor = outboundPortAnchor(
@@ -248,18 +277,31 @@ internal fun EditorEdges(
             val tx = transform.canvasToScreenX(tgtAnchor.xCanvas)
             val ty = transform.canvasToScreenY(tgtAnchor.yCanvas)
             val (c0, c1) = BezierEdge.controlPoints(sx, sy, tx, ty)
-            val isSelected = c.id == selectedEdgeId
             val path = Path().apply {
                 moveTo(sx, sy)
                 cubicTo(c0.first, c0.second, c1.first, c1.second, tx, ty)
             }
-            val strokeMultiplier = if (isSelected) EDGE_STROKE_SELECTED_FACTOR else 1f
-            val strokeColor = if (isSelected) accentColor else edgeColor
-            drawPath(
-                path = path,
-                color = strokeColor,
-                style = Stroke(width = strokeWidth * strokeMultiplier),
-            )
+            val style = styles[index]
+            val width = style.width.value.dp.toPx()
+            val color = style.color.copy(alpha = style.alpha.value)
+            drawPath(path = path, color = color, style = Stroke(width = width, cap = StrokeCap.Round))
+            if (style.highlighted) {
+                val dx = tx - c1.first
+                val dy = ty - c1.second
+                val length = sqrt(dx * dx + dy * dy)
+                if (length > 0f) {
+                    val ux = dx / length
+                    val uy = dy / length
+                    val size = width * 2.5f
+                    val arrow = Path().apply {
+                        moveTo(tx, ty)
+                        lineTo(tx - ux * size - uy * size * 0.45f, ty - uy * size + ux * size * 0.45f)
+                        lineTo(tx - ux * size + uy * size * 0.45f, ty - uy * size - ux * size * 0.45f)
+                        close()
+                    }
+                    drawPath(path = arrow, color = color)
+                }
+            }
         }
         if (connectionDraft != null) {
             drawPreviewEdge(
@@ -364,5 +406,19 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawPreviewEdge(
     )
 }
 
-private const val EDGE_STROKE_SELECTED_FACTOR = 2f
+private data class EdgeStyle(
+    val color: Color,
+    val alpha: State<Float>,
+    val width: State<Float>,
+    val highlighted: Boolean,
+)
+
+internal fun relatedEdges(connections: List<ConnectionModel>, selectedNodeId: String?): Set<String> =
+    if (selectedNodeId == null) {
+        emptySet()
+    } else {
+        connections.filter { it.sourceNodeId == selectedNodeId || it.targetNodeId == selectedNodeId }
+            .mapTo(mutableSetOf()) { it.id }
+    }
+
 private const val EDGE_PREVIEW_STROKE_FACTOR = 1.5f
