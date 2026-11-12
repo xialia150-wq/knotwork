@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import app.knotwork.design.a11y.KnotworkA11y
 import app.knotwork.design.a11y.LocalKnotworkA11y
 import app.knotwork.design.tokens.DefaultKnotworkElevation
@@ -22,17 +23,16 @@ import app.knotwork.design.tokens.LocalKnotworkMotion
 import app.knotwork.design.tokens.LocalKnotworkShapes
 import app.knotwork.design.tokens.LocalKnotworkSpacing
 import app.knotwork.design.tokens.MaterialKnotworkShapes
-import app.knotwork.design.tokens.knotworkDarkColorScheme
-import app.knotwork.design.tokens.knotworkExtendedColorsDark
-import app.knotwork.design.tokens.knotworkExtendedColorsLight
-import app.knotwork.design.tokens.knotworkLightColorScheme
+import app.knotwork.design.tokens.ThemeSeed
 import app.knotwork.design.tokens.knotworkTypography
+import app.knotwork.design.tokens.themedColorScheme
+import app.knotwork.design.tokens.themedExtendedColors
 
 /**
  * Root theme of the Knotwork design system.
  *
  * Wires the Knotwork tokens into a [MaterialTheme]:
- *  - `colorScheme` ← `knotworkLightColorScheme()` / `knotworkDarkColorScheme()`
+ *  - `colorScheme` ← fixed-lightness roles derived from the selected seed
  *  - `typography`  ← `knotworkTypography()`
  *  - `shapes`      ← `MaterialKnotworkShapes`
  *
@@ -41,11 +41,8 @@ import app.knotwork.design.tokens.knotworkTypography
  * mirror of the shape scale) into composition locals so they can be reached
  * via the [KnotworkTheme] accessor object below.
  *
- * Material You / dynamic colour is intentionally **not** exposed as a
- * parameter: the design system pins its own accent ramp
- * ("Material You disabled"). If a user ever asks for a
- * wallpaper-derived primary, that ships as a separate Settings flag, never
- * as a constructor parameter on this theme.
+ * Wallpaper-derived seeds and user selections share the same fixed-lightness palette derivation.
+ * The defaults are deterministic for previews and tests.
  *
  * @param darkTheme `true` to use the dark Knotwork palette; defaults to
  * [isSystemInDarkTheme]. Pinned to `false` / `true` in catalog previews to
@@ -53,9 +50,19 @@ import app.knotwork.design.tokens.knotworkTypography
  * @param content composable tree wrapped by the theme.
  */
 @Composable
-fun KnotworkTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colorScheme = if (darkTheme) knotworkDarkColorScheme() else knotworkLightColorScheme()
-    val extended = if (darkTheme) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
+fun KnotworkTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    seed: ThemeSeed = ThemeSeed(),
+    vivid: Boolean = false,
+    pureBlack: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = remember(seed, vivid, darkTheme, pureBlack) {
+        themedColorScheme(seed, vivid, darkTheme, pureBlack)
+    }
+    val extended = remember(seed, colorScheme, darkTheme) {
+        themedExtendedColors(seed, colorScheme, darkTheme)
+    }
     CompositionLocalProvider(
         LocalKnotworkExtendedColors provides extended,
         LocalKnotworkSpacing provides DefaultKnotworkSpacing,

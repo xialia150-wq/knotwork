@@ -22,6 +22,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import app.knotwork.android.data.services.AgentForegroundService
 import app.knotwork.android.domain.repositories.AppStateSettings
+import app.knotwork.android.domain.repositories.AppearanceSettings
+import app.knotwork.android.domain.repositories.AppearanceSettingsRepository
 import app.knotwork.android.presentation.startup.StartupMaintenance
 import app.knotwork.android.presentation.state.AppRestartRequest
 import app.knotwork.android.presentation.state.ChatEntryRequestRelay
@@ -47,6 +49,8 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var appStateSettings: AppStateSettings
+
+    @Inject lateinit var appearanceSettings: AppearanceSettingsRepository
 
     @Inject lateinit var transientMessageRelay: TransientMessageRelay
 
@@ -151,7 +155,8 @@ class MainActivity : ComponentActivity() {
         val pendingDeepLink = intent?.takeIf { it.data?.scheme == NavRoutes.DEEP_LINK_SCHEME }
 
         setContent {
-            KnotworkAppTheme {
+            val appearance by appearanceSettings.settings.collectAsState(initial = AppearanceSettings())
+            KnotworkAppTheme(appearance = appearance) {
                 val navController = rememberNavController()
 
                 // Route deep links that arrive on the already-running single-task

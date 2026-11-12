@@ -77,6 +77,12 @@ internal object PreferenceBackupPolicy {
     private val TRAVELLING: Map<String, ValueType> = mapOf(
         "active_embedding_provider_id" to ValueType.STRING,
         "allowed_http_domains" to ValueType.STRING,
+        "appearance_source" to ValueType.STRING,
+        "appearance_preset" to ValueType.STRING,
+        "appearance_custom_color" to ValueType.INT,
+        "appearance_vivid" to ValueType.BOOLEAN,
+        "appearance_mode" to ValueType.STRING,
+        "appearance_pure_black" to ValueType.BOOLEAN,
         "app_function_risk_overrides" to ValueType.STRING,
         "approved_cleartext_origins" to ValueType.STRING_SET,
         "audio_max_duration_sec" to ValueType.INT,

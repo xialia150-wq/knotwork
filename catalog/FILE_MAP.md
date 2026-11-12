@@ -365,6 +365,7 @@ Paths below are relative to `src/main/java/app/knotwork/design/`.
     - `SavePromptAsPresetPreview.kt` - Preview fixtures for the save-prompt-as-preset dialog.
   - `settings/` - the settings hub plus one content composable per category sub-screen (the flat single-screen `SettingsContent` was split into this stack).
     - `AboutSettingsContent.kt` - identity card, build info, licenses and the reset actions.
+    - `AppearanceSettingsContent.kt` - Stateless appearance controls, shared by the app and screenshot tests.
     - `BackgroundSettingsContent.kt` - background work, triggers, notifications and entry-surface bindings.
     - `backup/` - The *Backup & restore* screen: its content, route bodies, parts and view states.
       - `AfterRestoreSheet.kt` - The after-restore sheet over the chat: the models to download again, and what was not carried.
@@ -432,8 +433,10 @@ Paths below are relative to `src/main/java/app/knotwork/design/`.
   - `ExtendedColors.kt` - `KnotworkExtendedColors` data class (chat surfaces, console, risk pills, 12 node hues) and the `LocalKnotworkExtendedColors` composition local provider.
   - `KnotworkIconSizes.kt` - icon-size tokens (AppBar / Nav / Inline / Fab / Micro) for consistent glyph render targets across surfaces.
   - `Motion.kt` - `KnotworkMotion` durations / easings + `LocalKnotworkMotion`.
+  - `Oklch.kt` - Converts OKLCH, OKLab and sRGB, maps chroma to gamut, and computes contrast.
   - `Shape.kt` - `KnotworkShapes` corner radii + `MaterialKnotworkShapes` M3 mapping + `LocalKnotworkShapes`.
   - `Spacing.kt` - `KnotworkSpacing` 4 dp grid + `LocalKnotworkSpacing`.
+  - `ThemeSeed.kt` - Defines preset seeds and derives fixed-lightness Material color roles.
   - `Type.kt` - `KnotworkFonts.install(...)` font-family registry, `KnotworkTextStyles` raw scale and `knotworkTypography()` Material3 mapping.
 <!-- /AUTO-GEN:FILE_MAP -->
 ## Tests and snapshot baselines
@@ -605,6 +608,7 @@ matters.
     - `SavePromptAsPresetSnapshotTest.kt` - Roborazzi baselines for the save-prompt-as-preset form.
   - `SecretFieldImeTest.kt` - Every field that takes a credential tells the keyboard it is a password.
   - `settings/` - the settings hub and its category sub-screens, including the hint affordance, the search surface, and the provider / run-limits details.
+    - `AppearanceSettingsSnapshotTest.kt` - Captures the default appearance controls in both themes.
     - `backup/` - Roborazzi baselines for the *Backup & restore* screen.
       - `BackupContentSemanticsTest.kt` - What the *Back up* route puts in the semantics tree for TalkBack: the working steps are one polite live region whose text is the current step, so the step's name changes as the work moves on — the content change a live region is announced on.
       - `BackupSnapshotTest.kt` - Roborazzi baseline for Settings → Privacy → *Backup & restore* and its *Back up* route: the screen, the password form (empty, flagged, ready, 200 %), the work (key derivation, files), the saved result (also at 200 %, where the counts fall into one column) and two failures — light, and dark for every state the user reads a result in.
@@ -643,5 +647,7 @@ matters.
   - `KnotworkThemeTest.kt` - Verifies that `KnotworkTheme` wires the Knotwork tokens into the underlying `MaterialTheme` and into the `KnotworkTheme.*` composition-local accessors.
 - `tokens/` - the token data classes themselves, plus the WCAG contrast audit over every on-surface text pair.
   - `KnotworkTokensTest.kt` - Pure-JVM sanity tests for the token data classes — no Compose runtime, no Robolectric.
+  - `OklchColorMathTest.kt` - Checks conversion references, gamut mapping and WCAG contrast.
+  - `ThemePaletteTest.kt` - Checks theme contrast across preset and extreme custom seeds.
   - `WcagContrastTest.kt` - Contrast checks for a few colour pairs of the Knotwork design system, in both themes, measured with the WCAG 2.1 formula.
 <!-- /AUTO-GEN:FILE_MAP_TESTS -->

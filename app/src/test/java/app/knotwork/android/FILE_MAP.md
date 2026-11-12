@@ -130,6 +130,7 @@ Only Kotlin files appear inside the generated blocks.
     - `AgentWorkspaceImplTest.kt` - Verifies the `AgentWorkspaceImpl` foundation: the path-traversal containment boundary (the single canonicalisation gate), the per-file and total-size quotas at their exact boundaries, the text/binary read distinction, and the overwrite semantics — each surfaced as a typed `WorkspaceError`.
     - `ApiKeyManagerTest.kt` - Tests for ApiKeyManager.
     - `AppDatabaseMigrationTest.kt` - Verifies the Room migration scripts on the JVM, starting with `MIGRATION_17_18`.
+    - `AppearancePreferencesStoreTest.kt` - Checks appearance defaults and persistence.
     - `AttachmentStoreImplTest.kt` - Verifies `AttachmentStoreImpl`: aspect-preserving downscale to the longest-side cap (never a square crop), JPEG re-encode, ingest of invalid bytes, the content-URI ingest path, and the delete / list surface used by retention.
     - `AudioCaptureStoreImplTest.kt` - Unit tests for `AudioCaptureStoreImpl`, the ephemeral voice-input clip store.
     - `ConvertersTest.kt` - Unit tests for `Converters`, focusing on the `NodeContextConfig` JSON round trip and its legacy-row fallback contract.
@@ -633,6 +634,8 @@ Only Kotlin files appear inside the generated blocks.
     - `SharedIntentFieldsTest.kt` - Unit tests for `SharedIntentFields.read` — the only place `ShareReceiverActivity` touches a caller's extras.
   - `startup/` - Tests for the cold-start upkeep: every step failing in turn leaves the others running.
     - `StartupMaintenanceTest.kt` - `StartupMaintenance` must survive every one of its steps failing — the case it was written for is a database whose key is lost, where the trigger sync threw `DbPassphraseUnavailableException` out of `MainActivity` and killed the process before the splash could show *Erase data*, on every launch.
+  - `theme/` - Appearance theme and wallpaper fallback tests.
+    - `WallpaperThemeSeedTest.kt` - Verifies wallpaper fallback and successful seed selection.
   - `ui/` - Tests for the screens and their ViewModels.
     - `about/` - Tests for the About surface.
       - `AboutAcknowledgmentsTest.kt` - Drift guard for the hand-maintained `AboutAcknowledgments` list surfaced on the About screen.

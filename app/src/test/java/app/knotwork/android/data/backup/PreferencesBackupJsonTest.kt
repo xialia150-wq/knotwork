@@ -110,6 +110,19 @@ class PreferencesBackupJsonTest {
     }
 
     @Test
+    fun `appearance preferences survive an archive round trip`() {
+        val prefs = mutablePreferencesOf(
+            stringPreferencesKey("appearance_source") to "custom",
+            stringPreferencesKey("appearance_preset") to "dusk_purple",
+            intPreferencesKey("appearance_custom_color") to -123456,
+            booleanPreferencesKey("appearance_vivid") to true,
+            stringPreferencesKey("appearance_mode") to "dark",
+            booleanPreferencesKey("appearance_pure_black") to true,
+        )
+        assertEquals(prefs.asMap(), PreferencesBackupJson.decode(PreferencesBackupJson.encode(prefs)))
+    }
+
+    @Test
     fun `given values that do not fit their setting when decoded then each is left out and the rest come back`() {
         // Given — written by hand: a type the setting is not declared with, a fraction for a whole number, a
         // number too large for an int, a setting that stays with the phone, and a name no setting has.

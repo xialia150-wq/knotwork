@@ -141,6 +141,12 @@ class PreferenceStorageSnapshotTest {
         val EXPECTED_KEYS = mapOf(
             "active_embedding_provider_id" to "string",
             "allowed_http_domains" to "string",
+            "appearance_custom_color" to "int",
+            "appearance_mode" to "string",
+            "appearance_preset" to "string",
+            "appearance_pure_black" to "boolean",
+            "appearance_source" to "string",
+            "appearance_vivid" to "boolean",
             // Holds MCP overrides too; the name is history, kept so stored overrides survive.
             "app_function_risk_overrides" to "string",
             "approved_cleartext_origins" to "stringSet",

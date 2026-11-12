@@ -1,6 +1,8 @@
 package app.knotwork.android.presentation.ui.settings
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasSetTextAction
@@ -8,12 +10,14 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.knotwork.android.presentation.ui.navigation.NavRoutes
+import app.knotwork.design.components.text.Text
 import app.knotwork.design.screens.settings.HUB_CATEGORY_ROW_TAG_PREFIX
 import app.knotwork.design.screens.settings.HubSearchResultRow
 import app.knotwork.design.screens.settings.SETTINGS_CATEGORY_BODY_TEST_TAG
@@ -99,6 +103,22 @@ class SettingsNavigationTest {
             }
         }
         return navController
+    }
+
+    @Test
+    fun hub_rendersInjectedAppearanceWithoutHilt() {
+        val (vm, _) = mockSettingsViewModel()
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            MaterialTheme {
+                SettingsHubScreen(
+                    viewModel = vm,
+                    nav = navActions(navController),
+                    appearance = { Text("Appearance slot", modifier = Modifier.testTag("appearance_slot")) },
+                )
+            }
+        }
+        composeTestRule.onNodeWithTag("appearance_slot").performScrollTo().assertIsDisplayed()
     }
 
     @Test

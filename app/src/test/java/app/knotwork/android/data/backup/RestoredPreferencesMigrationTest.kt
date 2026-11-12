@@ -56,6 +56,18 @@ class RestoredPreferencesMigrationTest {
     }
 
     @Test
+    fun `old archive without appearance keys clears current choices for defaults`() = runTest {
+        val current = mutablePreferencesOf(
+            stringPreferencesKey("appearance_source") to "custom",
+            booleanPreferencesKey("appearance_pure_black") to true,
+        ).toPreferences()
+        commit()
+        val restored = migration.migrate(current)
+        assertNull(restored[stringPreferencesKey("appearance_source")])
+        assertNull(restored[booleanPreferencesKey("appearance_pure_black")])
+    }
+
+    @Test
     fun `given a staged restore that is not committed when the DataStore opens then it does not migrate`() = runTest {
         assertFalse(migration.shouldMigrate(phone))
     }

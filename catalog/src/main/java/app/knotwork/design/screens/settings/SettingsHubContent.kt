@@ -137,6 +137,7 @@ fun SettingsHubContent(
     state: SettingsHubViewState,
     modifier: Modifier = Modifier,
     callbacks: SettingsCallbacks = noopSettingsCallbacks(),
+    appearance: @Composable () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
@@ -157,7 +158,11 @@ fun SettingsHubContent(
                     ),
                 )
                 when {
-                    state.searchQuery.isBlank() -> HubDefaultBody(state = state, callbacks = callbacks)
+                    state.searchQuery.isBlank() -> HubDefaultBody(
+                        state = state,
+                        callbacks = callbacks,
+                        appearance = appearance,
+                    )
                     state.searchResults.isEmpty() -> HubSearchEmpty(query = state.searchQuery, callbacks = callbacks)
                     else -> HubSearchResults(
                         results = state.searchResults,
@@ -174,7 +179,11 @@ fun SettingsHubContent(
 
 /** The default (non-search) hub body: the inline Basic block and category rows. */
 @Composable
-private fun HubDefaultBody(state: SettingsHubViewState, callbacks: SettingsCallbacks) {
+private fun HubDefaultBody(
+    state: SettingsHubViewState,
+    callbacks: SettingsCallbacks,
+    appearance: @Composable () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -185,6 +194,7 @@ private fun HubDefaultBody(state: SettingsHubViewState, callbacks: SettingsCallb
         verticalArrangement = Arrangement.spacedBy(KnotworkTheme.spacing.sp4),
     ) {
         HubBasicBlock(state = state, callbacks = callbacks)
+        appearance()
         HorizontalDivider(color = KnotworkTheme.extended.divider)
         HubCategoriesBlock(loading = state.loading, onOpenCategory = callbacks.onOpenCategory)
     }
@@ -371,9 +381,13 @@ private fun HubTopBar(state: SettingsHubViewState, onBack: () -> Unit) {
                     style = KnotworkTextStyles.TitleMd,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                val subtitle = listOf("v${state.subtitleVersion}", state.subtitleChannel, state.subtitleBuildDate)
+                val subtitle = listOf(
+                    stringResource(R.string.appearance_version, state.subtitleVersion),
+                    state.subtitleChannel,
+                    state.subtitleBuildDate,
+                )
                     .filter { it.isNotBlank() }
-                    .joinToString(" · ")
+                    .joinToString(stringResource(R.string.appearance_subtitle_separator))
                 if (subtitle.isNotBlank()) {
                     Text(
                         text = subtitle,
