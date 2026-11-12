@@ -1,7 +1,6 @@
 package app.knotwork.android.presentation.ui.settings
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
@@ -18,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.knotwork.android.presentation.ui.navigation.NavRoutes
+import app.knotwork.design.components.text.Text
 import app.knotwork.design.screens.settings.HUB_CATEGORY_ROW_TAG_PREFIX
 import app.knotwork.design.screens.settings.HubSearchResultRow
 import app.knotwork.design.screens.settings.SETTINGS_CATEGORY_BODY_TEST_TAG
