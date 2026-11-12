@@ -60,6 +60,7 @@ class SettingsResetStore @Inject constructor(
             tool.writeRecommendedDefaults(preferences)
             privacy.writeRecommendedDefaults(preferences)
             entryPoints.writeRecommendedDefaults(preferences)
+            AppearancePreferencesStore.reset(preferences)
         }
     }
 }

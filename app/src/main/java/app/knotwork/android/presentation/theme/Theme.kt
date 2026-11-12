@@ -2,25 +2,34 @@ package app.knotwork.android.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import app.knotwork.android.domain.repositories.AppearanceSettings
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.ThemeSeed
+import app.knotwork.design.tokens.themePresets
+import app.knotwork.design.tokens.themeSeed
 
-/**
- * Thin alias that delegates to [KnotworkTheme] so every screen receives the
- * brand palette, typography, shapes, and extended tokens.
- *
- * Routing through [KnotworkTheme] avoids Material You's
- * `dynamicLightColorScheme(context)`, whose wallpaper-derived `primary` is
- * whatever the device picks — usually blue — instead of the brand amber, and
- * pins the entire surface to the documented design tokens.
- *
- * Material You is intentionally disabled: there is no `dynamicColor`
- * switch to turn it back on.
- *
- * @param darkTheme `true` to use the dark Knotwork palette; defaults to
- * the system theme via [isSystemInDarkTheme].
- * @param content composable tree wrapped by the theme.
- */
+/** Wallpaper supplies only a seed; our fixed-lightness OKLCH roles construct the palette. */
 @Composable
-fun KnotworkAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    KnotworkTheme(darkTheme = darkTheme, content = content)
+fun KnotworkAppTheme(
+    appearance: AppearanceSettings = AppearanceSettings(),
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val context = LocalContext.current
+    // Read configuration so changes to wallpaper-derived resources trigger recomposition.
+    LocalConfiguration.current
+    val seed = when (appearance.source) {
+        "preset" -> themePresets.firstOrNull { it.id == appearance.preset }
+            ?.let { ThemeSeed(it.hue, it.chroma) } ?: ThemeSeed()
+        "custom" -> themeSeed(Color(appearance.customColor))
+        else -> runCatching {
+            val id = context.resources.getIdentifier("system_accent1_500", "color", "android")
+            if (id == 0) ThemeSeed() else themeSeed(Color(context.getColor(id)))
+        }.getOrDefault(ThemeSeed())
+    }
+    val dark = when (appearance.mode) { "light" -> false; "dark" -> true; else -> darkTheme }
+    KnotworkTheme(darkTheme = dark, seed = seed, vivid = appearance.vivid, pureBlack = appearance.pureBlack, content = content)
 }

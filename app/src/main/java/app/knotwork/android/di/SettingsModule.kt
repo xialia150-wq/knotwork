@@ -1,6 +1,8 @@
 package app.knotwork.android.di
 
 import app.knotwork.android.data.local.SettingsManager
+import app.knotwork.android.data.local.settings.AppearancePreferencesStore
+import app.knotwork.android.domain.repositories.AppearanceSettingsRepository
 import app.knotwork.android.data.local.settings.AppStateSettingsStore
 import app.knotwork.android.data.local.settings.EntryPointSettingsStore
 import app.knotwork.android.data.local.settings.GenerationSettingsStore
@@ -86,6 +88,9 @@ abstract class SettingsModule {
     @Binds
     @Singleton
     abstract fun bindAppStateSettings(store: AppStateSettingsStore): AppStateSettings
+
+    @Binds
+    abstract fun bindAppearanceSettings(store: AppearancePreferencesStore): AppearanceSettingsRepository
 
     /** Binds the cross-section resets to the store that writes them. */
     @Binds
