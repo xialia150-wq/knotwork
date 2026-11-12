@@ -434,6 +434,7 @@ Paths below are relative to `src/main/java/app/knotwork/design/`.
   - `Motion.kt` - `KnotworkMotion` durations / easings + `LocalKnotworkMotion`.
   - `Shape.kt` - `KnotworkShapes` corner radii + `MaterialKnotworkShapes` M3 mapping + `LocalKnotworkShapes`.
   - `Spacing.kt` - `KnotworkSpacing` 4 dp grid + `LocalKnotworkSpacing`.
+  - `ThemePalette.kt` - **No description** — give the declaration this file is named for a KDoc, or replace this line by hand.
   - `Type.kt` - `KnotworkFonts.install(...)` font-family registry, `KnotworkTextStyles` raw scale and `knotworkTypography()` Material3 mapping.
 <!-- /AUTO-GEN:FILE_MAP -->
 ## Tests and snapshot baselines
@@ -643,5 +644,6 @@ matters.
   - `KnotworkThemeTest.kt` - Verifies that `KnotworkTheme` wires the Knotwork tokens into the underlying `MaterialTheme` and into the `KnotworkTheme.*` composition-local accessors.
 - `tokens/` - the token data classes themselves, plus the WCAG contrast audit over every on-surface text pair.
   - `KnotworkTokensTest.kt` - Pure-JVM sanity tests for the token data classes — no Compose runtime, no Robolectric.
+  - `ThemePaletteTest.kt` - **No description** — give the declaration this file is named for a KDoc, or replace this line by hand.
   - `WcagContrastTest.kt` - Contrast checks for a few colour pairs of the Knotwork design system, in both themes, measured with the WCAG 2.1 formula.
 <!-- /AUTO-GEN:FILE_MAP_TESTS -->

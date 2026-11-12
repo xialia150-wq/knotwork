@@ -130,6 +130,7 @@ Only Kotlin files appear inside the generated blocks.
     - `AgentWorkspaceImplTest.kt` - Verifies the `AgentWorkspaceImpl` foundation: the path-traversal containment boundary (the single canonicalisation gate), the per-file and total-size quotas at their exact boundaries, the text/binary read distinction, and the overwrite semantics — each surfaced as a typed `WorkspaceError`.
     - `ApiKeyManagerTest.kt` - Tests for ApiKeyManager.
     - `AppDatabaseMigrationTest.kt` - Verifies the Room migration scripts on the JVM, starting with `MIGRATION_17_18`.
+    - `AppearancePreferencesStoreTest.kt` - **No description** — give the declaration this file is named for a KDoc, or replace this line by hand.
     - `AttachmentStoreImplTest.kt` - Verifies `AttachmentStoreImpl`: aspect-preserving downscale to the longest-side cap (never a square crop), JPEG re-encode, ingest of invalid bytes, the content-URI ingest path, and the delete / list surface used by retention.
     - `AudioCaptureStoreImplTest.kt` - Unit tests for `AudioCaptureStoreImpl`, the ephemeral voice-input clip store.
     - `ConvertersTest.kt` - Unit tests for `Converters`, focusing on the `NodeContextConfig` JSON round trip and its legacy-row fallback contract.

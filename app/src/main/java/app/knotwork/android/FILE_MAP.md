@@ -210,6 +210,7 @@ Only Kotlin files appear inside the generated blocks.
       - `UsagePipelineDayEntity.kt` - One `(day, pipeline)` activity pair (`usage_pipeline_day`, v57, composite PK). The one time-resolved dimension of the local telemetry: a *set*, not a second run counter, and the only way "which pipelines are alive this week" is answerable from dateless all-time counters.
     - `PathContainment.kt` - The one containment test for "does this path stay inside that directory".
     - `settings/` - One store per settings section over the app's single preferences DataStore, and the read helper they share.
+      - `AppearancePreferencesStore.kt` - **No description** — give the declaration this file is named for a KDoc, or replace this line by hand.
       - `AppStateSettingsStore.kt` - `AppStateSettings` over the app's preferences DataStore: the first-launch and onboarding flags, the open chat and the preferred console tab.
       - `EntryPointSettingsStore.kt` - `EntryPointSettings` over the app's preferences DataStore: which pipeline each entry point runs, the share target's one-chat preference and the external automation contract's master switch.
       - `GenerationSettingsStore.kt` - `GenerationSettings` over the app's preferences DataStore and the settings secret store: the sampling parameters, the system-prompt prefix, the context window and the voice-input length; the local backend with its crash-recovery breadcrumbs and the last backend probe; and the Hugging Face access token.
@@ -635,6 +636,7 @@ Only Kotlin files appear inside the generated blocks.
     - `ContentReportComposer.kt` - Pure renderer: subject line plus a Markdown body (note, category, block-quoted model output capped at `MAX_QUOTED_CHARS` with the omission stated, build metadata). Framework-free so "what exactly is in a report" is unit-testable.
   - `repositories/` - Repository interfaces.
     - `ApiKeyRepository.kt` - Provider credentials keyed by `CloudProvider` — API key, chosen model, server address — plus `requiredCredential`, the one definition of "is this provider set up", and `configuredProviders` in enum order.
+    - `AppearanceSettingsRepository.kt` - Persisted appearance choices.
     - `AppLanguageRepository.kt` - The language the app's interface is shown in.
     - `AppStateSettings.kt` - State the app keeps between starts that is not a preference: the first-launch and onboarding flags, the chat that is open, and the console tab last chosen.
     - `BackgroundPromptRepository.kt` - The prompts of background runs waiting in the scheduler, kept in the encrypted database rather than handed to the background runtime.
@@ -1093,6 +1095,7 @@ Only Kotlin files appear inside the generated blocks.
       - `PromptLibraryViewModel.kt` - Prompt library ViewModel. Injects `PromptPresetRepository` + `SavePromptAsPresetUseCase`. Exposes `selectCategory`, `openEditor(id?)`, `closeEditor`, per-field editor setters, `saveEditor` (upsert via `existingId`), `duplicatePrompt`, `deletePrompt` (bundled-aware no-op).
     - `settings/` - Settings surface as a nested navigation graph: a category **hub** (inline Basic controls + eight category rows) routing to eight per-category sub-screens, each with an in-category "Advanced — change deliberately" disclosure. Catalog `SettingsHubContent` + `<Category>SettingsContent` render the slices; re-organisation only — every setting keeps its meaning, range, default, validation and gating 1:1.
       - `AboutSettingsDelegate.kt` - About category: read-only identity card load + the Reset-all-settings action.
+      - `AppearanceSettingsSection.kt` - **No description** — give the declaration this file is named for a KDoc, or replace this line by hand.
       - `AppLanguageLabels.kt` - How the interface-language picker names a language.
       - `BackgroundSettingsDelegate.kt` - Background & triggers category: notification toggles, resume / background-approval windows, the three entry-surface pipeline bindings, and the external-automation consent switch. That switch is the one setting here that does not write through: moving it **on** only stages `pendingExternalAutomationConsent` and `confirmExternalAutomationConsent` persists it, while moving it **off** writes immediately — a confirmation on the way out would falsify the consent copy's "one tap turns it off". Also folds the newest external-request journal row (only the newest: that table's write rate is set by a third-party app) into the Background row subtitle.
       - `backup/` - Settings → Privacy → *Backup & restore*: the screen and its ViewModel.

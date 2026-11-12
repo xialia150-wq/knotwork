@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import app.knotwork.design.a11y.KnotworkA11y
 import app.knotwork.design.a11y.LocalKnotworkA11y
 import app.knotwork.design.tokens.DefaultKnotworkElevation
@@ -58,7 +59,9 @@ fun KnotworkTheme(
     pureBlack: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = themedColorScheme(seed, vivid, darkTheme, pureBlack)
+    val colorScheme = remember(seed, vivid, darkTheme, pureBlack) {
+        themedColorScheme(seed, vivid, darkTheme, pureBlack)
+    }
     val original = if (darkTheme) knotworkExtendedColorsDark() else knotworkExtendedColorsLight()
     val neutralChroma = minOf(seed.chroma.coerceAtLeast(0.025) * 0.12, 0.012)
     fun neutral(lightness: Double) = themeTone(lightness, neutralChroma, seed.hue)
