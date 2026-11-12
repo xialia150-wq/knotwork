@@ -63,7 +63,7 @@ class CanvasHighlightSnapshotTest {
                             point(300f, 190f),
                             point(300f, 390f),
                             point(174f, 446f),
-                            first.copy(alpha = 0.15f),
+                            first.copy(alpha = 0.25f),
                             2.5.dp.toPx(),
                             false,
                         )

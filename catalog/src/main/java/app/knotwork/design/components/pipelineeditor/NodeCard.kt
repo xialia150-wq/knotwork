@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import app.knotwork.design.components.text.Text
 import app.knotwork.design.icons.AppIcons
 import app.knotwork.design.theme.KnotworkTheme
@@ -87,6 +89,12 @@ const val NODE_CARD_INBOUND_DOT_TEST_TAG: String = "node_card_inbound_dot"
 
 /** Test-tag prefix of an outbound port dot; the port's index, left to right, follows. */
 const val NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX: String = "node_card_outbound_dot_"
+
+/** Test tag of the node type label in the header. */
+const val NODE_CARD_HEADER_LABEL_TEST_TAG: String = "node_card_header_label"
+
+/** Test-tag prefix of an outbound port label. */
+const val NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX: String = "node_card_outbound_label_"
 
 /** Header strip opacity. Constant — the card has no animated state. */
 private const val HEADER_STRIP_ALPHA = 1.0f
@@ -158,6 +166,7 @@ fun NodeCard(
         quietHeaderBackground(headerColor, MaterialTheme.colorScheme.surfaceColorAtElevation(elevation))
     }
     val onHeader = if (vivid) headerOnColor(strip) else quietHeaderForeground(headerColor, strip)
+    val portColor = quietHeaderForeground(headerColor, KnotworkTheme.extended.surface1)
     val showOutboundLabels = ports.outbound.size > 1
     val topInset = if (ports.inbound > 0) PortDotRadius else 0.dp
     val labelLineHeight = nodePortLabelLineHeight()
@@ -191,17 +200,25 @@ fun NodeCard(
                     onStrip = onHeader,
                     error = error,
                     alpha = HEADER_STRIP_ALPHA,
+                    maxLabelWidth = if (ports.inbound > 0) {
+                        (
+                            NodePortGeometry.cardWidth(ports.outbound.size).dp / 2 - PortDotRadius - PortLabelGap -
+                                KnotworkTheme.spacing.sp3 - HeaderGlyphSize - KnotworkTheme.spacing.sp2
+                            ).coerceAtLeast(0.dp)
+                    } else {
+                        Dp.Infinity
+                    },
                 )
                 NodeBody(title = title, subtitle = subtitle, error = error)
             }
         }
         if (ports.inbound > 0) {
-            InboundDot(color = headerColor)
+            InboundDot(color = portColor)
         }
         if (ports.outbound.isNotEmpty()) {
             OutboundPortRow(
                 ports = ports.outbound,
-                color = headerColor,
+                color = portColor,
                 showLabels = showOutboundLabels,
                 labelLineHeight = labelLineHeight,
             )
@@ -214,7 +231,14 @@ fun NodeCard(
 
 /** Header strip — 28 dp tall, hue-tinted, with glyph + uppercase type label. */
 @Composable
-private fun HeaderStrip(type: NodeType, strip: Color, onStrip: Color, error: NodeError?, alpha: Float) {
+private fun HeaderStrip(
+    type: NodeType,
+    strip: Color,
+    onStrip: Color,
+    error: NodeError?,
+    alpha: Float,
+    maxLabelWidth: Dp,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -238,11 +262,20 @@ private fun HeaderStrip(type: NodeType, strip: Color, onStrip: Color, error: Nod
                 modifier = Modifier.size(HeaderGlyphSize),
             )
         } else {
+            val label = stringResource(type.canvasName)
             Text(
-                text = stringResource(type.canvasName),
+                text = label,
+                modifier = Modifier.widthIn(max = maxLabelWidth).testTag(NODE_CARD_HEADER_LABEL_TEST_TAG),
                 style = KnotworkTextStyles.LabelSm.copy(
                     fontWeight = FontWeight.SemiBold,
-                    letterSpacing = HEADER_LABEL_TRACKING_EM.em,
+                    letterSpacing = if (label.any {
+                            Character.UnicodeScript.of(it.code) == Character.UnicodeScript.HAN
+                        }
+                    ) {
+                        0.sp
+                    } else {
+                        HEADER_LABEL_TRACKING_EM.em
+                    },
                 ),
                 color = onStrip,
                 maxLines = 1,
@@ -327,6 +360,7 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
     labelLineHeight: Dp,
 ) {
     val slot = NodePortGeometry.slotWidth(ports.size).dp
+    val labelWidth = (slot - (PortDotRadius + PortLabelGap) * 2).coerceAtLeast(0.dp)
     ports.forEachIndexed { index, port ->
         Column(
             modifier = Modifier
@@ -343,7 +377,15 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
                     // Exactly one line tall at the current font scale: a single LabelSm line can
                     // measure short of it (13 dp of 14, measured) or, at 200 %, past the 14 dp the
                     // inset used to hold, which pushed the dots up onto the card's text.
-                    modifier = Modifier.height(labelLineHeight),
+                    modifier = Modifier
+                        .offset(
+                            x = (PortDotRadius + PortLabelGap + labelWidth / 2) *
+                                if (index < ports.size / 2) -1 else 1,
+                            y = -(PortDotRadius + PortLabelGap + labelLineHeight / 2),
+                        )
+                        .width(labelWidth)
+                        .height(labelLineHeight)
+                        .testTag(NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index),
                     style = KnotworkTextStyles.LabelSm,
                     color = KnotworkTheme.extended.onSurfaceMuted,
                     textAlign = TextAlign.Center,

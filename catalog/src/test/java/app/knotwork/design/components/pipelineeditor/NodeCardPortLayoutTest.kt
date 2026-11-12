@@ -74,6 +74,29 @@ class NodeCardPortLayoutTest {
     }
 
     @Test
+    fun `header and outbound labels leave the port centers clear`() {
+        shown = Case(NodeType.IF_CONDITION)
+        render()
+        val card = composeTestRule.onNodeWithTag(CARD).getBoundsInRoot()
+        val header = composeTestRule.onNodeWithTag(NODE_CARD_HEADER_LABEL_TEST_TAG).getBoundsInRoot()
+        val inbound = composeTestRule.onNodeWithTag(NODE_CARD_INBOUND_DOT_TEST_TAG).getBoundsInRoot()
+        assertTrue(header.right.value <= inbound.left.value - NodePortGeometry.LABEL_GAP + TOLERANCE)
+        listOf(0, 1).forEach { index ->
+            val dot = composeTestRule.onNodeWithTag(NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index).getBoundsInRoot()
+            val label = composeTestRule.onNodeWithTag(
+                NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index,
+            ).getBoundsInRoot()
+            if (index == 0) {
+                assertTrue("left label clears dot", label.right.value <= dot.left.value + TOLERANCE)
+            } else {
+                assertTrue("right label clears dot", label.left.value >= dot.right.value - TOLERANCE)
+            }
+        }
+        assertEquals(NodePortGeometry.cardWidth(2), card.width.value, TOLERANCE)
+        assertDotsWhereTheGeometrySays(onShortestCard = true)
+    }
+
+    @Test
     fun `given a router with three to eight classes when drawn then every dot is drawn in its slot`() {
         render()
         listOf(3, 4, 5, 6, 8).forEach { count ->

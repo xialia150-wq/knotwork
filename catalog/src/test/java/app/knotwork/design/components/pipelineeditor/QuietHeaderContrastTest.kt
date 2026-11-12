@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.luminance
 import app.knotwork.design.tokens.KnotworkPalette
 import app.knotwork.design.tokens.ThemeSeed
 import app.knotwork.design.tokens.themedColorScheme
+import app.knotwork.design.tokens.themedExtendedColors
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -22,10 +23,13 @@ class QuietHeaderContrastTest {
         for (dark in listOf(false, true)) {
             for (pureBlack in listOf(false, true)) {
                 val scheme = themedColorScheme(ThemeSeed(), vivid = false, dark = dark, pureBlack = pureBlack)
+                val canvas = themedExtendedColors(ThemeSeed(), scheme, dark).surface1
                 for (node in colors) {
                     val background = quietHeaderBackground(node, scheme.surface)
                     val foreground = quietHeaderForeground(node, background)
                     assertTrue("$node on $background", contrast(foreground, background) >= 4.5)
+                    val port = quietHeaderForeground(node, canvas)
+                    assertTrue("port $node on $canvas", contrast(port, canvas) >= 4.5)
                 }
             }
         }

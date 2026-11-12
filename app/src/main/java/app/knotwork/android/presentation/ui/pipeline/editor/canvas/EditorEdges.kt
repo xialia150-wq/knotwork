@@ -409,7 +409,7 @@ internal fun relatedEdges(connections: List<ConnectionModel>, selectedNodeId: St
 private const val EDGE_PREVIEW_STROKE_FACTOR = 1.5f
 
 private const val DARK_LUMINANCE_CUTOFF = 0.5f
-private const val EDGE_DIM_ALPHA = 0.15f
+private const val EDGE_DIM_ALPHA = 0.25f
 private const val EDGE_DARK_ALPHA = 0.65f
 private const val EDGE_LIGHT_ALPHA = 0.55f
 private const val EDGE_ANIMATION_MS = 150
