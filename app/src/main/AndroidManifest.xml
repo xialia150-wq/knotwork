@@ -63,7 +63,7 @@
             journal — which is a `PackageManager` lookup and therefore filtered.
         -->
         <intent>
-            <action android:name="app.knotwork.android.action.RUN_RESULT" />
+            <action android:name="me.lcfuns.zhiwen.action.RUN_RESULT" />
         </intent>
     </queries>
 
@@ -302,7 +302,7 @@
             tools:targetApi="36"
             tools:ignore="ExportedReceiver">
             <intent-filter>
-                <action android:name="app.knotwork.android.action.RUN_PIPELINE" />
+                <action android:name="me.lcfuns.zhiwen.action.RUN_PIPELINE" />
             </intent-filter>
         </receiver>
     </application>

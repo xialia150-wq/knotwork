@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Knotwork</string>
+    <string name="app_name">织问</string>
     <string name="approval_channel_sensitive_name">Aprobaciones del agente</string>
     <string name="approval_channel_sensitive_description">Confirmaciones para ejecutar herramientas sensibles.</string>
     <string name="approval_channel_destructive_name">Aprobaciones del agente: acciones peligrosas</string>

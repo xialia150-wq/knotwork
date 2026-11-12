@@ -202,7 +202,8 @@ android {
     ndkVersion = libs.versions.ndk.get()
 
     defaultConfig {
-        applicationId = "app.knotwork.android"
+        applicationId = "me.lcfuns.zhiwen"
+        resValue("string", "shortcut_target_package", applicationId!!)
         minSdk = 34
         targetSdk = 37
         versionCode = 21
@@ -289,6 +290,7 @@ android {
             // build never resolves to a real Firebase project even when the
             // root file is swapped for the real one at release-build time.
             applicationIdSuffix = ".debug"
+            resValue("string", "shortcut_target_package", "${defaultConfig.applicationId}.debug")
             versionNameSuffix = "-debug"
 
             // Where this build's in-app documentation links resolve. A debug

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    User-visible strings for the Knotwork design-system catalog.
+    User-visible strings for the 织问 design-system catalog.
 
     Naming convention: `knotwork_<surface>_<role>_<intent>` so a global text search
     locates every translation site at once. The catalog introduces the
@@ -779,7 +779,7 @@
     <!-- ============ Onboarding pager ============ -->
 
     <!-- Brand title rendered in the onboarding top app bar next to the logo glyph. -->
-    <string name="knotwork_onboarding_brand_title">Knotwork</string>
+    <string name="knotwork_onboarding_brand_title">织问</string>
     <!-- Skip button — visible on every step except the final one. -->
     <string name="knotwork_onboarding_skip">Skip</string>
     <!-- Primary CTA on steps 1-3. -->

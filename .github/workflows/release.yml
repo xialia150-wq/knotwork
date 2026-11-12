@@ -196,8 +196,8 @@ jobs:
           # Whitespace-tolerant: a re-serialised or minified copy of the same
           # file is still the right file, and a false failure here blocks a
           # release for nothing.
-          if ! grep -qE '"package_name"[[:space:]]*:[[:space:]]*"app\.knotwork\.android"' app/google-services.json; then
-            echo "::error::The decoded google-services.json has no client for app.knotwork.android — wrong Firebase project or a truncated secret."
+          if ! grep -qE '"package_name"[[:space:]]*:[[:space:]]*"me\.lcfuns\.zhiwen"' app/google-services.json; then
+            echo "::error::The decoded google-services.json has no client for me.lcfuns.zhiwen — wrong Firebase project or a truncated secret."
             exit 1
           fi
           if grep -q 'placeholder' app/google-services.json; then

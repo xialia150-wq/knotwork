@@ -175,7 +175,7 @@
     <string name="settings_reset_button">La configuración volvió a sus valores predeterminados.</string>
     <string name="notifications_agent_foreground_channel_name">Servicio del agente</string>
     <string name="notifications_agent_foreground_channel_description">Muestra el estado mientras el agente trabaja; la notificación desaparece sola cuando termina.</string>
-    <string name="notifications_agent_foreground_title">Agente de Knotwork</string>
+    <string name="notifications_agent_foreground_title">Agente de 织问</string>
     <string name="notifications_scheduled_running_title">Tarea programada</string>
     <string name="notifications_scheduled_running_body">El agente está trabajando en segundo plano…</string>
     <string name="notifications_model_download_channel_name">Descargas de modelos</string>
@@ -260,7 +260,7 @@
     <string name="settings_usage_duration">%1$d:%2$02d</string>
     <string name="settings_usage_duration_none">—</string>
     <string name="settings_usage_export_filename">knotwork-usage.json</string>
-    <string name="settings_usage_share_title">Estadísticas de uso de Knotwork</string>
+    <string name="settings_usage_share_title">Estadísticas de uso de 织问</string>
     <string name="settings_usage_reset_title">¿Restablecer las estadísticas de uso?</string>
     <string name="settings_usage_reset_body">Se borran para siempre todos los recuentos de uso de este dispositivo. No cambia el ajuste «Registrar el uso en este dispositivo».</string>
     <string name="settings_usage_reset_confirm">Restablecer</string>

@@ -31,10 +31,10 @@ class BuildExternalAutomationJournalExportUseCaseTest {
         id: String,
         requestId: String = "req-1",
         receivedAt: Long = 0L,
-        action: String = "app.knotwork.android.action.RUN_PIPELINE",
+        action: String = "me.lcfuns.zhiwen.action.RUN_PIPELINE",
         target: ExternalAutomationTarget? = null,
         declaredReturnPackage: String? = null,
-        returnAction: String = "app.knotwork.android.action.RUN_RESULT",
+        returnAction: String = "me.lcfuns.zhiwen.action.RUN_RESULT",
         attestedSenderPackage: String? = null,
         status: ExternalAutomationStatus = ExternalAutomationStatus.Accepted,
         runId: String? = null,
@@ -90,11 +90,11 @@ class BuildExternalAutomationJournalExportUseCaseTest {
         assertEquals("row-1", row.getValue("id").jsonPrimitive.content)
         assertEquals("tsk-42", row.getValue("requestId").jsonPrimitive.content)
         assertEquals(1_724_000_000_000L, row.getValue("receivedAt").jsonPrimitive.long)
-        assertEquals("app.knotwork.android.action.RUN_PIPELINE", row.getValue("action").jsonPrimitive.content)
+        assertEquals("me.lcfuns.zhiwen.action.RUN_PIPELINE", row.getValue("action").jsonPrimitive.content)
         assertEquals("ID", row.getValue("targetKind").jsonPrimitive.content)
         assertEquals("pipe-7", row.getValue("targetValue").jsonPrimitive.content)
         assertEquals("net.dinglisch.android.taskerm", row.getValue("declaredReturnPackage").jsonPrimitive.content)
-        assertEquals("app.knotwork.android.action.RUN_RESULT", row.getValue("returnAction").jsonPrimitive.content)
+        assertEquals("me.lcfuns.zhiwen.action.RUN_RESULT", row.getValue("returnAction").jsonPrimitive.content)
         assertEquals("com.example.attested", row.getValue("attestedSenderPackage").jsonPrimitive.content)
         assertEquals("Accepted", row.getValue("status").jsonPrimitive.content)
         assertEquals(JsonNull, row.getValue("statusReason"))

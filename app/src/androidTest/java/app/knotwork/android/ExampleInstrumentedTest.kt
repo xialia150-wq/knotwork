@@ -27,7 +27,7 @@ class ExampleInstrumentedTest {
         // the suffixed id instead would just move the breakage to the next variant.
         assertTrue(
             "Unexpected target package: ${appContext.packageName}",
-            appContext.packageName.startsWith("app.knotwork.android"),
+            appContext.packageName == BuildConfig.APPLICATION_ID,
         )
     }
 }

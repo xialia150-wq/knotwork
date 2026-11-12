@@ -23,13 +23,13 @@ package app.knotwork.android.domain.constants
 object ExternalAutomationContract {
 
     /** Broadcast action a caller sends to ask the app to run a pipeline. */
-    const val ACTION_RUN_PIPELINE: String = "app.knotwork.android.action.RUN_PIPELINE"
+    const val ACTION_RUN_PIPELINE: String = "me.lcfuns.zhiwen.action.RUN_PIPELINE"
 
     /**
      * Default broadcast action of the terminal callback. Used when a caller asks
      * for a callback without naming an action of its own.
      */
-    const val ACTION_RUN_RESULT: String = "app.knotwork.android.action.RUN_RESULT"
+    const val ACTION_RUN_RESULT: String = "me.lcfuns.zhiwen.action.RUN_RESULT"
 
     /** Request key: id of the pipeline to run. Mutually exclusive with [EXTRA_PIPELINE_NAME]. */
     const val EXTRA_PIPELINE_ID: String = "pipeline_id"
