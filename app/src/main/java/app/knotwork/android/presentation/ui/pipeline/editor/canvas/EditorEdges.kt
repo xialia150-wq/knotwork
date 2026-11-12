@@ -13,9 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -34,9 +31,9 @@ import app.knotwork.design.components.pipelineeditor.IntentRouterConfig
 import app.knotwork.design.components.pipelineeditor.NodePortGeometry
 import app.knotwork.design.components.pipelineeditor.NodePorts
 import app.knotwork.design.components.pipelineeditor.OutboundPort
+import app.knotwork.design.components.pipelineeditor.drawCanvasEdge
 import app.knotwork.design.components.pipelineeditor.headerTint
 import app.knotwork.design.theme.KnotworkTheme
-import kotlin.math.sqrt
 
 /**
  * Canvas-space coordinates of one port anchor (inbound or one of N outbound ports).
@@ -276,37 +273,16 @@ internal fun EditorEdges(
             val tx = transform.canvasToScreenX(tgtAnchor.xCanvas)
             val ty = transform.canvasToScreenY(tgtAnchor.yCanvas)
             val (c0, c1) = BezierEdge.controlPoints(sx, sy, tx, ty)
-            val path = Path().apply {
-                moveTo(sx, sy)
-                cubicTo(c0.first, c0.second, c1.first, c1.second, tx, ty)
-            }
             val style = styles[index]
-            val width = style.width.value.dp.toPx()
-            val color = style.color.copy(alpha = style.alpha.value)
-            drawPath(path = path, color = color, style = Stroke(width = width, cap = StrokeCap.Round))
-            if (style.highlighted) {
-                val dx = tx - c1.first
-                val dy = ty - c1.second
-                val length = sqrt(dx * dx + dy * dy)
-                if (length > 0f) {
-                    val ux = dx / length
-                    val uy = dy / length
-                    val size = width * ARROW_LENGTH_FACTOR
-                    val arrow = Path().apply {
-                        moveTo(tx, ty)
-                        lineTo(
-                            tx - ux * size - uy * size * ARROW_HALF_WIDTH_FACTOR,
-                            ty - uy * size + ux * size * ARROW_HALF_WIDTH_FACTOR,
-                        )
-                        lineTo(
-                            tx - ux * size + uy * size * ARROW_HALF_WIDTH_FACTOR,
-                            ty - uy * size - ux * size * ARROW_HALF_WIDTH_FACTOR,
-                        )
-                        close()
-                    }
-                    drawPath(path = arrow, color = color)
-                }
-            }
+            drawCanvasEdge(
+                start = Offset(sx, sy),
+                control1 = Offset(c0.first, c0.second),
+                control2 = Offset(c1.first, c1.second),
+                end = Offset(tx, ty),
+                color = style.color.copy(alpha = style.alpha.value),
+                width = style.width.value.dp.toPx(),
+                highlighted = style.highlighted,
+            )
         }
         if (connectionDraft != null) {
             drawPreviewEdge(
@@ -439,5 +415,3 @@ private const val EDGE_LIGHT_ALPHA = 0.55f
 private const val EDGE_ANIMATION_MS = 150
 private const val EDGE_WIDTH_DP = 2.5f
 private const val EDGE_HIGHLIGHT_WIDTH_DP = 3.5f
-private const val ARROW_LENGTH_FACTOR = 2.5f
-private const val ARROW_HALF_WIDTH_FACTOR = 0.45f

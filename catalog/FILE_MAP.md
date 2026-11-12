@@ -137,6 +137,7 @@ Paths below are relative to `src/main/java/app/knotwork/design/`.
     - `KnotworkWarningBanner.kt` - A persistent, warning-toned notice with one inline action.
     - `StripedPlaceholder.kt` - Knotwork striped placeholder — the canonical "missing asset" stand-in for any product surface that ships before its real illustration / hero image is available.
   - `pipelineeditor/` - pipeline-editor base components.
+    - `CanvasEdge.kt` - Paints the editor's cubic connection and its optional tangent-aligned arrow.
     - `EdgeLabel.kt` - floating edge-label chip (branch conditions True/False/Item/Done/Pass/Retry/Fail or intent class names).
     - `EditorToolbar.kt` - editor top toolbar (back, inline-editable name, subtitle, overflow). No run action: the editor composes pipelines, it does not execute them.
     - `NodeCard.kt` - unified node card covering idle / selected / multi-selected / error states with dynamic port dots and header tint.
@@ -522,6 +523,7 @@ matters.
     - `KnotworkMiscSnapshotTest.kt` - Roborazzi snapshot baseline for `KnotworkMiscCatalogContent` in both themes.
   - `pipelineeditor/` - the node canvas and its configuration sheets — ports, validation rules, the toolbar roster, and the baselines for each.
     - `CanvasHeadersSnapshotTest.kt` - Captures quiet and vivid node headers in both themes.
+    - `CanvasHighlightSnapshotTest.kt` - Captures selected-node connections using the editor's shared edge painter.
     - `EditorToolbarTest.kt` - Pins the editor toolbar's action roster.
     - `HeroSnapshotTest.kt` - Roborazzi baseline of the editor's node-card surface at the canonical 1080 × 2400 resolution, in both themes.
     - `NodeCardPortLayoutTest.kt` - `NodeCard` draws every outbound port where `NodePortGeometry` says it is — the positions the editor canvas starts its edges from and places its touch targets at.
