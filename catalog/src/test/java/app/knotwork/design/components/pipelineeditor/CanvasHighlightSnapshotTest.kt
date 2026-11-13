@@ -2,9 +2,12 @@ package app.knotwork.design.components.pipelineeditor
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -44,6 +47,39 @@ class CanvasHighlightSnapshotTest {
     @Test fun light() = capture(false)
 
     @Test fun dark() = capture(true)
+
+    @Test fun denseLabelsLight() = captureLabels(false)
+
+    @Test fun denseLabelsDark() = captureLabels(true)
+
+    private fun captureLabels(dark: Boolean) {
+        compose.setContent {
+            KnotworkTheme(darkTheme = dark) {
+                Column(
+                    modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(32.dp),
+                    verticalArrangement = Arrangement.spacedBy(48.dp),
+                ) {
+                    val names = listOf("simple", "complex", "tool", "one", "two", "three")
+                    listOf(2, 3, 6).forEach { count ->
+                        NodeCard(
+                            type = NodeType.INTENT_ROUTER,
+                            title = "Route",
+                            subtitle = null,
+                            selected = false,
+                            error = null,
+                            multiSelected = false,
+                            ports = NodePorts.forType(NodeType.INTENT_ROUTER, names.take(count)),
+                        )
+                    }
+                }
+            }
+        }
+        val theme = if (dark) "dark" else "light"
+        compose.onRoot().captureRoboImage(
+            filePath = "src/test/snapshots/canvas_port_labels_$theme.png",
+            roborazziOptions = KnotworkRoborazziOptions,
+        )
+    }
 
     private fun capture(dark: Boolean) {
         compose.setContent {

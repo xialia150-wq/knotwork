@@ -481,8 +481,7 @@ internal fun EditorCanvas(
                         viewportW = viewportSize.first.toFloat(),
                         viewportH = viewportSize.second.toFloat(),
                     )
-                    editor.selection = setOf(firstMatch.id)
-                    editor.multiSelectMode = false
+                    editor.selectSingleNode(firstMatch.id)
                 },
                 onClose = {
                     editor.searchOpen = false

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -79,6 +80,10 @@ private val HeaderGlyphSize = 16.dp
 
 /** Vertical gap between an outbound dot and its label. */
 private val PortLabelGap = NodePortGeometry.LABEL_GAP.dp
+
+/** Extra room for short class names when densely packed ports need staggered labels. */
+private val DensePortLabelWidth = 56.dp
+private const val DENSE_PORT_COUNT = 5
 
 /** Test tag of the card's surface — the rounded body whose edges the port dots sit on. */
 const val NODE_CARD_SURFACE_TEST_TAG: String = "node_card_surface"
@@ -345,7 +350,7 @@ private fun androidx.compose.foundation.layout.BoxScope.InboundDot(color: Color)
 /**
  * Outbound ports pinned to the bottom edge of the outer Box, each in its own slot: the dot at
  * [NodePortGeometry.outboundOffset] from the centre line, and — on a multi-port node — its
- * `LabelSm` label underneath, never wider than the slot. Every port is drawn, however many there
+ * `LabelSm` label, staggered below dense rows to keep short class names readable. Every port is drawn, however many there
  * are; the card is as wide as [NodePortGeometry.cardWidth] needs.
  *
  * Vertical alignment is computed by the outer card layout — the Surface is inset by
@@ -360,7 +365,13 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
     labelLineHeight: Dp,
 ) {
     val slot = NodePortGeometry.slotWidth(ports.size).dp
-    val labelWidth = (slot - (PortDotRadius + PortLabelGap) * 2).coerceAtLeast(0.dp)
+    val sideLabels = ports.size == 2
+    val denseLabels = ports.size >= DENSE_PORT_COUNT
+    val labelWidth = when {
+        sideLabels -> (slot - (PortDotRadius + PortLabelGap) * 2).coerceAtLeast(0.dp)
+        denseLabels -> maxOf(slot, DensePortLabelWidth)
+        else -> slot
+    }
     ports.forEachIndexed { index, port ->
         Column(
             modifier = Modifier
@@ -379,11 +390,18 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
                     // inset used to hold, which pushed the dots up onto the card's text.
                     modifier = Modifier
                         .offset(
-                            x = (PortDotRadius + PortLabelGap + labelWidth / 2) *
-                                if (index < ports.size / 2) -1 else 1,
-                            y = -(PortDotRadius + PortLabelGap + labelLineHeight / 2),
+                            x = if (sideLabels) {
+                                (PortDotRadius + PortLabelGap + labelWidth / 2) * if (index == 0) -1 else 1
+                            } else {
+                                0.dp
+                            },
+                            y = when {
+                                sideLabels -> -(PortDotRadius + PortLabelGap + labelLineHeight / 2)
+                                denseLabels && index % 2 == 1 -> labelLineHeight
+                                else -> 0.dp
+                            },
                         )
-                        .width(labelWidth)
+                        .requiredWidth(labelWidth)
                         .height(labelLineHeight)
                         .testTag(NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index),
                     style = KnotworkTextStyles.LabelSm,

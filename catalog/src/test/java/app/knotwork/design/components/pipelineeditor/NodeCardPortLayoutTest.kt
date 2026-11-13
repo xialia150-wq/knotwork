@@ -145,6 +145,39 @@ class NodeCardPortLayoutTest {
     }
 
     @Test
+    @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
+    fun `short router labels remain readable at two three and six ports`() {
+        val names = listOf("simple", "complex", "tool", "one", "two", "three")
+        render()
+        listOf(2, 3, 6).forEach { count ->
+            shown = Case(NodeType.INTENT_ROUTER, NodePorts.forType(NodeType.INTENT_ROUTER, names.take(count)))
+            composeTestRule.waitForIdle()
+            assertDotsWhereTheGeometrySays(onShortestCard = true)
+            names.take(count).forEachIndexed { index, name ->
+                val label = composeTestRule.onNodeWithTag(NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index)
+                val layouts = mutableListOf<TextLayoutResult>()
+                label.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                assertTrue("$count ports: $name is truncated", !layouts.single().isLineEllipsized(0))
+                val dot = composeTestRule.onNodeWithTag(
+                    NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index,
+                ).getBoundsInRoot()
+                val bounds = label.getBoundsInRoot()
+                if (count >= 3) assertTrue("$count ports: label below dot", bounds.top.value >= dot.bottom.value)
+            }
+        }
+        shown = Case(NodeType.IF_CONDITION)
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("是").assertExists()
+        composeTestRule.onNodeWithText("否").assertExists()
+        assertDotsWhereTheGeometrySays(onShortestCard = true)
+        val longName = "a much longer user supplied intent category"
+        shown = Case(NodeType.INTENT_ROUTER, NodePorts.forType(NodeType.INTENT_ROUTER, listOf(longName, "other")))
+        composeTestRule.waitForIdle()
+        // The full text remains in the semantics tree for screen readers even when visually ellipsized.
+        composeTestRule.onNodeWithText(longName).assertExists()
+    }
+
+    @Test
     fun `given a body line or a runtime error when drawn then the dots stay on the surface's bottom edge`() {
         render()
         listOf(

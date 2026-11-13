@@ -57,10 +57,6 @@ object BezierEdge {
 
     /**
      * Approximate arc length of the cubic, sampled at [samples] points.
-     *
-     * Used by the run-trace traveling-dot animation: dividing the arc length by the
-     * dot speed (`40 dp/s` per spec) yields the cycle duration so the dot moves at a
-     * visually constant velocity regardless of edge length.
      */
     fun approximateArcLength(
         x0: Float,

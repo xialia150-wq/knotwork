@@ -5,6 +5,7 @@ import app.knotwork.android.domain.models.NodeType
 import app.knotwork.android.domain.models.PipelineGraph
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -18,6 +19,24 @@ import org.junit.Test
  * the user is editing.
  */
 class EditorStateFramingTest {
+
+    @Test
+    fun `search and validation selection clear a previously selected edge even in multi select mode`() {
+        val editor = EditorState()
+        val node = NodeModel(id = "node", type = NodeType.TOOL, x = 0f, y = 0f)
+        listOf<() -> Unit>(
+            { editor.selectSingleNode(node.id) },
+            { editor.focusOn(node, NodeCardFootprint.MIN_WIDTH) },
+        ).forEach { select ->
+            editor.multiSelectMode = true
+            editor.selection = setOf("other", node.id)
+            editor.selectedEdgeId = "old-edge"
+            select()
+            assertNull(editor.selectedEdgeId)
+            assertEquals(setOf(node.id), editor.selection)
+            assertFalse(editor.multiSelectMode)
+        }
+    }
 
     private fun graph(id: String, vararg xs: Float) = PipelineGraph(
         id = id,

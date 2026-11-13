@@ -204,10 +204,7 @@ internal fun portsFor(node: NodeModel, outboundLabels: List<String?> = emptyList
 
 /**
  * Draws every edge in [connections] as a cubic Bezier between the source's outbound
- * anchor and the target's inbound anchor. Highlights the edge identified by
- * [highlightedConnectionId] (the run-trace cursor / hover) and applies a traveling
- * accent dot whose duration is derived from the edge's arc length so motion stays
- * visually constant at the spec's 40 dp/s.
+ * anchor and the target's inbound anchor, highlighting selected nodes and edges.
  *
  * @param connections graph edges, in stable iteration order (typically the persisted list).
  * @param nodesById map of `id → NodeModel` used to look up anchor positions.
@@ -273,7 +270,7 @@ internal fun EditorEdges(
         }
     }
     // A node's ports come from its decoded config and its edges. Work them out once per graph
-    // change rather than for both ends of every edge on every frame of the run-trace animation.
+    // change rather than for both ends of every edge on each draw.
     val portsById = remember(nodesById, connections) {
         nodesById.mapValues { (id, node) -> portsFor(node, outboundLabelsOf(id, connections)) }
     }
