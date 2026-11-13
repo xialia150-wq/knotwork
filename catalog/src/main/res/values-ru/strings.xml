@@ -927,4 +927,8 @@
     <string name="canvas_route_pass">Пройдено</string>
     <string name="canvas_route_retry">Повтор</string>
     <string name="canvas_route_fail">Ошибка</string>
+    <string name="canvas_node_lite_rt_short">Локально</string>
+    <string name="canvas_node_intent_router_short">Маршрут</string>
+    <string name="canvas_node_if_condition_short">Условие</string>
+    <string name="canvas_node_queue_processor_short">Очередь</string>
 </resources>

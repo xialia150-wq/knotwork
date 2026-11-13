@@ -109,3 +109,14 @@ val NodeType.canvasName: Int
         NodeType.PIPELINE -> R.string.canvas_node_pipeline
         NodeType.SKILL -> R.string.canvas_node_skill
     }
+
+/** Short canvas header name where the full type name would reach the inbound port. */
+@get:StringRes
+val NodeType.canvasHeaderName: Int
+    get() = when (this) {
+        NodeType.LITE_RT -> R.string.canvas_node_lite_rt_short
+        NodeType.INTENT_ROUTER -> R.string.canvas_node_intent_router_short
+        NodeType.IF_CONDITION -> R.string.canvas_node_if_condition_short
+        NodeType.QUEUE_PROCESSOR -> R.string.canvas_node_queue_processor_short
+        else -> canvasName
+    }

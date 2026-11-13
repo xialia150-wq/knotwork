@@ -33,9 +33,9 @@ fun DrawScope.drawCanvasEdge(
             val ux = dx / length
             val uy = dy / length
             val size = width * ARROW_LENGTH_FACTOR
-            val setback = NodePortGeometry.DOT_RADIUS.dp.toPx() * portScale + width
-            val tipX = end.x - ux * setback
-            val tipY = end.y - uy * setback
+            val tip = canvasArrowTip(end, Offset(ux, uy), NodePortGeometry.DOT_RADIUS.dp.toPx() * portScale, width)
+            val tipX = tip.x
+            val tipY = tip.y
             val arrow = Path().apply {
                 moveTo(tipX, tipY)
                 lineTo(
@@ -52,6 +52,10 @@ fun DrawScope.drawCanvasEdge(
         }
     }
 }
+
+// Return the tip offset from the port center along the normalized end tangent.
+internal fun canvasArrowTip(end: Offset, tangent: Offset, portRadius: Float, strokeWidth: Float): Offset =
+    end - tangent * (portRadius + strokeWidth)
 
 private const val ARROW_LENGTH_FACTOR = 2.5f
 private const val ARROW_HALF_WIDTH_FACTOR = 0.45f

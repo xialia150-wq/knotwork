@@ -2,10 +2,19 @@ package app.knotwork.android.presentation.ui.pipeline.editor.canvas
 
 import app.knotwork.android.domain.models.ConnectionModel
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 /** Verifies incoming, outgoing and self connections in a selection. */
 class RelatedEdgesTest {
+    @Test
+    fun `multi selection never highlights connections`() {
+        assertNull(selectedNodeForHighlight(setOf("b"), true))
+        assertNull(selectedNodeForHighlight(setOf("a", "b"), true))
+        assertNull(selectedNodeForHighlight(setOf("a", "b"), false))
+        assertEquals("b", selectedNodeForHighlight(setOf("b"), false))
+    }
+
     @Test
     fun `selects incoming outgoing and self edges only`() {
         val edges = listOf(

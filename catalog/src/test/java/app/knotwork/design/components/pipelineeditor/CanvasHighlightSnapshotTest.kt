@@ -15,6 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.knotwork.design.KnotworkRoborazziOptions
 import app.knotwork.design.theme.KnotworkTheme
 import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +28,18 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [36], qualifiers = "w360dp-h800dp-xhdpi")
 class CanvasHighlightSnapshotTest {
     @get:Rule val compose = createComposeRule()
+
+    @Test
+    fun arrowTipStopsOutsidePortAtAnyZoom() {
+        val end = Offset(50f, 100f)
+        val tangent = Offset(0.6f, 0.8f)
+        for (scale in listOf(0.4f, 1f, 2f)) {
+            val radius = NodePortGeometry.DOT_RADIUS * scale
+            val tip = canvasArrowTip(end, tangent, radius, 3.5f)
+            assertEquals(end.x - tangent.x * (radius + 3.5f), tip.x, 0.0001f)
+            assertEquals(end.y - tangent.y * (radius + 3.5f), tip.y, 0.0001f)
+        }
+    }
 
     @Test fun light() = capture(false)
 

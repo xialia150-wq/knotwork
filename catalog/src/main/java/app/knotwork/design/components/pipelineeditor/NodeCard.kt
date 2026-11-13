@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -160,13 +159,14 @@ fun NodeCard(
         else -> KnotworkTheme.elevation.el1
     }
     val vivid = LocalThemeVivid.current
+    val cardSurface = nodeCardSurfaceColor(MaterialTheme.colorScheme, elevation)
     val strip = if (vivid) {
         headerColor
     } else {
-        quietHeaderBackground(headerColor, MaterialTheme.colorScheme.surfaceColorAtElevation(elevation))
+        quietHeaderBackground(headerColor, cardSurface)
     }
     val onHeader = if (vivid) headerOnColor(strip) else quietHeaderForeground(headerColor, strip)
-    val portColor = quietHeaderForeground(headerColor, KnotworkTheme.extended.surface1)
+    val portColor = portForeground(headerColor, cardSurface, KnotworkTheme.extended.surface1)
     val showOutboundLabels = ports.outbound.size > 1
     val topInset = if (ports.inbound > 0) PortDotRadius else 0.dp
     val labelLineHeight = nodePortLabelLineHeight()
@@ -262,7 +262,7 @@ private fun HeaderStrip(
                 modifier = Modifier.size(HeaderGlyphSize),
             )
         } else {
-            val label = stringResource(type.canvasName)
+            val label = stringResource(type.canvasHeaderName)
             Text(
                 text = label,
                 modifier = Modifier.widthIn(max = maxLabelWidth).testTag(NODE_CARD_HEADER_LABEL_TEST_TAG),

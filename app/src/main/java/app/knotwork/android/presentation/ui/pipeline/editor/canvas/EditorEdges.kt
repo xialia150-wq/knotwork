@@ -1,5 +1,6 @@
 package app.knotwork.android.presentation.ui.pipeline.editor.canvas
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -8,7 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -224,6 +227,7 @@ internal fun EditorEdges(
     selectedEdgeId: String?,
     modifier: Modifier = Modifier,
     selectedNodeId: String? = null,
+    reducedMotion: Boolean = false,
     measuredCards: Map<String, CardMeasure> = emptyMap(),
 ) {
     val density = LocalDensity.current
@@ -232,22 +236,41 @@ internal fun EditorEdges(
     val dark = MaterialTheme.colorScheme.background.luminance() < DARK_LUMINANCE_CUTOFF
     val related = remember(connections, selectedNodeId) { relatedEdges(connections, selectedNodeId) }
     val styles = connections.map { connection ->
-        val color = sourceEdgeColor(connection, nodesById)
-        val highlighted = selectedNodeId != null && connection.id in related
-        val selected = connection.id == selectedEdgeId
-        val opacity = when {
-            highlighted || selected -> 1f
-            selectedNodeId != null -> EDGE_DIM_ALPHA
-            dark -> EDGE_DARK_ALPHA
-            else -> EDGE_LIGHT_ALPHA
+        key(connection.id) {
+            val color = sourceEdgeColor(connection, nodesById)
+            val highlighted = selectedNodeId != null && connection.id in related
+            val selected = connection.id == selectedEdgeId
+            val opacity = when {
+                highlighted || selected -> 1f
+                selectedNodeId != null -> EDGE_DIM_ALPHA
+                dark -> EDGE_DARK_ALPHA
+                else -> EDGE_LIGHT_ALPHA
+            }
+            val targetWidth = when {
+                selected -> EDGE_SELECTED_WIDTH_DP
+                highlighted -> EDGE_HIGHLIGHT_WIDTH_DP
+                else -> EDGE_WIDTH_DP
+            }
+            val targetColor = if (selected) accentColor else color
+            val animatedAlpha = if (reducedMotion) {
+                rememberUpdatedState(opacity)
+            } else {
+                animateFloatAsState(opacity, tween(EDGE_ANIMATION_MS), label = "edgeAlpha")
+            }
+            val animatedWidth = if (reducedMotion) {
+                rememberUpdatedState(targetWidth)
+            } else {
+                animateFloatAsState(targetWidth, tween(EDGE_ANIMATION_MS), label = "edgeWidth")
+            }
+            val animatedColor = if (reducedMotion) {
+                rememberUpdatedState(targetColor)
+            } else {
+                animateColorAsState(targetColor, tween(EDGE_ANIMATION_MS), label = "edgeColor")
+            }
+            remember(highlighted, animatedColor, animatedAlpha, animatedWidth) {
+                EdgeStyle(animatedColor, animatedAlpha, animatedWidth, highlighted)
+            }
         }
-        val animatedAlpha = animateFloatAsState(opacity, tween(EDGE_ANIMATION_MS), label = "edgeAlpha")
-        val animatedWidth = animateFloatAsState(
-            if (highlighted || selected) EDGE_HIGHLIGHT_WIDTH_DP else EDGE_WIDTH_DP,
-            tween(EDGE_ANIMATION_MS),
-            label = "edgeWidth",
-        )
-        remember(connection.id, color, highlighted) { EdgeStyle(color, animatedAlpha, animatedWidth, highlighted) }
     }
     // A node's ports come from its decoded config and its edges. Work them out once per graph
     // change rather than for both ends of every edge on every frame of the run-trace animation.
@@ -279,7 +302,7 @@ internal fun EditorEdges(
                 control1 = Offset(c0.first, c0.second),
                 control2 = Offset(c1.first, c1.second),
                 end = Offset(tx, ty),
-                color = style.color.copy(alpha = style.alpha.value),
+                color = style.color.value.copy(alpha = style.alpha.value),
                 width = style.width.value.dp.toPx(),
                 highlighted = style.highlighted,
                 portScale = transform.scale,
@@ -389,7 +412,7 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawPreviewEdge(
 }
 
 private data class EdgeStyle(
-    val color: Color,
+    val color: State<Color>,
     val alpha: State<Float>,
     val width: State<Float>,
     val highlighted: Boolean,
@@ -407,6 +430,9 @@ internal fun relatedEdges(connections: List<ConnectionModel>, selectedNodeId: St
             .mapTo(mutableSetOf()) { it.id }
     }
 
+internal fun selectedNodeForHighlight(selection: Set<String>, multiSelectMode: Boolean): String? =
+    if (multiSelectMode) null else selection.singleOrNull()
+
 private const val EDGE_PREVIEW_STROKE_FACTOR = 1.5f
 
 private const val DARK_LUMINANCE_CUTOFF = 0.5f
@@ -416,3 +442,4 @@ private const val EDGE_LIGHT_ALPHA = 0.55f
 private const val EDGE_ANIMATION_MS = 150
 private const val EDGE_WIDTH_DP = 2.5f
 private const val EDGE_HIGHLIGHT_WIDTH_DP = 3.5f
+private const val EDGE_SELECTED_WIDTH_DP = 4f

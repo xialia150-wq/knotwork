@@ -1,5 +1,6 @@
 package app.knotwork.design.components.pipelineeditor
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,9 +8,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.width
@@ -52,6 +59,37 @@ class NodeCardPortLayoutTest {
 
     /** The label line height the card was composed with — read back from the composition. */
     private var labelLineHeight = 0f
+
+    @Test
+    @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
+    fun `only built in port labels are translated by default`() {
+        composeTestRule.setContent {
+            KnotworkTheme {
+                Column {
+                    EdgeLabel(text = "True")
+                    EdgeLabel(port = OutboundPort.True)
+                    EdgeLabel(port = OutboundPort.Custom("True"))
+                }
+            }
+        }
+        composeTestRule.onAllNodesWithText("True").assertCountEquals(2)
+        composeTestRule.onNodeWithText("是").assertExists()
+    }
+
+    @Test
+    @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
+    fun `Chinese headers fit all node types at default font size`() {
+        render()
+        NodeType.entries.forEach { type ->
+            shown = Case(type)
+            composeTestRule.waitForIdle()
+            val layouts = mutableListOf<TextLayoutResult>()
+            composeTestRule.onNodeWithTag(NODE_CARD_HEADER_LABEL_TEST_TAG)
+                .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+            assertTrue("$type header has no layout", layouts.isNotEmpty())
+            assertTrue("$type header is truncated", !layouts.single().isLineEllipsized(0))
+        }
+    }
 
     @Test
     fun `given a single port when drawn then its dot is centred on the card's bottom edge`() {

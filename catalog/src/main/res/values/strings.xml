@@ -1344,4 +1344,8 @@
     <string name="canvas_route_pass">通过</string>
     <string name="canvas_route_retry">重试</string>
     <string name="canvas_route_fail">失败</string>
+    <string name="canvas_node_lite_rt_short">本地</string>
+    <string name="canvas_node_intent_router_short">路由</string>
+    <string name="canvas_node_if_condition_short">判断</string>
+    <string name="canvas_node_queue_processor_short">队列</string>
 </resources>

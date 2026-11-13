@@ -37,7 +37,7 @@ private val EdgeLabelInnerPadding = 4.dp
  * @param modifier optional layout modifier applied to the chip root.
  */
 @Composable
-fun EdgeLabel(text: String, modifier: Modifier = Modifier, translate: Boolean = true) {
+fun EdgeLabel(text: String, modifier: Modifier = Modifier, translate: Boolean = false) {
     val display = if (translate) routeTextResource(text)?.let { stringResource(it) } ?: text else text
     Box(
         modifier = modifier
@@ -71,7 +71,11 @@ fun EdgeLabel(text: String, modifier: Modifier = Modifier, translate: Boolean = 
  */
 @Composable
 fun EdgeLabel(port: OutboundPort, modifier: Modifier = Modifier) {
-    EdgeLabel(text = port.label, modifier = modifier, translate = port !is OutboundPort.Custom)
+    if (port is OutboundPort.Custom) {
+        EdgeLabel(text = port.label, modifier = modifier)
+    } else {
+        EdgeLabel(text = port.label, modifier = modifier, translate = true)
+    }
 }
 
 /** Light-theme preview rendering every canonical label kind. */
