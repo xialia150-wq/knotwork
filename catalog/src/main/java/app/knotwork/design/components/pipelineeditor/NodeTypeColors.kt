@@ -18,6 +18,14 @@ import app.knotwork.design.tokens.Srgb
 /** Quiet header background, composed before contrast is measured. */
 fun quietHeaderBackground(tint: Color, surface: Color): Color = tint.copy(alpha = 0.14f).compositeOver(surface)
 
+/** Choose the higher-contrast opaque foreground for a vivid node header. */
+fun vividHeaderForeground(strip: Color): Color {
+    val luminance = strip.luminance()
+    val darkContrast = (luminance + 0.05f) / 0.05f
+    val lightContrast = 1.05f / (luminance + 0.05f)
+    return if (darkContrast >= lightContrast) Color.Black else Color.White
+}
+
 /** Actual elevated card surface, shared by rendering and contrast tests. */
 fun nodeCardSurfaceColor(scheme: ColorScheme, elevation: Dp): Color = scheme.surfaceColorAtElevation(elevation)
 

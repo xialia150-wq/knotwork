@@ -175,7 +175,7 @@ fun NodeCard(
     } else {
         quietHeaderBackground(headerColor, cardSurface)
     }
-    val onHeader = if (vivid) headerOnColor(strip) else quietHeaderForeground(headerColor, strip)
+    val onHeader = if (vivid) vividHeaderForeground(strip) else quietHeaderForeground(headerColor, strip)
     val portColor = portForeground(headerColor, cardSurface, KnotworkTheme.extended.surface1)
     val showOutboundLabels = ports.outbound.size > 1
     val topInset = if (ports.inbound > 0) PortDotRadius else 0.dp

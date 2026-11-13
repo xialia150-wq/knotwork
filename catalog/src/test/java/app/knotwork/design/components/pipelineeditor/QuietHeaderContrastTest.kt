@@ -7,6 +7,7 @@ import app.knotwork.design.tokens.KnotworkPalette
 import app.knotwork.design.tokens.OklchColorMath
 import app.knotwork.design.tokens.Srgb
 import app.knotwork.design.tokens.ThemeSeed
+import app.knotwork.design.tokens.themePresets
 import app.knotwork.design.tokens.themedColorScheme
 import app.knotwork.design.tokens.themedExtendedColors
 import org.junit.Assert.assertEquals
@@ -16,6 +17,35 @@ import kotlin.math.abs
 
 /** Checks quiet header contrast for all fixed node colors. */
 class QuietHeaderContrastTest {
+    @Test
+    fun `vivid headers have readable foregrounds for all node colors and skill theme presets`() {
+        val fixed = listOf(
+            KnotworkPalette.NodeInput, KnotworkPalette.NodeOutput, KnotworkPalette.NodeLiteRt,
+            KnotworkPalette.NodeCloud, KnotworkPalette.NodeIntentRouter, KnotworkPalette.NodeIfCondition,
+            KnotworkPalette.NodeClarification, KnotworkPalette.NodeTool, KnotworkPalette.NodeDecomposition,
+            KnotworkPalette.NodeQueueProcessor, KnotworkPalette.NodeEvaluation, KnotworkPalette.NodeSummary,
+            KnotworkPalette.NodePipeline,
+        )
+        for (preset in themePresets) {
+            for (dark in listOf(false, true)) {
+                for (pureBlack in listOf(false, true)) {
+                    val scheme = themedColorScheme(ThemeSeed(preset.hue, preset.chroma), true, dark, pureBlack)
+                    for (strip in fixed + scheme.primary) {
+                        val foreground = vividHeaderForeground(strip)
+                        assertTrue(
+                            "${preset.id}, dark=$dark, black=$pureBlack, $strip",
+                            contrast(foreground, strip) >= 4.5,
+                        )
+                    }
+                }
+            }
+        }
+        // Even colors outside the preset registry must have a readable foreground.
+        for (strip in listOf(Color.Black, Color.White, Color.Yellow, Color.Blue)) {
+            assertTrue("custom color $strip", contrast(vividHeaderForeground(strip), strip) >= 4.5)
+        }
+    }
+
     @Test
     fun `all fixed node colors remain readable on quiet headers`() {
         val colors = listOf(

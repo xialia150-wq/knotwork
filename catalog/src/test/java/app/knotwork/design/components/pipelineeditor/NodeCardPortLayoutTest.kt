@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.width
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.ThemeSeed
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -59,6 +60,46 @@ class NodeCardPortLayoutTest {
 
     /** The label line height the card was composed with — read back from the composition. */
     private var labelLineHeight = 0f
+
+    @Test
+    fun `vivid rendered headers use readable foreground for fixed colors and skill`() {
+        var dark by mutableStateOf(false)
+        var black by mutableStateOf(false)
+        var type by mutableStateOf(NodeType.TOOL)
+        var strip = androidx.compose.ui.graphics.Color.Unspecified
+        composeTestRule.setContent {
+            KnotworkTheme(darkTheme = dark, vivid = true, pureBlack = black, seed = ThemeSeed(55.0, 0.19)) {
+                strip = type.headerTint()
+                NodeCard(
+                    type = type,
+                    title = "Node",
+                    subtitle = null,
+                    selected = false,
+                    error = null,
+                    multiSelected = false,
+                    ports = NodePorts.forType(type),
+                )
+            }
+        }
+        for (darkMode in listOf(false, true)) {
+            for (pureBlack in listOf(false, true)) {
+                for (nodeType in NodeType.entries) {
+                    dark = darkMode
+                    black = pureBlack
+                    type = nodeType
+                    composeTestRule.waitForIdle()
+                    val layouts = mutableListOf<TextLayoutResult>()
+                    composeTestRule.onNodeWithTag(NODE_CARD_HEADER_LABEL_TEST_TAG)
+                        .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                    assertEquals(
+                        "$nodeType vivid foreground",
+                        vividHeaderForeground(strip),
+                        layouts.single().layoutInput.style.color,
+                    )
+                }
+            }
+        }
+    }
 
     @Test
     @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
