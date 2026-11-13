@@ -60,7 +60,7 @@ class CanvasHighlightSnapshotTest {
                     verticalArrangement = Arrangement.spacedBy(48.dp),
                 ) {
                     val names = listOf("simple", "complex", "tool", "one", "two", "three")
-                    listOf(2, 3, 6).forEach { count ->
+                    listOf(2, 3, 4, 5, 6).forEach { count ->
                         NodeCard(
                             type = NodeType.INTENT_ROUTER,
                             title = "Route",

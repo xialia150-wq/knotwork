@@ -83,7 +83,12 @@ private val PortLabelGap = NodePortGeometry.LABEL_GAP.dp
 
 /** Extra room for short class names when densely packed ports need staggered labels. */
 private val DensePortLabelWidth = 56.dp
-private const val DENSE_PORT_COUNT = 5
+private const val DENSE_PORT_COUNT = 4
+
+/** Space below the dot, including the second measured label row on dense cards. */
+fun nodeCardBelowOutboundDots(portCount: Int, labelLineHeight: Float): Float =
+    NodePortGeometry.belowOutboundDots(portCount, labelLineHeight) +
+        if (portCount >= DENSE_PORT_COUNT) labelLineHeight else 0f
 
 /** Test tag of the card's surface — the rounded body whose edges the port dots sit on. */
 const val NODE_CARD_SURFACE_TEST_TAG: String = "node_card_surface"
@@ -175,7 +180,7 @@ fun NodeCard(
     val showOutboundLabels = ports.outbound.size > 1
     val topInset = if (ports.inbound > 0) PortDotRadius else 0.dp
     val labelLineHeight = nodePortLabelLineHeight()
-    val bottomInset = NodePortGeometry.belowOutboundDots(ports.outbound.size, labelLineHeight.value).dp
+    val bottomInset = nodeCardBelowOutboundDots(ports.outbound.size, labelLineHeight.value).dp
     // The outer Box hosts the Surface AND the port dots as siblings. Surface
     // clips its content to its rounded shape; placing dots at the Box level
     // (outside Surface) is what lets them protrude past the card edge per
@@ -354,7 +359,7 @@ private fun androidx.compose.foundation.layout.BoxScope.InboundDot(color: Color)
  * are; the card is as wide as [NodePortGeometry.cardWidth] needs.
  *
  * Vertical alignment is computed by the outer card layout — the Surface is inset by
- * [NodePortGeometry.belowOutboundDots] for a label exactly [labelLineHeight] tall, so the dot
+ * [nodeCardBelowOutboundDots] for the measured label rows, so the dot
  * centres land on the Surface bottom edge whether or not labels are present, at any font scale.
  */
 @Composable
@@ -365,13 +370,8 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
     labelLineHeight: Dp,
 ) {
     val slot = NodePortGeometry.slotWidth(ports.size).dp
-    val sideLabels = ports.size == 2
     val denseLabels = ports.size >= DENSE_PORT_COUNT
-    val labelWidth = when {
-        sideLabels -> (slot - (PortDotRadius + PortLabelGap) * 2).coerceAtLeast(0.dp)
-        denseLabels -> maxOf(slot, DensePortLabelWidth)
-        else -> slot
-    }
+    val labelWidth = if (denseLabels) maxOf(slot, DensePortLabelWidth) else slot
     ports.forEachIndexed { index, port ->
         Column(
             modifier = Modifier
@@ -389,18 +389,7 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
                     // measure short of it (13 dp of 14, measured) or, at 200 %, past the 14 dp the
                     // inset used to hold, which pushed the dots up onto the card's text.
                     modifier = Modifier
-                        .offset(
-                            x = if (sideLabels) {
-                                (PortDotRadius + PortLabelGap + labelWidth / 2) * if (index == 0) -1 else 1
-                            } else {
-                                0.dp
-                            },
-                            y = when {
-                                sideLabels -> -(PortDotRadius + PortLabelGap + labelLineHeight / 2)
-                                denseLabels && index % 2 == 1 -> labelLineHeight
-                                else -> 0.dp
-                            },
-                        )
+                        .offset(y = if (denseLabels && index % 2 == 1) labelLineHeight else 0.dp)
                         .requiredWidth(labelWidth)
                         .height(labelLineHeight)
                         .testTag(NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index),
@@ -410,6 +399,7 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (denseLabels) Spacer(modifier = Modifier.height(labelLineHeight))
             }
         }
     }
@@ -421,7 +411,7 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
  * Android 14's non-linear font scaling applies to both. 14 dp at font scale 1.
  *
  * [NodeCard] gives every port label exactly this height, so its outbound dots sit
- * [NodePortGeometry.belowOutboundDots] above the bottom of its layout box at any font scale; the
+ * [nodeCardBelowOutboundDots] above the bottom of its layout box at any font scale; the
  * editor canvas reads the same value to find them.
  *
  * @return the label line height.

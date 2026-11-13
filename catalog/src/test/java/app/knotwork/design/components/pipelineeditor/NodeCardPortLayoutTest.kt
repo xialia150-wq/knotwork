@@ -124,11 +124,9 @@ class NodeCardPortLayoutTest {
             val label = composeTestRule.onNodeWithTag(
                 NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index,
             ).getBoundsInRoot()
-            if (index == 0) {
-                assertTrue("left label clears dot", label.right.value <= dot.left.value + TOLERANCE)
-            } else {
-                assertTrue("right label clears dot", label.left.value >= dot.right.value - TOLERANCE)
-            }
+            assertTrue("label below dot", label.top.value >= dot.bottom.value - TOLERANCE)
+            assertTrue("label inside card", label.left.value >= card.left.value - TOLERANCE)
+            assertTrue("label inside card", label.right.value <= card.right.value + TOLERANCE)
         }
         assertEquals(NodePortGeometry.cardWidth(2), card.width.value, TOLERANCE)
         assertDotsWhereTheGeometrySays(onShortestCard = true)
@@ -146,10 +144,10 @@ class NodeCardPortLayoutTest {
 
     @Test
     @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
-    fun `short router labels remain readable at two three and six ports`() {
+    fun `short router labels remain readable and within card at two through six ports`() {
         val names = listOf("simple", "complex", "tool", "one", "two", "three")
         render()
-        listOf(2, 3, 6).forEach { count ->
+        listOf(2, 3, 4, 5, 6).forEach { count ->
             shown = Case(NodeType.INTENT_ROUTER, NodePorts.forType(NodeType.INTENT_ROUTER, names.take(count)))
             composeTestRule.waitForIdle()
             assertDotsWhereTheGeometrySays(onShortestCard = true)
@@ -162,7 +160,11 @@ class NodeCardPortLayoutTest {
                     NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index,
                 ).getBoundsInRoot()
                 val bounds = label.getBoundsInRoot()
-                if (count >= 3) assertTrue("$count ports: label below dot", bounds.top.value >= dot.bottom.value)
+                val card = composeTestRule.onNodeWithTag(CARD).getBoundsInRoot()
+                assertTrue("$count ports: label below dot", bounds.top.value >= dot.bottom.value - TOLERANCE)
+                assertTrue("$count ports: left edge", bounds.left.value >= card.left.value - TOLERANCE)
+                assertTrue("$count ports: right edge", bounds.right.value <= card.right.value + TOLERANCE)
+                assertTrue("$count ports: bottom edge", bounds.bottom.value <= card.bottom.value + TOLERANCE)
             }
         }
         shown = Case(NodeType.IF_CONDITION)
@@ -175,6 +177,25 @@ class NodeCardPortLayoutTest {
         composeTestRule.waitForIdle()
         // The full text remains in the semantics tree for screen readers even when visually ellipsized.
         composeTestRule.onNodeWithText(longName).assertExists()
+    }
+
+    @Test
+    fun `dense labels stay inside the measured card at larger font scales`() {
+        render()
+        listOf(1f, 1.3f, 2f).forEach { scale ->
+            listOf(4, 5, 6).forEach { count ->
+                shown = Case(NodeType.INTENT_ROUTER, router(count), fontScale = scale)
+                composeTestRule.waitForIdle()
+                assertDotsWhereTheGeometrySays(onShortestCard = scale == 1f)
+                val card = composeTestRule.onNodeWithTag(CARD).getBoundsInRoot()
+                repeat(count) { index ->
+                    val label = composeTestRule.onNodeWithTag(
+                        NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index,
+                    ).getBoundsInRoot()
+                    assertTrue("$count ports at $scale: bottom", label.bottom.value <= card.bottom.value + TOLERANCE)
+                }
+            }
+        }
     }
 
     @Test
@@ -232,7 +253,7 @@ class NodeCardPortLayoutTest {
 
     /**
      * Every dot of the shown card is in its slot, on the surface's edge, and where the editor
-     * expects it: [NodePortGeometry.belowOutboundDots] above the card's bottom for the label line
+     * expects it: [nodeCardBelowOutboundDots] above the card's bottom for the label line
      * the card was composed with — and, on the shortest card, on [NodePortGeometry.outboundDotY].
      */
     private fun assertDotsWhereTheGeometrySays(onShortestCard: Boolean) {
@@ -255,7 +276,7 @@ class NodeCardPortLayoutTest {
                 TOLERANCE,
             )
         }
-        val dotLine = card.bottom.value - NodePortGeometry.belowOutboundDots(count, labelLineHeight)
+        val dotLine = card.bottom.value - nodeCardBelowOutboundDots(count, labelLineHeight)
         (0 until count).forEach { index ->
             val dot = composeTestRule.onNodeWithTag(NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index).getBoundsInRoot()
             assertEquals("$name, #$index: dot diameter", 2 * NodePortGeometry.DOT_RADIUS, dot.width.value, TOLERANCE)
