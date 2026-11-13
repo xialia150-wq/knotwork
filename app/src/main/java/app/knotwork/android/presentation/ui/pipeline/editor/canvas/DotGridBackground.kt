@@ -2,10 +2,10 @@ package app.knotwork.android.presentation.ui.pipeline.editor.canvas
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.knotwork.android.presentation.ui.pipeline.editor.core.CanvasTransform
@@ -33,7 +33,7 @@ import kotlin.math.floor
 @Composable
 internal fun DotGridBackground(transform: CanvasTransform, modifier: Modifier = Modifier) {
     val density = LocalDensity.current
-    val dotColor = Color(red = 0f, green = 0f, blue = 0f, alpha = DOT_ALPHA_LIGHT)
+    val dotColor = MaterialTheme.colorScheme.outline.copy(alpha = DOT_ALPHA)
     val dotRadiusPx = with(density) { DOT_RADIUS_DP.dp.toPx() }
     Canvas(modifier = modifier.fillMaxSize()) {
         if (size.width <= 0f || size.height <= 0f) return@Canvas
@@ -68,7 +68,7 @@ internal fun DotGridBackground(transform: CanvasTransform, modifier: Modifier = 
 private const val DOT_RADIUS_DP = 1f
 
 /** Dot tint alpha — kept low so the grid reads as a hint rather than a print. */
-private const val DOT_ALPHA_LIGHT = 0.10f
+private const val DOT_ALPHA = 0.16f
 
 /**
  * Below this projected grid step the dots fuse into noise. Hide them so the

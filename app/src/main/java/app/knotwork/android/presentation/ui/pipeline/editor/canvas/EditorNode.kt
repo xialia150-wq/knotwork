@@ -36,6 +36,7 @@ import app.knotwork.design.components.pipelineeditor.NodeCard
 import app.knotwork.design.components.pipelineeditor.NodeError
 import app.knotwork.design.components.pipelineeditor.NodePortGeometry
 import app.knotwork.design.components.pipelineeditor.NodePorts
+import app.knotwork.design.components.pipelineeditor.nodeCardBelowOutboundDots
 import app.knotwork.design.components.pipelineeditor.nodePortLabelLineHeight
 import app.knotwork.design.theme.KnotworkTheme
 import androidx.compose.animation.core.Animatable as AnimFloat
@@ -187,7 +188,7 @@ internal fun EditorNode(
         // Where the outbound dots sit above the card's bottom: the dot's lower half and, on a
         // multi-port node, the label line at the current font scale — the value the card lays
         // its port labels out with.
-        val belowDots = NodePortGeometry.belowOutboundDots(ports.outbound.size, nodePortLabelLineHeight().value)
+        val belowDots = nodeCardBelowOutboundDots(ports.outbound.size, nodePortLabelLineHeight().value)
         NodeCard(
             type = NodeTypeMapper.toCatalog(node.type),
             title = node.label.ifBlank { node.type.name },

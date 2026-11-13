@@ -719,8 +719,11 @@ Only Kotlin files appear inside the generated blocks.
     - `pipeline/` - Tests for the pipeline editor surface.
       - `editor/` - Tests for the editor screen and its state.
         - `canvas/` - Tests for the canvas geometry and hit-testing.
+          - `CanvasSnapshotTest.kt` - Captures the actual editor canvas in both themes and selection states.
+          - `EdgeSourceColorTest.kt` - Verifies that edge colors come from the source node, not the target.
           - `EditorHitTestTest.kt` - Unit tests for the editor's canvas-space hit-test geometry — the maths behind connection creation.
           - `ImportedRoutingDisplayTest.kt` - The canvas draws an imported branching node's edges from the port the run takes them by.
+          - `RelatedEdgesTest.kt` - Verifies incoming, outgoing and self connections in a selection.
         - `config/` - Tests for the node-configuration codec and its type mapping.
           - `BundledPresetEditabilityTest.kt` - Proves every node of every bundled pipeline preset opens **cleanly** in the editor's `NodeConfigSheet` — decoded by `NodeConfigCodec` and accepted by `NodeConfigValidation` with zero field errors.
           - `CookbookRuntimeReachTest.kt` - Holds the published claim "this configuration field reaches the run" against what `NodeConfigCodec` actually does.

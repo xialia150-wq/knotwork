@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,9 +38,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import app.knotwork.design.components.text.Text
 import app.knotwork.design.icons.AppIcons
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.theme.LocalThemeVivid
 import app.knotwork.design.tokens.KnotworkTextStyles
 
 /** Minimum NodeCard surface height — body wraps within this floor. */
@@ -76,6 +81,15 @@ private val HeaderGlyphSize = 16.dp
 /** Vertical gap between an outbound dot and its label. */
 private val PortLabelGap = NodePortGeometry.LABEL_GAP.dp
 
+/** Extra room for short class names when densely packed ports need staggered labels. */
+private val DensePortLabelWidth = 56.dp
+private const val DENSE_PORT_COUNT = 4
+
+/** Space below the dot, including the second measured label row on dense cards. */
+fun nodeCardBelowOutboundDots(portCount: Int, labelLineHeight: Float): Float =
+    NodePortGeometry.belowOutboundDots(portCount, labelLineHeight) +
+        if (portCount >= DENSE_PORT_COUNT) labelLineHeight else 0f
+
 /** Test tag of the card's surface — the rounded body whose edges the port dots sit on. */
 const val NODE_CARD_SURFACE_TEST_TAG: String = "node_card_surface"
 
@@ -84,6 +98,12 @@ const val NODE_CARD_INBOUND_DOT_TEST_TAG: String = "node_card_inbound_dot"
 
 /** Test-tag prefix of an outbound port dot; the port's index, left to right, follows. */
 const val NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX: String = "node_card_outbound_dot_"
+
+/** Test tag of the node type label in the header. */
+const val NODE_CARD_HEADER_LABEL_TEST_TAG: String = "node_card_header_label"
+
+/** Test-tag prefix of an outbound port label. */
+const val NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX: String = "node_card_outbound_label_"
 
 /** Header strip opacity. Constant — the card has no animated state. */
 private const val HEADER_STRIP_ALPHA = 1.0f
@@ -135,7 +155,6 @@ fun NodeCard(
     modifier: Modifier = Modifier,
 ) {
     val headerColor = type.headerTint()
-    val onHeader = headerOnColor(strip = headerColor)
     val borderColor = nodeBorderColor(
         selected = selected,
         multiSelected = multiSelected,
@@ -149,10 +168,19 @@ fun NodeCard(
         selected -> KnotworkTheme.elevation.el3
         else -> KnotworkTheme.elevation.el1
     }
+    val vivid = LocalThemeVivid.current
+    val cardSurface = nodeCardSurfaceColor(MaterialTheme.colorScheme, elevation)
+    val strip = if (vivid) {
+        headerColor
+    } else {
+        quietHeaderBackground(headerColor, cardSurface)
+    }
+    val onHeader = if (vivid) vividHeaderForeground(strip) else quietHeaderForeground(headerColor, strip)
+    val portColor = portForeground(headerColor, cardSurface, KnotworkTheme.extended.surface1)
     val showOutboundLabels = ports.outbound.size > 1
     val topInset = if (ports.inbound > 0) PortDotRadius else 0.dp
     val labelLineHeight = nodePortLabelLineHeight()
-    val bottomInset = NodePortGeometry.belowOutboundDots(ports.outbound.size, labelLineHeight.value).dp
+    val bottomInset = nodeCardBelowOutboundDots(ports.outbound.size, labelLineHeight.value).dp
     // The outer Box hosts the Surface AND the port dots as siblings. Surface
     // clips its content to its rounded shape; placing dots at the Box level
     // (outside Surface) is what lets them protrude past the card edge per
@@ -178,21 +206,29 @@ fun NodeCard(
             ) {
                 HeaderStrip(
                     type = type,
-                    strip = headerColor,
+                    strip = strip,
                     onStrip = onHeader,
                     error = error,
                     alpha = HEADER_STRIP_ALPHA,
+                    maxLabelWidth = if (ports.inbound > 0) {
+                        (
+                            NodePortGeometry.cardWidth(ports.outbound.size).dp / 2 - PortDotRadius - PortLabelGap -
+                                KnotworkTheme.spacing.sp3 - HeaderGlyphSize - KnotworkTheme.spacing.sp2
+                            ).coerceAtLeast(0.dp)
+                    } else {
+                        Dp.Infinity
+                    },
                 )
                 NodeBody(title = title, subtitle = subtitle, error = error)
             }
         }
         if (ports.inbound > 0) {
-            InboundDot(color = headerColor)
+            InboundDot(color = portColor)
         }
         if (ports.outbound.isNotEmpty()) {
             OutboundPortRow(
                 ports = ports.outbound,
-                color = headerColor,
+                color = portColor,
                 showLabels = showOutboundLabels,
                 labelLineHeight = labelLineHeight,
             )
@@ -205,7 +241,14 @@ fun NodeCard(
 
 /** Header strip — 28 dp tall, hue-tinted, with glyph + uppercase type label. */
 @Composable
-private fun HeaderStrip(type: NodeType, strip: Color, onStrip: Color, error: NodeError?, alpha: Float) {
+private fun HeaderStrip(
+    type: NodeType,
+    strip: Color,
+    onStrip: Color,
+    error: NodeError?,
+    alpha: Float,
+    maxLabelWidth: Dp,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -229,11 +272,20 @@ private fun HeaderStrip(type: NodeType, strip: Color, onStrip: Color, error: Nod
                 modifier = Modifier.size(HeaderGlyphSize),
             )
         } else {
+            val label = stringResource(type.canvasHeaderName)
             Text(
-                text = type.displayLabel(),
+                text = label,
+                modifier = Modifier.widthIn(max = maxLabelWidth).testTag(NODE_CARD_HEADER_LABEL_TEST_TAG),
                 style = KnotworkTextStyles.LabelSm.copy(
                     fontWeight = FontWeight.SemiBold,
-                    letterSpacing = HEADER_LABEL_TRACKING_EM.em,
+                    letterSpacing = if (label.any {
+                            Character.UnicodeScript.of(it.code) == Character.UnicodeScript.HAN
+                        }
+                    ) {
+                        0.sp
+                    } else {
+                        HEADER_LABEL_TRACKING_EM.em
+                    },
                 ),
                 color = onStrip,
                 maxLines = 1,
@@ -303,11 +355,11 @@ private fun androidx.compose.foundation.layout.BoxScope.InboundDot(color: Color)
 /**
  * Outbound ports pinned to the bottom edge of the outer Box, each in its own slot: the dot at
  * [NodePortGeometry.outboundOffset] from the centre line, and — on a multi-port node — its
- * `LabelSm` label underneath, never wider than the slot. Every port is drawn, however many there
+ * `LabelSm` label, staggered below dense rows to keep short class names readable. Every port is drawn, however many there
  * are; the card is as wide as [NodePortGeometry.cardWidth] needs.
  *
  * Vertical alignment is computed by the outer card layout — the Surface is inset by
- * [NodePortGeometry.belowOutboundDots] for a label exactly [labelLineHeight] tall, so the dot
+ * [nodeCardBelowOutboundDots] for the measured label rows, so the dot
  * centres land on the Surface bottom edge whether or not labels are present, at any font scale.
  */
 @Composable
@@ -318,6 +370,8 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
     labelLineHeight: Dp,
 ) {
     val slot = NodePortGeometry.slotWidth(ports.size).dp
+    val denseLabels = ports.size >= DENSE_PORT_COUNT
+    val labelWidth = if (denseLabels) maxOf(slot, DensePortLabelWidth) else slot
     ports.forEachIndexed { index, port ->
         Column(
             modifier = Modifier
@@ -330,17 +384,22 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
             if (showLabels) {
                 Spacer(modifier = Modifier.size(PortLabelGap))
                 Text(
-                    text = port.label,
+                    text = port.displayText(),
                     // Exactly one line tall at the current font scale: a single LabelSm line can
                     // measure short of it (13 dp of 14, measured) or, at 200 %, past the 14 dp the
                     // inset used to hold, which pushed the dots up onto the card's text.
-                    modifier = Modifier.height(labelLineHeight),
+                    modifier = Modifier
+                        .offset(y = if (denseLabels && index % 2 == 1) labelLineHeight else 0.dp)
+                        .requiredWidth(labelWidth)
+                        .height(labelLineHeight)
+                        .testTag(NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index),
                     style = KnotworkTextStyles.LabelSm,
                     color = KnotworkTheme.extended.onSurfaceMuted,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (denseLabels) Spacer(modifier = Modifier.height(labelLineHeight))
             }
         }
     }
@@ -352,7 +411,7 @@ private fun androidx.compose.foundation.layout.BoxScope.OutboundPortRow(
  * Android 14's non-linear font scaling applies to both. 14 dp at font scale 1.
  *
  * [NodeCard] gives every port label exactly this height, so its outbound dots sit
- * [NodePortGeometry.belowOutboundDots] above the bottom of its layout box at any font scale; the
+ * [nodeCardBelowOutboundDots] above the bottom of its layout box at any font scale; the
  * editor canvas reads the same value to find them.
  *
  * @return the label line height.

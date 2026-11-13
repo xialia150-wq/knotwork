@@ -314,6 +314,8 @@ internal fun EditorCanvas(
             transform = editor.transform,
             connectionDraft = draftDraw,
             selectedEdgeId = editor.selectedEdgeId,
+            selectedNodeId = selectedNodeForHighlight(editor.selection, editor.multiSelectMode),
+            reducedMotion = reducedMotion,
             measuredCards = editor.measuredCards,
         )
 
@@ -479,8 +481,7 @@ internal fun EditorCanvas(
                         viewportW = viewportSize.first.toFloat(),
                         viewportH = viewportSize.second.toFloat(),
                     )
-                    editor.selection = setOf(firstMatch.id)
-                    editor.multiSelectMode = false
+                    editor.selectSingleNode(firstMatch.id)
                 },
                 onClose = {
                     editor.searchOpen = false

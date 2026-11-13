@@ -18,7 +18,7 @@ import app.knotwork.design.components.pipelineeditor.NodeConfig
 /**
  * Local state owned by the pipeline editor screen — everything that does NOT need to
  * survive process death and does NOT belong in the ViewModel (gestures, transient
- * selection, in-flight connection drafts, undo / redo stack, run-trace tick).
+ * selection, in-flight connection drafts and undo / redo stack).
  *
  * `OrchestratorViewModel` continues to own canonical graph state (nodes, connections,
  * persistence). The editor maintains [EditorState] separately because driving the
@@ -217,6 +217,13 @@ class EditorState(undoCapacity: Int = EditorUndoRedo.DEFAULT_CAPACITY, density: 
         if (edgeId != null) selection = emptySet()
     }
 
+    /** Select one node after a search or validation jump and discard any old edge selection. */
+    fun selectSingleNode(nodeId: String) {
+        multiSelectMode = false
+        selectedEdgeId = null
+        selection = setOf(nodeId)
+    }
+
     /**
      * Selects [node] and centres the viewport on the middle of its card, keeping the
      * current zoom. Used when a validation error jumps to the node it is about.
@@ -230,8 +237,7 @@ class EditorState(undoCapacity: Int = EditorUndoRedo.DEFAULT_CAPACITY, density: 
      * @param cardWidth the width of [node]'s card, which grows with its outbound ports.
      */
     fun focusOn(node: NodeModel, cardWidth: Float) {
-        selection = setOf(node.id)
-        multiSelectMode = false
+        selectSingleNode(node.id)
         if (viewportWidthPx <= 0f || viewportHeightPx <= 0f) return
         transform = transform.centeredOn(
             x = node.x + cardWidth / 2f,

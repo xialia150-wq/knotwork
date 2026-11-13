@@ -1,5 +1,6 @@
 package app.knotwork.design.components.pipelineeditor
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,14 +8,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.width
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.ThemeSeed
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -54,6 +62,77 @@ class NodeCardPortLayoutTest {
     private var labelLineHeight = 0f
 
     @Test
+    fun `vivid rendered headers use readable foreground for fixed colors and skill`() {
+        var dark by mutableStateOf(false)
+        var black by mutableStateOf(false)
+        var type by mutableStateOf(NodeType.TOOL)
+        var strip = androidx.compose.ui.graphics.Color.Unspecified
+        composeTestRule.setContent {
+            KnotworkTheme(darkTheme = dark, vivid = true, pureBlack = black, seed = ThemeSeed(55.0, 0.19)) {
+                strip = type.headerTint()
+                NodeCard(
+                    type = type,
+                    title = "Node",
+                    subtitle = null,
+                    selected = false,
+                    error = null,
+                    multiSelected = false,
+                    ports = NodePorts.forType(type),
+                )
+            }
+        }
+        for (darkMode in listOf(false, true)) {
+            for (pureBlack in listOf(false, true)) {
+                for (nodeType in NodeType.entries) {
+                    dark = darkMode
+                    black = pureBlack
+                    type = nodeType
+                    composeTestRule.waitForIdle()
+                    val layouts = mutableListOf<TextLayoutResult>()
+                    composeTestRule.onNodeWithTag(NODE_CARD_HEADER_LABEL_TEST_TAG)
+                        .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                    assertEquals(
+                        "$nodeType vivid foreground",
+                        vividHeaderForeground(strip),
+                        layouts.single().layoutInput.style.color,
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
+    fun `only built in port labels are translated by default`() {
+        composeTestRule.setContent {
+            KnotworkTheme {
+                Column {
+                    EdgeLabel(text = "True")
+                    EdgeLabel(port = OutboundPort.True)
+                    EdgeLabel(port = OutboundPort.Custom("True"))
+                }
+            }
+        }
+        composeTestRule.onAllNodesWithText("True").assertCountEquals(2)
+        composeTestRule.onNodeWithText("是").assertExists()
+    }
+
+    @Test
+    @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
+    fun `Chinese headers fit all node types at default font size`() {
+        render()
+        NodeType.entries.forEach { type ->
+            shown = Case(type)
+            composeTestRule.waitForIdle()
+            val layouts = mutableListOf<TextLayoutResult>()
+            composeTestRule.onNodeWithTag(NODE_CARD_HEADER_LABEL_TEST_TAG)
+                .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+            assertTrue("$type header has no layout", layouts.isNotEmpty())
+            assertTrue("$type header is truncated", !layouts.single().isLineEllipsized(0))
+        }
+    }
+
+    @Test
     fun `given a single port when drawn then its dot is centred on the card's bottom edge`() {
         render()
         assertDotsWhereTheGeometrySays(onShortestCard = true)
@@ -74,12 +153,89 @@ class NodeCardPortLayoutTest {
     }
 
     @Test
+    fun `header and outbound labels leave the port centers clear`() {
+        shown = Case(NodeType.IF_CONDITION)
+        render()
+        val card = composeTestRule.onNodeWithTag(CARD).getBoundsInRoot()
+        val header = composeTestRule.onNodeWithTag(NODE_CARD_HEADER_LABEL_TEST_TAG).getBoundsInRoot()
+        val inbound = composeTestRule.onNodeWithTag(NODE_CARD_INBOUND_DOT_TEST_TAG).getBoundsInRoot()
+        assertTrue(header.right.value <= inbound.left.value - NodePortGeometry.LABEL_GAP + TOLERANCE)
+        listOf(0, 1).forEach { index ->
+            val dot = composeTestRule.onNodeWithTag(NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index).getBoundsInRoot()
+            val label = composeTestRule.onNodeWithTag(
+                NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index,
+            ).getBoundsInRoot()
+            assertTrue("label below dot", label.top.value >= dot.bottom.value - TOLERANCE)
+            assertTrue("label inside card", label.left.value >= card.left.value - TOLERANCE)
+            assertTrue("label inside card", label.right.value <= card.right.value + TOLERANCE)
+        }
+        assertEquals(NodePortGeometry.cardWidth(2), card.width.value, TOLERANCE)
+        assertDotsWhereTheGeometrySays(onShortestCard = true)
+    }
+
+    @Test
     fun `given a router with three to eight classes when drawn then every dot is drawn in its slot`() {
         render()
         listOf(3, 4, 5, 6, 8).forEach { count ->
             shown = Case(NodeType.INTENT_ROUTER, router(count))
             composeTestRule.waitForIdle()
             assertDotsWhereTheGeometrySays(onShortestCard = true)
+        }
+    }
+
+    @Test
+    @Config(qualifiers = "zh-w800dp-h600dp-mdpi")
+    fun `short router labels remain readable and within card at two through six ports`() {
+        val names = listOf("simple", "complex", "tool", "one", "two", "three")
+        render()
+        listOf(2, 3, 4, 5, 6).forEach { count ->
+            shown = Case(NodeType.INTENT_ROUTER, NodePorts.forType(NodeType.INTENT_ROUTER, names.take(count)))
+            composeTestRule.waitForIdle()
+            assertDotsWhereTheGeometrySays(onShortestCard = true)
+            names.take(count).forEachIndexed { index, name ->
+                val label = composeTestRule.onNodeWithTag(NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index)
+                val layouts = mutableListOf<TextLayoutResult>()
+                label.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+                assertTrue("$count ports: $name is truncated", !layouts.single().isLineEllipsized(0))
+                val dot = composeTestRule.onNodeWithTag(
+                    NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index,
+                ).getBoundsInRoot()
+                val bounds = label.getBoundsInRoot()
+                val card = composeTestRule.onNodeWithTag(CARD).getBoundsInRoot()
+                assertTrue("$count ports: label below dot", bounds.top.value >= dot.bottom.value - TOLERANCE)
+                assertTrue("$count ports: left edge", bounds.left.value >= card.left.value - TOLERANCE)
+                assertTrue("$count ports: right edge", bounds.right.value <= card.right.value + TOLERANCE)
+                assertTrue("$count ports: bottom edge", bounds.bottom.value <= card.bottom.value + TOLERANCE)
+            }
+        }
+        shown = Case(NodeType.IF_CONDITION)
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("是").assertExists()
+        composeTestRule.onNodeWithText("否").assertExists()
+        assertDotsWhereTheGeometrySays(onShortestCard = true)
+        val longName = "a much longer user supplied intent category"
+        shown = Case(NodeType.INTENT_ROUTER, NodePorts.forType(NodeType.INTENT_ROUTER, listOf(longName, "other")))
+        composeTestRule.waitForIdle()
+        // The full text remains in the semantics tree for screen readers even when visually ellipsized.
+        composeTestRule.onNodeWithText(longName).assertExists()
+    }
+
+    @Test
+    fun `dense labels stay inside the measured card at larger font scales`() {
+        render()
+        listOf(1f, 1.3f, 2f).forEach { scale ->
+            listOf(4, 5, 6).forEach { count ->
+                shown = Case(NodeType.INTENT_ROUTER, router(count), fontScale = scale)
+                composeTestRule.waitForIdle()
+                assertDotsWhereTheGeometrySays(onShortestCard = scale == 1f)
+                val card = composeTestRule.onNodeWithTag(CARD).getBoundsInRoot()
+                repeat(count) { index ->
+                    val label = composeTestRule.onNodeWithTag(
+                        NODE_CARD_OUTBOUND_LABEL_TEST_TAG_PREFIX + index,
+                    ).getBoundsInRoot()
+                    assertTrue("$count ports at $scale: bottom", label.bottom.value <= card.bottom.value + TOLERANCE)
+                }
+            }
         }
     }
 
@@ -138,7 +294,7 @@ class NodeCardPortLayoutTest {
 
     /**
      * Every dot of the shown card is in its slot, on the surface's edge, and where the editor
-     * expects it: [NodePortGeometry.belowOutboundDots] above the card's bottom for the label line
+     * expects it: [nodeCardBelowOutboundDots] above the card's bottom for the label line
      * the card was composed with — and, on the shortest card, on [NodePortGeometry.outboundDotY].
      */
     private fun assertDotsWhereTheGeometrySays(onShortestCard: Boolean) {
@@ -161,7 +317,7 @@ class NodeCardPortLayoutTest {
                 TOLERANCE,
             )
         }
-        val dotLine = card.bottom.value - NodePortGeometry.belowOutboundDots(count, labelLineHeight)
+        val dotLine = card.bottom.value - nodeCardBelowOutboundDots(count, labelLineHeight)
         (0 until count).forEach { index ->
             val dot = composeTestRule.onNodeWithTag(NODE_CARD_OUTBOUND_DOT_TEST_TAG_PREFIX + index).getBoundsInRoot()
             assertEquals("$name, #$index: dot diameter", 2 * NodePortGeometry.DOT_RADIUS, dot.width.value, TOLERANCE)

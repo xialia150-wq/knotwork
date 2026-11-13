@@ -2,12 +2,92 @@
 
 package app.knotwork.design.components.pipelineeditor
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.unit.Dp
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.OklchColorMath
+import app.knotwork.design.tokens.Srgb
+
+/** Quiet header background, composed before contrast is measured. */
+fun quietHeaderBackground(tint: Color, surface: Color): Color = tint.copy(alpha = 0.14f).compositeOver(surface)
+
+/** Choose the higher-contrast opaque foreground for a vivid node header. */
+fun vividHeaderForeground(strip: Color): Color {
+    val luminance = strip.luminance()
+    val darkContrast = (luminance + 0.05f) / 0.05f
+    val lightContrast = 1.05f / (luminance + 0.05f)
+    return if (darkContrast >= lightContrast) Color.Black else Color.White
+}
+
+/** Actual elevated card surface, shared by rendering and contrast tests. */
+fun nodeCardSurfaceColor(scheme: ColorScheme, elevation: Dp): Color = scheme.surfaceColorAtElevation(elevation)
+
+/** Protect a port against both the card and the surrounding canvas at 3:1. */
+fun portForeground(tint: Color, surface: Color, canvas: Color): Color {
+    fun contrast(a: Color, b: Color): Double {
+        val x = a.luminance().toDouble()
+        val y = b.luminance().toDouble()
+        return (maxOf(x, y) + 0.05) / (minOf(x, y) + 0.05)
+    }
+    fun readable(color: Color): Boolean = contrast(color, surface) >= 3.0 && contrast(color, canvas) >= 3.0
+    if (readable(tint)) return tint
+    val rgb = Srgb(tint.red.toDouble(), tint.green.toDouble(), tint.blue.toDouble())
+    val original = OklchColorMath.toOklch(OklchColorMath.toOklab(OklchColorMath.toLinear(rgb)))
+    val target = if (maxOf(surface.luminance(), canvas.luminance()) < 0.18f) 1.0 else 0.0
+    var low = 0.0
+    var high = 1.0
+    var result = tint
+    repeat(24) {
+        val amount = (low + high) / 2.0
+        val lightness = original.lightness + (target - original.lightness) * amount
+        val mapped = OklchColorMath.gamutMap(original.copy(lightness = lightness))
+        val candidate = Color(mapped.red.toFloat(), mapped.green.toFloat(), mapped.blue.toFloat())
+        if (readable(candidate)) {
+            result = candidate
+            high = amount
+        } else {
+            low = amount
+        }
+    }
+    return result
+}
+
+/** Retains the node hue, adjusting lightness only when the original cannot reach 4.5:1. */
+fun quietHeaderForeground(tint: Color, background: Color): Color {
+    fun contrast(a: Color, b: Color): Double {
+        val x = a.luminance().toDouble()
+        val y = b.luminance().toDouble()
+        return (maxOf(x, y) + 0.05) / (minOf(x, y) + 0.05)
+    }
+    if (contrast(tint, background) >= 4.5) return tint
+    val rgb = Srgb(tint.red.toDouble(), tint.green.toDouble(), tint.blue.toDouble())
+    val lab = OklchColorMath.toOklab(OklchColorMath.toLinear(rgb))
+    val original = OklchColorMath.toOklch(lab)
+    val target = if (background.luminance() < 0.18f) 1.0 else 0.0
+    var low = 0.0
+    var high = 1.0
+    var result = tint
+    repeat(24) {
+        val amount = (low + high) / 2.0
+        val lightness = original.lightness + (target - original.lightness) * amount
+        val color = OklchColorMath.gamutMap(original.copy(lightness = lightness))
+        val candidate = Color(color.red.toFloat(), color.green.toFloat(), color.blue.toFloat())
+        if (contrast(candidate, background) >= 4.51) {
+            result = candidate
+            high = amount
+        } else {
+            low = amount
+        }
+    }
+    return result
+}
 
 /**
  * Reads the header-strip tint for [this] node type from the
