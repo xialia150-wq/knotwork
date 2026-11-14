@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -47,6 +49,8 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private var splashAnimationStartMillis by mutableStateOf<Long?>(null)
 
     @Inject lateinit var appStateSettings: AppStateSettings
 
@@ -92,13 +96,16 @@ class MainActivity : ComponentActivity() {
         // Platform splash (Android 12+) — must be installed BEFORE
         // `super.onCreate` so the system swaps the activity-theme splash
         // window for the SplashScreen-managed window before any content
-        // attempts to draw. `Theme.App.Splash` supplies the accent-500
+        // attempts to draw. `Theme.App.Splash` supplies the light or dark
         // background and the brand-mark foreground; the post-splash theme
-        // declared there takes over as soon as the first Compose frame
-        // commits, so the platform splash hides exactly when the in-app
-        // [SplashScreen][app.knotwork.android.presentation.ui.splash.SplashScreen]
-        // composable becomes visible — no blank-frame flash.
-        installSplashScreen()
+        // declared there takes over when the first Compose frame commits.
+        installSplashScreen().setOnExitAnimationListener { splash ->
+            // Transfer the system's clock to Compose before releasing the overlay.
+            // One frame lets Compose paint the matching path segment; navigation
+            // and initialization continue independently and never wait for 1 s.
+            splashAnimationStartMillis = splash.iconAnimationStartMillis
+            splash.view.postOnAnimation { splash.remove() }
+        }
         super.onCreate(savedInstanceState)
 
         if (ContextCompat.checkSelfPermission(
@@ -203,6 +210,7 @@ class MainActivity : ComponentActivity() {
                         showOnboarding = !hasCompletedOnboarding,
                         pendingDeepLink = pendingDeepLink,
                         chatEntryRequestRelay = chatEntryRequestRelay,
+                        splashAnimationStartMillis = splashAnimationStartMillis,
                         modifier = Modifier.padding(innerPadding),
                     )
                 }

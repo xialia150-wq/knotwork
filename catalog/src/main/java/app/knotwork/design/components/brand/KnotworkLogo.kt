@@ -47,10 +47,10 @@ private const val TILE_MARK_FRACTION = 0.6f
  * Knotwork brand **logo** — the bare canonical mark ([AppIcons.Mark]: two nodes
  * joined by one edge), no plate, tinted [tint] (defaults to `primary`).
  *
- * This is the single brand glyph — splash, onboarding, empty
- * states and headers all render it via this composable, so there is exactly one
- * mark across the app and it matches the launcher icon. Use [KnotworkAppIconTile]
- * for the plated app-icon presentation (About row, share cards).
+ * The existing in-app glyph remains in onboarding, empty states and headers.
+ * The launcher and splash use the separate rounded-wordmark design; other in-app
+ * surfaces retain this glyph until their own redesign. Use [KnotworkAppIconTile]
+ * for the existing plated presentation (About row, share cards).
  *
  * @param modifier additional layout modifier applied to the glyph.
  * @param size visual size token; defaults to [KnotworkLogoSize.Md].
@@ -72,7 +72,7 @@ fun KnotworkLogo(
 
 /**
  * Knotwork **app-icon** presentation — the white [AppIcons.Mark] on a rounded
- * `primary` tile, mirroring the launcher adaptive icon 1:1.
+ * `primary` tile. This in-app presentation retains the existing glyph.
  * Used in the About hero / row and share cards.
  *
  * @param modifier additional layout modifier applied to the tile.

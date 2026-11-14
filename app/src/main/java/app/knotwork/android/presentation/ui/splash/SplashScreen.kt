@@ -34,12 +34,14 @@ import app.knotwork.design.R as DesignR
  * @param onInitialized Invoked once when the use case reaches `InitStage.Done`.
  * @param viewModel Hilt-injected [SplashViewModel].
  * @param modifier Optional layout modifier.
+ * @param splashAnimationStartMillis Platform icon animation start time, in epoch milliseconds.
  */
 @Composable
 fun SplashScreen(
     onInitialized: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SplashViewModel = hiltViewModel(),
+    splashAnimationStartMillis: Long? = null,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -84,6 +86,7 @@ fun SplashScreen(
         modifier = modifier,
         retryLabel = retryLabel,
         callbacks = callbacks,
+        splashAnimationStartMillis = splashAnimationStartMillis,
     )
 }
 

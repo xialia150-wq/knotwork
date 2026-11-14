@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_foreground">
+    <target android:name="stroke1" android:animation="@animator/splash_stroke_1" />
+    <target android:name="stroke2" android:animation="@animator/splash_stroke_2" />
+    <target android:name="stroke3" android:animation="@animator/splash_stroke_3" />
+    <target android:name="stroke4" android:animation="@animator/splash_stroke_4" />
+    <target android:name="stroke5" android:animation="@animator/splash_stroke_5" />
+    <target android:name="stroke6" android:animation="@animator/splash_stroke_6" />
+    <target android:name="stroke7" android:animation="@animator/splash_stroke_7" />
+    <target android:name="stroke8" android:animation="@animator/splash_stroke_8" />
+    <target android:name="stroke9" android:animation="@animator/splash_stroke_9" />
+</animated-vector>

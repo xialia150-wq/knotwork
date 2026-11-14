@@ -4,23 +4,68 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!--
-      Themed (monochrome) adaptive layer for Android 13+ themed icons — the
-      canonical two-node Knotwork mark, matching the foreground composition.
-      Source: brand/ic_launcher_monochrome.svg (logo guide §4). Fill is solid
-      black; the system applies the user's monochrome tint.
-    -->
+    <!-- Rounded 织问 mark; source: brand/zhiwen-thread.svg. -->
     <path
-        android:pathData="M42,45 L66,63"
-        android:strokeColor="#000000"
-        android:strokeWidth="5"
+        android:name="stroke1"
+        android:pathData="M30.16,40.11 L25.36,48.43 Q24.91,49.52 26.19,49.52 L32.08,48.88"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
-        android:pathData="M36,39 m-9,0 a9,9 0 1 0 18,0 a9,9 0 1 0 -18,0 Z"
-        android:fillColor="#000000" />
+        android:name="stroke2"
+        android:pathData="M35.28,51.63 L25.68,57.71 Q25.04,58.93 26.45,58.54 L35.92,56.11"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
     <path
-        android:pathData="M72,69 m-9,0 a9,9 0 1 0 18,0 a9,9 0 1 0 -18,0 Z"
-        android:fillColor="#000000" />
+        android:name="stroke3"
+        android:pathData="M25.55,66.67 L35.92,61.87"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:name="stroke4"
+        android:pathData="M42.64,41.71 L50.38,41.71 Q52.94,41.71 52.94,44.27 L52.94,51.76 Q52.94,54.32 50.38,54.32 L42.64,54.32 Q40.08,54.32 40.08,51.76 L40.08,44.27 Q40.08,41.71 42.64,41.71"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:name="stroke5"
+        android:pathData="M43.09,59.18 L36.24,67.89"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:name="stroke6"
+        android:pathData="M49.87,59.25 Q56.08,67.31 58.64,67.31 Q63.38,67.31 63.38,62.51 L63.38,47.54"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:name="stroke7"
+        android:pathData="M65.1,40.5 L68.18,43.44"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:name="stroke8"
+        android:pathData="M72.98,41.9 L80.85,41.9 Q82.64,41.9 82.64,43.7 L82.64,64.11 Q82.64,67.31 80.08,67.31 L78.54,67.31"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:name="stroke9"
+        android:pathData="M70.61,49.71 L74.19,49.71 Q76.24,49.71 76.24,51.76 L76.24,58.29 Q76.24,60.34 74.19,60.34 L70.61,60.34 Q68.56,60.34 68.56,58.29 L68.56,51.76 Q68.56,49.71 70.61,49.71"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>
