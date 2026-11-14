@@ -1202,6 +1202,15 @@ class OrchestratorViewModelTest {
     }
 
     @Test
+    fun `addNode preserves the supplied display label`() {
+        listOf(NodeType.INPUT to "输入", NodeType.LITE_RT to "本地模型").forEach { (type, label) ->
+            val id = viewModel.addNode(type, 10f, 20f, label)
+            val node = viewModel.uiState.value.currentPipeline.nodes.single { it.id == id }
+            assertEquals(label, node.label)
+        }
+    }
+
+    @Test
     fun `updateNodeFromEditor replaces the matching node`() {
         viewModel.addNode(NodeType.LITE_RT, 0f, 0f)
         val node = viewModel.uiState.value.currentPipeline.nodes.first()

@@ -24,11 +24,11 @@ object DefaultPipelineFactory {
     // built as one builder-style expression. Splitting into helpers would
     // hurt readability more than the length cost.
     @Suppress("LongMethod")
-    fun create(name: String = "Default System Pipeline"): PipelineGraph {
+    fun create(name: String = "默认系统流程"): PipelineGraph {
         val inputNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.INPUT,
-            label = "Input",
+            label = "输入",
             x = 100f,
             y = 300f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.INPUT),
@@ -36,7 +36,7 @@ object DefaultPipelineFactory {
         val intentRouterNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.INTENT_ROUTER,
-            label = "Classifier",
+            label = "分类",
             x = 300f,
             y = 300f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.INTENT_ROUTER),
@@ -46,7 +46,7 @@ object DefaultPipelineFactory {
         val liteRtNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.LITE_RT,
-            label = "Local LLM",
+            label = "本地模型",
             x = 500f,
             y = 100f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.LITE_RT),
@@ -56,7 +56,7 @@ object DefaultPipelineFactory {
         val searchToolNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.TOOL,
-            label = "Search Tool",
+            label = "搜索工具",
             toolName = "search_tool",
             x = 500f,
             y = 250f,
@@ -67,7 +67,7 @@ object DefaultPipelineFactory {
         val cloudNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.CLOUD,
-            label = "Cloud API",
+            label = "云端模型",
             cloudProvider = CloudProvider.AUTO_KEY,
             x = 500f,
             y = 400f,
@@ -78,7 +78,7 @@ object DefaultPipelineFactory {
         val decompositionNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.DECOMPOSITION,
-            label = "Decompose",
+            label = "任务拆解",
             x = 500f,
             y = 550f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.DECOMPOSITION),
@@ -86,7 +86,7 @@ object DefaultPipelineFactory {
         val queueProcessorNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.QUEUE_PROCESSOR,
-            label = "Queue",
+            label = "队列",
             x = 700f,
             y = 550f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.QUEUE_PROCESSOR),
@@ -94,7 +94,7 @@ object DefaultPipelineFactory {
         val taskToolNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.LITE_RT,
-            label = "Execute Subtask",
+            label = "执行子任务",
             x = 900f,
             y = 550f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.LITE_RT),
@@ -102,7 +102,7 @@ object DefaultPipelineFactory {
         val summaryNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.SUMMARY,
-            label = "Summary",
+            label = "汇总",
             x = 1100f,
             y = 550f,
             contextConfig = NodeContextConfig.defaultForType(NodeType.SUMMARY),
@@ -111,7 +111,7 @@ object DefaultPipelineFactory {
         val outputNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = NodeType.OUTPUT,
-            label = "Output",
+            label = "输出",
             // No systemPrompt: the OUTPUT node runs in pass-through mode and forwards
             // the upstream text verbatim, instead of adding an extra formatting pass
             // that pollutes simple answers with LLM filler.
@@ -224,14 +224,14 @@ object DefaultPipelineFactory {
             // tool, because only search_tool is wired here.
             samplePrompts = listOf(
                 PipelineSamplePrompt(
-                    title = "Look up the latest on-device LLM benchmarks",
+                    title = "查找最新的端侧大模型基准测试",
                     toolsHint = "search_tool",
                 ),
                 PipelineSamplePrompt(
-                    title = "Explain how on-device inference keeps my data private",
+                    title = "解释端侧推理如何保护我的数据隐私",
                 ),
                 PipelineSamplePrompt(
-                    title = "Break down \"learn Kotlin coroutines\" into a step-by-step plan",
+                    title = "将学习 Kotlin 协程拆解成逐步计划",
                 ),
             ),
         )

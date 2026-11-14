@@ -132,12 +132,14 @@ class OrchestratorViewModel @Inject constructor(
      * @param type The type of node to add.
      * @param x The x-coordinate for the node's position.
      * @param y The y-coordinate for the node's position.
+     * @param label The display name of the new node.
      * @return The unique identifier assigned to the newly-added node.
      */
-    fun addNode(type: NodeType, x: Float, y: Float): String {
+    fun addNode(type: NodeType, x: Float, y: Float, label: String = type.name): String {
         val newNode = NodeModel(
             id = UUID.randomUUID().toString(),
             type = type,
+            label = label,
             x = x,
             y = y,
             cloudProvider = if (type == NodeType.CLOUD) CloudProvider.AUTO_KEY else null,

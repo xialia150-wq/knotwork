@@ -17,7 +17,7 @@ import javax.inject.Inject
  * Use case executed when the application is launched.
  * It checks if this is the first launch, and if so, initializes default settings,
  * such as saving the default system prompts to the settings repository,
- * and materialises the bundled showcase pipeline as the application default.
+ * and materialises the bundled local question-and-answer pipeline as the application default.
  *
  * On **every** invocation (not just the first launch) it additionally sweeps
  * orphaned pipeline-run records: every non-terminal run whose owning process
@@ -47,15 +47,9 @@ class InitializeAppUseCase @Inject constructor(
     /**
      * Executes the initialization logic.
      *
-     * On the very first launch the seed pipeline is materialised from the
-     * bundled [SHOWCASE_PRESET_ID] preset via [LoadPipelineFromPresetUseCase]
-     * (fresh node / connection ids, validated, persisted). This gives the new
-     * user a pipeline that exercises the full breadth of the agent — intent
-     * routing, a local/cloud fork, task decomposition, a tool call, a
-     * human-in-the-loop clarification, summarisation and evaluation — instead
-     * of a minimal stub. If the preset cannot be loaded (e.g. a corrupt or
-     * missing asset) the seed falls back to the code-level
-     * [DefaultPipelineFactory] so first launch never leaves the library empty.
+     * On first launch, materialise the bundled local question-and-answer preset. The
+     * comprehensive showcase remains available in the template library. If the starter
+     * preset cannot load, fall back to the code-level default pipeline.
      */
     suspend operator fun invoke() {
         sweepOrphanedRuns()
@@ -71,9 +65,9 @@ class InitializeAppUseCase @Inject constructor(
             // Save the default prompt to settings so the user can edit it later.
             generationSettings.setSystemPromptPrefix(DefaultPrompts.SYSTEM_PROMPT_PREFIX)
 
-            // Materialise the bundled showcase pipeline as the seed; fall back
+            // Materialise the bundled local question-and-answer pipeline as the seed; fall back
             // to the code-level factory if the preset asset is unavailable.
-            val seededPipelineId = loadPipelineFromPresetUseCase(SHOWCASE_PRESET_ID)
+            val seededPipelineId = loadPipelineFromPresetUseCase(STARTER_PRESET_ID)
                 .getOrNull()
                 ?: seedFallbackPipeline()
 
@@ -116,21 +110,21 @@ class InitializeAppUseCase @Inject constructor(
 
     /**
      * Builds and persists the code-level default pipeline, returning its id.
-     * Used only when the bundled showcase preset fails to materialise.
+     * Used only when the bundled local question-and-answer preset fails to materialise.
      */
     private suspend fun seedFallbackPipeline(): String {
-        val defaultPipeline = DefaultPipelineFactory.create("Default System Pipeline")
+        val defaultPipeline = DefaultPipelineFactory.create()
         pipelineRepository.savePipeline(defaultPipeline)
         return defaultPipeline.id
     }
 
     private companion object {
         /**
-         * Stable id of the bundled showcase preset
-         * (`assets/presets/pipelines/showcase_full_agent.json`) materialised as
+         * Stable id of the bundled local question-and-answer preset
+         * (`assets/presets/pipelines/local_only_qa.json`) materialised as
          * the first-launch seed pipeline.
          */
-        const val SHOWCASE_PRESET_ID = "showcase_full_agent"
+        const val STARTER_PRESET_ID = "local_only_qa"
 
         /**
          * Reason written into run records finalised by the orphan sweep —
