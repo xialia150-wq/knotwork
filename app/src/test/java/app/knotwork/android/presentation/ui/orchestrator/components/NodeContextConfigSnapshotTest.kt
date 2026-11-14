@@ -83,7 +83,7 @@ class NodeContextConfigSnapshotTest {
                 KnotworkTheme(darkTheme = dark) {
                     Surface(color = MaterialTheme.colorScheme.surface) {
                         NodeConfigSheetBody(
-                            config = OutputConfig(title = "回复", systemPrompt = "Summarise the result."),
+                            config = OutputConfig(title = "Reply", systemPrompt = "Summarise the result."),
                             errors = emptyMap(),
                             onChange = {},
                             onCancel = {},
@@ -117,6 +117,7 @@ class NodeContextConfigSnapshotTest {
             assertTrue("Checkbox $label must be at least 48 dp", (bounds.bottom - bounds.top).value >= 48f)
         }
         if (fontScale == 1f && language == null) {
+            compose.onNodeWithText("Less input makes runs faster and cheaper.").assertIsDisplayed()
             val bounds = compose.onAllNodes(hasSetTextAction())[0].getBoundsInRoot()
             val height = (bounds.bottom - bounds.top).value
             assertTrue("Text field should be at least 48 dp, was $height", height >= 48f)
