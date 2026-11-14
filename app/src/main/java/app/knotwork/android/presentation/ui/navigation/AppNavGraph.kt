@@ -114,6 +114,7 @@ import app.knotwork.design.screens.settings.SettingsCategoryId
  *        open-thread / new-chat request and the `CHAT_TAB` composable drains it
  *        into `selectThread` / `createNewSessionWithPipeline`.
  * @param modifier Inset-padding passthrough from [AppShellScaffold].
+ * @param splashAnimationStartMillis Platform splash icon animation start time, in epoch milliseconds.
  */
 @Composable
 fun AppNavGraph(
@@ -122,6 +123,7 @@ fun AppNavGraph(
     pendingDeepLink: Intent?,
     chatEntryRequestRelay: ChatEntryRequestRelay,
     modifier: Modifier = Modifier,
+    splashAnimationStartMillis: Long? = null,
 ) {
     NavHost(
         navController = navController,
@@ -130,6 +132,7 @@ fun AppNavGraph(
     ) {
         composable(NavRoutes.SPLASH) {
             SplashScreen(
+                splashAnimationStartMillis = splashAnimationStartMillis,
                 onInitialized = {
                     val next = if (showOnboarding) NavRoutes.ONBOARDING else NavRoutes.CHAT_TAB
                     navController.navigate(next) {
