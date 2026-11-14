@@ -42,19 +42,19 @@ class InitializeAppUseCaseTest {
     )
 
     @Test
-    fun `invoke seeds from showcase preset and sets it as default on first launch`() = runTest {
-        // Given — first launch, and the bundled showcase preset materialises cleanly.
+    fun `invoke seeds from starter preset and sets it as default on first launch`() = runTest {
+        // Given — first launch, and the bundled starter preset materialises cleanly.
         every { settingsRepository.isFirstLaunch } returns flowOf(true)
-        coEvery { loadPipelineFromPresetUseCase(SHOWCASE_PRESET_ID) } returns Result.success(SEEDED_ID)
+        coEvery { loadPipelineFromPresetUseCase(STARTER_PRESET_ID) } returns Result.success(SEEDED_ID)
 
         // When
         useCase()
 
         // Then — the default prompt is persisted, the seed is materialised from
-        // the showcase preset (not the code-level factory), the returned id
+        // the starter preset (not the code-level factory), the returned id
         // becomes the application default, and first launch is cleared.
         coVerify { settingsRepository.setSystemPromptPrefix(DefaultPrompts.SYSTEM_PROMPT_PREFIX) }
-        coVerify { loadPipelineFromPresetUseCase(SHOWCASE_PRESET_ID) }
+        coVerify { loadPipelineFromPresetUseCase(STARTER_PRESET_ID) }
         coVerify { settingsRepository.setDefaultPipelineId(SEEDED_ID) }
         coVerify { settingsRepository.setFirstLaunch(false) }
         // The factory fallback must not run when the preset loads.
@@ -62,10 +62,10 @@ class InitializeAppUseCaseTest {
     }
 
     @Test
-    fun `invoke falls back to factory pipeline when showcase preset fails`() = runTest {
-        // Given — first launch, but the showcase preset cannot be materialised.
+    fun `invoke falls back to factory pipeline when starter preset fails`() = runTest {
+        // Given — first launch, but the starter preset cannot be materialised.
         every { settingsRepository.isFirstLaunch } returns flowOf(true)
-        coEvery { loadPipelineFromPresetUseCase(SHOWCASE_PRESET_ID) } returns
+        coEvery { loadPipelineFromPresetUseCase(STARTER_PRESET_ID) } returns
             Result.failure(IllegalStateException("missing asset"))
         val savedPipeline = slot<PipelineGraph>()
 
@@ -153,7 +153,7 @@ class InitializeAppUseCaseTest {
     fun `invoke sweeps orphaned runs on first launch too`() = runTest {
         // Given — first launch AND an orphaned run (e.g. data restored from backup).
         every { settingsRepository.isFirstLaunch } returns flowOf(true)
-        coEvery { loadPipelineFromPresetUseCase(SHOWCASE_PRESET_ID) } returns Result.success(SEEDED_ID)
+        coEvery { loadPipelineFromPresetUseCase(STARTER_PRESET_ID) } returns Result.success(SEEDED_ID)
         coEvery { pipelineRunRepository.getOrphanedRuns() } returns listOf(
             orphanRun("run-1", PipelineRunStatus.RUNNING),
         )
@@ -199,7 +199,7 @@ class InitializeAppUseCaseTest {
     )
 
     private companion object {
-        const val SHOWCASE_PRESET_ID = "showcase_full_agent"
+        const val STARTER_PRESET_ID = "local_only_qa"
         const val SEEDED_ID = "seeded-pipeline-id"
     }
 

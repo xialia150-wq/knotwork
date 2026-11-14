@@ -17,6 +17,8 @@ import app.knotwork.android.domain.models.ConnectionModel
 import app.knotwork.android.domain.models.NodeModel
 import app.knotwork.android.domain.models.NodeType
 import app.knotwork.android.domain.models.PipelineGraph
+import app.knotwork.android.domain.models.PipelinePresetImportOutcome
+import app.knotwork.android.domain.pipelineio.PipelinePresetJsonSerializer
 import app.knotwork.android.presentation.screenshots.AppRoborazziOptions
 import app.knotwork.android.presentation.ui.pipeline.editor.core.CanvasTransform
 import app.knotwork.android.presentation.ui.pipeline.editor.core.CardMeasure
@@ -34,6 +36,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.io.File
 import app.knotwork.design.components.pipelineeditor.NodeType as CatalogNodeType
 
 /** Captures the actual editor canvas in both themes and selection states. */
@@ -50,6 +53,42 @@ class CanvasSnapshotTest {
     @Test fun selectedLight() = capture(false, true)
 
     @Test fun selectedDark() = capture(true, true)
+
+    @Test fun firstStarterLight() = captureStarter(false)
+
+    @Test fun firstStarterDark() = captureStarter(true)
+
+    private fun captureStarter(dark: Boolean) {
+        val text = File("src/main/assets/presets/pipelines/local_only_qa.json").readText()
+        val parsed = PipelinePresetJsonSerializer.parse(text, isBundled = true) as PipelinePresetImportOutcome.Success
+        val graph = parsed.preset.graph
+        val editor = EditorState()
+        compose.setContent {
+            KnotworkTheme(darkTheme = dark) {
+                EditorCanvas(
+                    graph = graph,
+                    editor = editor,
+                    errorsByNodeId = emptyMap(),
+                    reducedMotion = true,
+                    onMoveNode = { _, _, _ -> },
+                    onAddNode = { _, _, _ -> },
+                    onAddConnection = { _, _, _ -> },
+                    onConnectionDropped = {},
+                    onOpenNodeConfig = {},
+                    onLongPressEdge = {},
+                    onStartWithInput = {},
+                    onFromTemplate = {},
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+        compose.waitForIdle()
+        val theme = if (dark) "dark" else "light"
+        compose.onRoot().captureRoboImage(
+            filePath = "src/test/snapshots/first_starter_$theme.png",
+            roborazziOptions = AppRoborazziOptions,
+        )
+    }
 
     @Test
     fun densePortTargetsAndMeasuredEdgeAnchorsFollowDrawnDots() {

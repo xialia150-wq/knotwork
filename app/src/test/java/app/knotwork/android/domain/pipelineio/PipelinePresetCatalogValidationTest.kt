@@ -25,7 +25,7 @@ import java.io.File
  * round-trip contract using synthetic fixtures, while this test pins the
  * *shipped* artefacts — the curated presets the user sees the first time they
  * open the library (including the comprehensive `showcase_full_agent`, which
- * doubles as the first-launch seed) plus the four internal sub-pipelines it
+ * remains available in the template library) plus the four internal sub-pipelines it
  * composes. A broken preset would otherwise only surface at runtime on a real
  * device.
  *
