@@ -112,7 +112,7 @@ class PipelineEditorCopyPasteTest {
         // The overflow item is rendered disabled; tapping it must NOT trigger
         // any vm.addNode dispatch — the "Clipboard is empty" snackbar handles
         // the user feedback instead.
-        verify(exactly = 0) { vm.addNode(any(), any(), any()) }
+        verify(exactly = 0) { vm.addNode(any(), any(), any(), any()) }
         verify(exactly = 0) { vm.updateNodeFromEditor(any(), any()) }
     }
 }

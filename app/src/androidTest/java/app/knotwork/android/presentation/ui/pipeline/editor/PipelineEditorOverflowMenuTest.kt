@@ -159,6 +159,6 @@ class PipelineEditorOverflowMenuTest {
             .performClick()
         composeTestRule.waitForIdle()
 
-        verify(exactly = 0) { vm.addNode(any(), any(), any()) }
+        verify(exactly = 0) { vm.addNode(any(), any(), any(), any()) }
     }
 }

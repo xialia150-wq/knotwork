@@ -75,6 +75,7 @@ import app.knotwork.design.components.pipelineeditor.PipelineTargetDisabledReaso
 import app.knotwork.design.components.pipelineeditor.PipelineTargetOption
 import app.knotwork.design.components.pipelineeditor.SkillConfig
 import app.knotwork.design.components.pipelineeditor.SkillOption
+import app.knotwork.design.components.pipelineeditor.canvasName
 import app.knotwork.design.components.text.Text
 import app.knotwork.design.icons.AppIcons
 import app.knotwork.design.theme.KnotworkTheme
@@ -331,6 +332,10 @@ fun PipelineEditorScreen(viewModel: OrchestratorViewModel, onBack: () -> Unit) {
             }
         }
 
+        val nodeNames = NodeType.entries.associateWith { type ->
+            stringResource(NodeTypeMapper.toCatalog(type).canvasName)
+        }
+
         PipelineEditorContent(
             graph = pipeline,
             editor = editor,
@@ -354,7 +359,8 @@ fun PipelineEditorScreen(viewModel: OrchestratorViewModel, onBack: () -> Unit) {
                 // `addNode` returns the new id synchronously — reading
                 // `uiState.currentPipeline.nodes.lastOrNull()` here would observe the
                 // pre-update snapshot since the StateFlow hasn't propagated yet.
-                val newId = viewModel.addNode(type, canvasX, canvasY)
+                val title = nodeNames.getValue(type)
+                val newId = viewModel.addNode(type, canvasX, canvasY, title)
                 // The new node shows selected between the "Add node" sheet leaving and
                 // its configuration sheet rising: the mark of where it landed.
                 editor.selectedEdgeId = null
@@ -363,7 +369,7 @@ fun PipelineEditorScreen(viewModel: OrchestratorViewModel, onBack: () -> Unit) {
                 editor.configuringNodeId = newId
                 editor.workingConfig = NodeConfigCodec.defaultFor(
                     type = NodeTypeMapper.toCatalog(type),
-                    title = type.name,
+                    title = title,
                 )
                 // Fresh nodes get the all-enabled context config so every
                 // available context block flows into the prompt by default.
@@ -389,11 +395,12 @@ fun PipelineEditorScreen(viewModel: OrchestratorViewModel, onBack: () -> Unit) {
                 // the canvas, so we fall back to a sensible grid-aligned spot. The
                 // user can immediately drag it.
                 editor.undoRedo.push(pipeline)
-                val newId = viewModel.addNode(NodeType.INPUT, x = 0f, y = 0f)
+                val title = nodeNames.getValue(NodeType.INPUT)
+                val newId = viewModel.addNode(NodeType.INPUT, x = 0f, y = 0f, label = title)
                 editor.configuringNodeId = newId
                 editor.workingConfig = NodeConfigCodec.defaultFor(
                     type = NodeTypeMapper.toCatalog(NodeType.INPUT),
-                    title = NodeType.INPUT.name,
+                    title = title,
                 )
                 editor.workingContextConfig = NodeContextConfig.ALL_ENABLED
             },
@@ -607,6 +614,7 @@ fun PipelineEditorScreen(viewModel: OrchestratorViewModel, onBack: () -> Unit) {
                                     original.type,
                                     x = original.x + offsetCanvas,
                                     y = original.y + offsetCanvas,
+                                    label = original.label,
                                 )
                                 // Replace the freshly-added node's payload with the original's
                                 // config so the paste preserves every field (label, prompt, etc.).

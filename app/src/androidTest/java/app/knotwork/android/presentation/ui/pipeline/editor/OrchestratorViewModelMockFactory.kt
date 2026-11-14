@@ -67,7 +67,7 @@ internal fun mockOrchestratorViewModel(
     // `addNode` returns the id of the new node — the production screen
     // assigns this id straight into `editor.configuringNodeId`, so a
     // null from a relaxed stub would crash the next composition.
-    every { vm.addNode(any(), any(), any()) } answers {
+    every { vm.addNode(any(), any(), any(), any()) } answers {
         "test-node-${java.util.UUID.randomUUID().shortHex()}"
     }
     // The node sheet reads which providers are set up when it opens.

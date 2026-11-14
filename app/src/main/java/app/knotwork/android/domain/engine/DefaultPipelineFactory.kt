@@ -224,14 +224,14 @@ object DefaultPipelineFactory {
             // tool, because only search_tool is wired here.
             samplePrompts = listOf(
                 PipelineSamplePrompt(
-                    title = "Look up the latest on-device LLM benchmarks",
+                    title = "查找最新的端侧大模型基准测试",
                     toolsHint = "search_tool",
                 ),
                 PipelineSamplePrompt(
-                    title = "Explain how on-device inference keeps my data private",
+                    title = "解释端侧推理如何保护我的数据隐私",
                 ),
                 PipelineSamplePrompt(
-                    title = "Break down \"learn Kotlin coroutines\" into a step-by-step plan",
+                    title = "将学习 Kotlin 协程拆解成逐步计划",
                 ),
             ),
         )

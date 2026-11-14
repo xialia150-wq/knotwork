@@ -50,6 +50,10 @@ class DefaultPipelineFactoryTest {
             3,
             pipeline.samplePrompts.size,
         )
+        assertEquals(
+            listOf("查找最新的端侧大模型基准测试", "解释端侧推理如何保护我的数据隐私", "将学习 Kotlin 协程拆解成逐步计划"),
+            pipeline.samplePrompts.map { it.title },
+        )
         // Only search_tool is actually wired (the Data branch), so it is the
         // sole tool a card may honestly advertise; the other cards make no
         // tool claim (null hint).
