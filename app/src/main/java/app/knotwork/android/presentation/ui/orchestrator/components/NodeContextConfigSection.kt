@@ -3,9 +3,13 @@ package app.knotwork.android.presentation.ui.orchestrator.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -18,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import app.knotwork.android.R
 import app.knotwork.android.domain.models.NodeContextConfig
 import app.knotwork.design.components.text.Text
+import app.knotwork.design.icons.AppIcons
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.KnotworkTextStyles
 
 /**
  * Renders the "Input Data" section of the node configuration dialog: a header,
@@ -71,50 +77,60 @@ fun NodeContextConfigSection(
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.orchestrator_context_section_title),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
+            style = KnotworkTextStyles.TitleMd,
             modifier = Modifier.padding(top = KnotworkTheme.spacing.sp3, bottom = KnotworkTheme.spacing.sp1),
         )
 
-        ContextFlagRow(
-            checked = true,
-            enabled = false,
-            label = stringResource(R.string.orchestrator_context_previous_node_output_label),
-            hint = stringResource(R.string.orchestrator_context_previous_node_output_hint),
-            onCheckedChange = null,
-        )
-        ContextFlagRow(
-            checked = originalTask,
-            enabled = true,
-            label = stringResource(R.string.orchestrator_context_original_task_label),
-            hint = stringResource(R.string.orchestrator_context_original_task_hint),
-            onCheckedChange = onOriginalTaskChange,
-            inheritedValue = inheritedBaseline?.originalTask,
-        )
-        ContextFlagRow(
-            checked = chatHistory,
-            enabled = true,
-            label = stringResource(R.string.orchestrator_context_chat_history_label),
-            hint = stringResource(R.string.orchestrator_context_chat_history_hint),
-            onCheckedChange = onChatHistoryChange,
-            inheritedValue = inheritedBaseline?.chatHistory,
-        )
-        ContextFlagRow(
-            checked = longTermMemory,
-            enabled = true,
-            label = stringResource(R.string.orchestrator_context_long_term_memory_label),
-            hint = stringResource(R.string.orchestrator_context_long_term_memory_hint),
-            onCheckedChange = onLongTermMemoryChange,
-            inheritedValue = inheritedBaseline?.longTermMemory,
-        )
-        ContextFlagRow(
-            checked = toolResults,
-            enabled = true,
-            label = stringResource(R.string.orchestrator_context_tool_results_label),
-            hint = stringResource(R.string.orchestrator_context_tool_results_hint),
-            onCheckedChange = onToolResultsChange,
-            inheritedValue = inheritedBaseline?.toolResults,
-        )
+        Surface(
+            shape = KnotworkTheme.shapes.sm,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+        ) {
+            Column {
+                ContextFlagRow(
+                    checked = true,
+                    enabled = false,
+                    label = stringResource(R.string.orchestrator_context_previous_node_output_label),
+                    hint = stringResource(R.string.orchestrator_context_previous_node_output_hint),
+                    onCheckedChange = null,
+                )
+                ContextDivider()
+                ContextFlagRow(
+                    checked = originalTask,
+                    enabled = true,
+                    label = stringResource(R.string.orchestrator_context_original_task_label),
+                    hint = stringResource(R.string.orchestrator_context_original_task_hint),
+                    onCheckedChange = onOriginalTaskChange,
+                    inheritedValue = inheritedBaseline?.originalTask,
+                )
+                ContextDivider()
+                ContextFlagRow(
+                    checked = chatHistory,
+                    enabled = true,
+                    label = stringResource(R.string.orchestrator_context_chat_history_label),
+                    hint = stringResource(R.string.orchestrator_context_chat_history_hint),
+                    onCheckedChange = onChatHistoryChange,
+                    inheritedValue = inheritedBaseline?.chatHistory,
+                )
+                ContextDivider()
+                ContextFlagRow(
+                    checked = longTermMemory,
+                    enabled = true,
+                    label = stringResource(R.string.orchestrator_context_long_term_memory_label),
+                    hint = stringResource(R.string.orchestrator_context_long_term_memory_hint),
+                    onCheckedChange = onLongTermMemoryChange,
+                    inheritedValue = inheritedBaseline?.longTermMemory,
+                )
+                ContextDivider()
+                ContextFlagRow(
+                    checked = toolResults,
+                    enabled = true,
+                    label = stringResource(R.string.orchestrator_context_tool_results_label),
+                    hint = stringResource(R.string.orchestrator_context_tool_results_hint),
+                    onCheckedChange = onToolResultsChange,
+                    inheritedValue = inheritedBaseline?.toolResults,
+                )
+            }
+        }
 
         Surface(
             tonalElevation = KnotworkTheme.elevation.el1,
@@ -123,12 +139,20 @@ fun NodeContextConfigSection(
                 .fillMaxWidth()
                 .padding(top = KnotworkTheme.spacing.sp2),
         ) {
-            Text(
-                text = stringResource(R.string.orchestrator_context_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(KnotworkTheme.spacing.sp2),
-            )
+            Row(modifier = Modifier.padding(KnotworkTheme.spacing.sp2)) {
+                Icon(
+                    imageVector = AppIcons.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp),
+                )
+                Text(
+                    text = stringResource(R.string.orchestrator_context_hint),
+                    style = KnotworkTextStyles.BodySm,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = KnotworkTheme.spacing.sp2),
+                )
+            }
         }
     }
 }
@@ -164,20 +188,16 @@ private fun ContextFlagRow(
     onCheckedChange: ((Boolean) -> Unit)?,
     inheritedValue: Boolean? = null,
 ) {
-    val rowModifier = if (onCheckedChange != null && enabled) {
-        Modifier
-            .fillMaxWidth()
-            .toggleable(
-                value = checked,
-                role = Role.Checkbox,
-                onValueChange = onCheckedChange,
-            )
-            .padding(vertical = ContextRowVerticalPadding)
-    } else {
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = ContextRowVerticalPadding)
-    }
+    val rowModifier = Modifier
+        .fillMaxWidth()
+        .heightIn(min = 48.dp)
+        .toggleable(
+            value = checked,
+            enabled = enabled,
+            role = Role.Checkbox,
+            onValueChange = { onCheckedChange?.invoke(it) },
+        )
+        .padding(vertical = ContextRowVerticalPadding, horizontal = KnotworkTheme.spacing.sp1)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = rowModifier,
@@ -190,12 +210,13 @@ private fun ContextFlagRow(
             onCheckedChange = null,
             enabled = enabled,
         )
-        Column(modifier = Modifier.padding(start = KnotworkTheme.spacing.sp1)) {
+        Column(modifier = Modifier.weight(1f).padding(start = KnotworkTheme.spacing.sp1)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = KnotworkTextStyles.BodyBase,
                     fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
                 if (inheritedValue != null) {
                     val tagRes = if (checked == inheritedValue) {
@@ -213,11 +234,16 @@ private fun ContextFlagRow(
             }
             Text(
                 text = hint,
-                style = MaterialTheme.typography.labelSmall,
+                style = KnotworkTextStyles.BodySm,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
+}
+
+@Composable
+private fun ContextDivider() {
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 }
 
 // Off-scale micro-padding for checkbox-row vertical rhythm. The Knotwork

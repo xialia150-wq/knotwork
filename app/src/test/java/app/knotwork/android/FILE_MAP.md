@@ -709,6 +709,7 @@ Only Kotlin files appear inside the generated blocks.
       - `OnboardingViewModelTest.kt` - Verifies the orchestrated scenario / download / warm flow layered on top of the `hasCompletedOnboarding` persistence.
     - `orchestrator/` - Tests for the pipeline-library surface.
       - `components/` - Tests for the pipeline-library components.
+        - `NodeContextConfigSnapshotTest.kt` - Production form plus the app-provided input-data group, including larger translated text.
         - `PromptPresetPickerDialogTest.kt` - Pure-logic tests for the filter helper backing `PromptPresetPickerDialog`.
       - `OrchestratorViewModelTest.kt` - Tests for OrchestratorViewModel.
       - `PipelineBindingsTextTest.kt` - The Replace confirmation's lines for what is bound to a pipeline.
