@@ -627,6 +627,7 @@ Only Kotlin files appear inside the generated blocks.
   - `screenshots/` - Roborazzi baselines of app screens in a translation, drawn by the screens' own code without their ViewModels, and the guard on their comparison options.
     - `AppRoborazziOptions.kt` - Comparison options every screenshot of this module is captured with.
     - `AppSnapshotOptionsGuardTest.kt` - Fails a screenshot of this module captured without `AppRoborazziOptions`.
+    - `BottomNavigationSnapshotTest.kt` - Screenshots of the bottom navigation bar in both themes and of the scrolled state that draws its hairline.
     - `RussianScreensSnapshotTest.kt` - The shared app-screen screenshots (`TranslatedScreensSnapshotTest`) in Russian, at font scale 200 %; baselines `src/test/snapshots/ru_*_fontscale200_light.png`.
     - `SpanishScreensSnapshotTest.kt` - The shared app-screen screenshots (`TranslatedScreensSnapshotTest`) in Spanish, at font scale 200 %; baselines `src/test/snapshots/es_*_fontscale200_light.png`.
     - `TranslatedScreensSnapshotTest.kt` - Screenshots of app screens in a translation, at font scale 200 % in the light theme.
@@ -701,9 +702,11 @@ Only Kotlin files appear inside the generated blocks.
       - `MoreFormattersTest.kt` - Unit tests for the pure-Kotlin formatter helpers feeding the More tab subtitle counters and footer pill.
       - `MoreViewModelTest.kt` - Unit tests for `MoreViewModel` — drives the `combine` + `reduceUiState` projection that powers the More tab's live subtitle counters and footer privacy pill.
     - `navigation/` - Tests for the navigation graph, routes and deep links.
+      - `BottomNavScrollTrackerTest.kt` - Unit tests for `BottomNavScrollTracker` — the travel arithmetic behind the bottom bar's conditional hairline, including the scroll sign convention.
       - `BottomNavVisibilityTest.kt` - Table-driven test for `shouldShowBottomNav`.
       - `DeepLinkRouterTest.kt` - JVM tests for the `knotwork://triggers/{id}` branch of `navigateToDeepLink` — the overdue-trigger notification's tap.
       - `NavRoutesTest.kt` - Unit tests for `NavRoutes` — guards against accidental route collisions, blank routes, and silently broken deep-link / argument contracts.
+      - `PostSplashDestinationTest.kt` - Pins the post-splash landing to the chat home: a returning user opens the conversation surface, only a first run is diverted to onboarding.
       - `TabOwnershipTest.kt` - Unit tests for `owningTabRoute` / `isTabRootStack` — the two pure functions that replaced the hand-maintained `route → tab` table.
     - `onboarding/` - Tests for the onboarding flow.
       - `OnboardingViewModelTest.kt` - Verifies the orchestrated scenario / download / warm flow layered on top of the `hasCompletedOnboarding` persistence.

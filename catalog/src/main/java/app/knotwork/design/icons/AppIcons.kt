@@ -1,6 +1,7 @@
 package app.knotwork.design.icons
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import app.knotwork.design.icons.imagevector.NavIcons
 import app.knotwork.design.icons.imagevector.knotworkAddIcon
 import app.knotwork.design.icons.imagevector.knotworkAlertCircleIcon
 import app.knotwork.design.icons.imagevector.knotworkArchiveIcon
@@ -127,8 +128,13 @@ import app.knotwork.design.icons.imagevector.knotworkXIcon
  * Implementations live in [imagevector] (one file per icon). Each file
  * exposes a top-level `internal val knotwork<Name>Icon: ImageVector`
  * lazily built from SVG path data, and the facade delegates to it. The
- * `*Active` variants restroke the bottom-nav glyphs at 2.0 for the selected
- * tab.
+ * `*Active` variants restroke a glyph at 2.0 for a selected surface.
+ *
+ * The bottom-nav strip has a family of its own ([NavChat] … [NavMore], in
+ * `imagevector/NavIcons.kt`): the four rounded single-line glyphs the bar draws.
+ * They are kept apart from the general `I.*` glyphs so the strip can be restyled
+ * without touching the list rows, dialogs and onboarding steps that also use
+ * `Chat`, `Flow`, `Tool` and `More2`.
  */
 object AppIcons {
     /** Knotwork wordmark glyph (used in compact contexts; the literal "Knotwork" text wordmark is rendered with Inter). */
@@ -184,6 +190,31 @@ object AppIcons {
 
     /** Memory entry / "Memory" navigation glyph. */
     val Brain: ImageVector get() = knotworkBrainIcon
+
+    // ── Bottom-nav glyph family (rounded single line) ─────────────────────
+    /** Chat tab — round speech bubble, the strip's own glyph. */
+    val NavChat: ImageVector get() = NavIcons.Chat
+
+    /** Chat tab at the active 2.0 stroke — selected bottom-nav item. */
+    val NavChatActive: ImageVector get() = NavIcons.ChatActive
+
+    /** Pipelines tab — two pipeline stages joined by a connector. */
+    val NavFlow: ImageVector get() = NavIcons.Flow
+
+    /** Pipelines tab at the active 2.0 stroke — selected bottom-nav item. */
+    val NavFlowActive: ImageVector get() = NavIcons.FlowActive
+
+    /** Tools tab — toolbox with a lid seam and a rounded handle. */
+    val NavTool: ImageVector get() = NavIcons.Tool
+
+    /** Tools tab at the active 2.0 stroke — selected bottom-nav item. */
+    val NavToolActive: ImageVector get() = NavIcons.ToolActive
+
+    /** More tab — four rounded tiles. */
+    val NavMore: ImageVector get() = NavIcons.More
+
+    /** More tab at the active 2.0 stroke — selected bottom-nav item. */
+    val NavMoreActive: ImageVector get() = NavIcons.MoreActive
 
     // ── Active (2.0 stroke) bottom-nav variants ───────────────────────────
     /** `I.chat` at active 2.0 stroke — selected Chat tab. */

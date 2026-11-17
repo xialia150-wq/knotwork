@@ -72,8 +72,10 @@ import app.knotwork.design.screens.settings.SettingsCategoryId
  *
  * Navigation map:
  *  - Splash and Onboarding are top-level "shell-less" destinations — the
- *    bottom-nav is hidden for them (see [shouldShowBottomNav]). After
- *    onboarding completes, the user lands on the Chat tab.
+ *    bottom-nav is hidden for them (see [shouldShowBottomNav]). Once start-up
+ *    finishes, [postSplashDestination] decides where the user lands: the Chat
+ *    tab for a returning user, onboarding for a first run. The Chat tab is the
+ *    app's home — it is where a request is started in natural language.
  *  - The four bottom-nav tabs (Chat / Pipelines / Tools / More) each own a
  *    `composable(...)` start-destination; deeper screens (`memory`,
  *    `settings`, `tools/{id}`, `pipeline/{id}/edit`, ...) live as
@@ -131,8 +133,7 @@ fun AppNavGraph(
         composable(NavRoutes.SPLASH) {
             SplashScreen(
                 onInitialized = {
-                    val next = if (showOnboarding) NavRoutes.ONBOARDING else NavRoutes.CHAT_TAB
-                    navController.navigate(next) {
+                    navController.navigate(postSplashDestination(showOnboarding)) {
                         popUpTo(NavRoutes.SPLASH) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -629,3 +630,19 @@ private fun settingsCategoryRoute(category: SettingsCategoryId): String = when (
     SettingsCategoryId.Privacy -> NavRoutes.SETTINGS_PRIVACY
     SettingsCategoryId.About -> NavRoutes.SETTINGS_ABOUT
 }
+
+/**
+ * The destination the splash screen hands over to once start-up finishes.
+ *
+ * Chat is the home: a returning user lands on the conversation surface, where a
+ * request is started by typing it in natural language. Only a first run is
+ * diverted to [NavRoutes.ONBOARDING]; there is no launcher grid or dashboard in
+ * front of the chat. The decision is a pure function the splash lambda calls so
+ * "the app opens on the chat" is pinned by a JVM test instead of living as an
+ * untestable line inside a Compose callback.
+ *
+ * @param showOnboarding Whether the first-run onboarding has still to be shown.
+ * @return [NavRoutes.ONBOARDING] on a first run, [NavRoutes.CHAT_TAB] otherwise.
+ */
+internal fun postSplashDestination(showOnboarding: Boolean): String =
+    if (showOnboarding) NavRoutes.ONBOARDING else NavRoutes.CHAT_TAB

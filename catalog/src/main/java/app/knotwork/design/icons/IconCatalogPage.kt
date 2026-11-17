@@ -63,6 +63,10 @@ fun IconCatalogPage() {
 private val customEntries: List<IconEntry> = listOf(
     IconEntry("Mark", AppIcons.Mark, IconSource.Custom),
     IconEntry("Wordmark", AppIcons.Wordmark, IconSource.Custom),
+    IconEntry("NavChat", AppIcons.NavChat, IconSource.Custom),
+    IconEntry("NavFlow", AppIcons.NavFlow, IconSource.Custom),
+    IconEntry("NavTool", AppIcons.NavTool, IconSource.Custom),
+    IconEntry("NavMore", AppIcons.NavMore, IconSource.Custom),
     IconEntry("Flow", AppIcons.Flow, IconSource.Custom),
     IconEntry("AutoLayout", AppIcons.AutoLayout, IconSource.Custom),
     IconEntry("Brain", AppIcons.Brain, IconSource.Custom),

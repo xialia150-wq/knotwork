@@ -5,26 +5,33 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -33,10 +40,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
@@ -56,11 +73,31 @@ import app.knotwork.design.tokens.KnotworkTextStyles
  *
  * Owns three responsibilities:
  *
- *  1. **Bottom-nav chrome.** Renders the M3 [NavigationBar] with the four
- *     [TAB_DESTINATIONS] tabs. Visibility per route is
- *     decided by [shouldShowBottomNav] (a pure function so it is
- *     unit-testable). Show/hide uses an [AnimatedVisibility] slide so the
- *     editor / onboarding entry doesn't snap the body.
+ *  1. **Bottom-nav chrome.** Renders the four [TAB_DESTINATIONS] tabs on a bar
+ *     that is flush with the bottom and painted the page's own colour, so it
+ *     reads as the bottom of the page rather than a raised slab. Selection is
+ *     three signals and no pill: the glyph takes the accent colour, the label
+ *     goes semi-bold, and a small accent dot appears under the glyph. A hairline
+ *     between the body and the bar fades in only once the body has been scrolled
+ *     away from its top (see [BottomNavScrollTracker]); a permanent divider would
+ *     draw a seam the page-coloured design does not have. Every selection state
+ *     change runs on [NAV_STATE_ANIMATION_MS], or instantly under reduced motion.
+ *     Visibility per route is decided by [shouldShowBottomNav] (a pure function
+ *     so it is unit-testable); show/hide uses an [AnimatedVisibility] slide so
+ *     the editor / onboarding entry doesn't snap the body.
+ *
+ *     The light frosted-glass backdrop was **not** implemented; the bar paints the
+ *     page colour as a solid, which is the degradation the spec allows for a slow
+ *     device. Two reasons, both structural. A real backdrop blur needs the
+ *     scrolling body drawn *under* the bar, and this app lays the body above it
+ *     (Scaffold's bottom slot, with the chat composer already pinned at the body's
+ *     bottom edge and the whole shell IME-padded); moving the body under the bar
+ *     would have every tab screen reserving the bar's height in its own scroll
+ *     padding, and no third-party blur library may be added. And because nothing
+ *     scrolls beneath the bar today, a translucent colour would composite over
+ *     the page's own colour and show nothing — the solid is both the fallback and
+ *     the honest rendering. A degradation path needs no setting, so no persisted
+ *     switch was added.
  *
  *  2. **Tab-switch state preservation.** Selecting a tab uses the canonical
  *     Compose Navigation pattern (`popUpTo(startDestination) {
@@ -134,6 +171,23 @@ fun AppShellScaffold(
     }
     val owningTab: String? = owningTabRoute(stackRoutes)
 
+    // The body's travel decides whether the bar shows its hairline. The tracker
+    // is fed from one nested-scroll connection installed over the whole body, so
+    // whichever screen owns the scrollable, its consumed deltas are what counts —
+    // the shell never reaches into a screen's scroll state.
+    val scrollTracker = remember { BottomNavScrollTracker() }
+    LaunchedEffect(currentRoute) { scrollTracker.reset() }
+    val bodyScrollConnection = remember(scrollTracker) {
+        object : NestedScrollConnection {
+            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                if (source == NestedScrollSource.UserInput) {
+                    scrollTracker.onConsumedScroll(deltaY = consumed.y)
+                }
+                return Offset.Zero
+            }
+        }
+    }
+
     BackHandler(enabled = isTabRootStack(stackRoutes)) {
         activity?.finish()
     }
@@ -205,63 +259,150 @@ fun AppShellScaffold(
             ) {
                 AppBottomNavigationBar(
                     owningTabRoute = owningTab,
+                    scrolledUnder = scrollTracker.scrolledUnder,
                     onTabSelected = { tab -> navController.navigateToTab(tab.route) },
                 )
             }
         },
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(modifier = Modifier.nestedScroll(bodyScrollConnection).padding(innerPadding)) {
             content(PaddingValues())
         }
     }
 }
 
+/**
+ * The four-tab bottom bar: page-coloured, flush with the bottom, and separated
+ * from the body only by the hairline that appears once the body has scrolled.
+ *
+ * The container is [MaterialTheme.colorScheme.background] — the page's own
+ * colour — rather than a raised tonal surface, which is what lets the bar sit on
+ * the page as its bottom edge. It carries no Material indicator pill: the
+ * selected item is marked by the accent-coloured glyph, the semi-bold label and
+ * the dot under the glyph, all of which animate over [NAV_STATE_ANIMATION_MS].
+ *
+ * @param owningTabRoute The tab route that owns the current back stack, or
+ *   `null` when no tab is on it (splash, onboarding, a modal sheet).
+ * @param scrolledUnder Whether the body has been scrolled away from its top;
+ *   the hairline fades in while it has.
+ * @param onTabSelected Invoked with the tab the user tapped.
+ * @param modifier Layout modifier applied to the bar's column.
+ */
 @Composable
-private fun AppBottomNavigationBar(owningTabRoute: String?, onTabSelected: (TabDestination) -> Unit) {
-    // Lower the default Material 3 highlight to a softer tonal pill matching
-    // the Knotwork design tokens: surface1 as the container, primaryContainer
-    // as the indicator tint, onPrimaryContainer for the selected glyph. The
-    // unselected icon and label stay on `onSurfaceMuted` so they read as
-    // secondary affordances rather than competing with the active tab.
-    // Spec §3.2: bg surface-2, 1 px top divider, nav glyph 22 dp, label Inter 11 sp
-    // (active 600 +0.2, idle 500).
-    Column {
-        HorizontalDivider(color = KnotworkTheme.extended.divider)
-        NavigationBar(containerColor = KnotworkTheme.extended.surface2) {
-            val itemColors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                unselectedIconColor = KnotworkTheme.extended.onSurfaceMuted,
-                unselectedTextColor = KnotworkTheme.extended.onSurfaceMuted,
-            )
+internal fun AppBottomNavigationBar(
+    owningTabRoute: String?,
+    scrolledUnder: Boolean,
+    onTabSelected: (TabDestination) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val reduceMotion = KnotworkTheme.a11y.reducedMotion()
+    val barColor = MaterialTheme.colorScheme.background
+    val dividerAlpha by animateFloatAsState(
+        targetValue = if (scrolledUnder) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = if (reduceMotion) 0 else NAV_STATE_ANIMATION_MS,
+            easing = KnotworkTheme.motion.easeStd,
+        ),
+        label = "bottomNavDivider",
+    )
+    Column(modifier = modifier.fillMaxWidth().background(barColor)) {
+        HorizontalDivider(modifier = Modifier.alpha(dividerAlpha), color = KnotworkTheme.extended.divider)
+        NavigationBar(containerColor = barColor, tonalElevation = 0.dp) {
             TAB_DESTINATIONS.forEach { tab ->
-                val selected = owningTabRoute == tab.route
-                NavigationBarItem(
-                    selected = selected,
+                BottomNavItem(
+                    tab = tab,
+                    selected = owningTabRoute == tab.route,
+                    reduceMotion = reduceMotion,
                     onClick = { onTabSelected(tab) },
-                    icon = {
-                        Icon(
-                            imageVector = if (selected) tab.iconSelected else tab.iconUnselected,
-                            contentDescription = null,
-                            modifier = Modifier.size(KnotworkIconSizes.AppBar),
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(tab.labelRes),
-                            style = KnotworkTextStyles.LabelSm.copy(
-                                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-                                letterSpacing = 0.2.sp,
-                            ),
-                        )
-                    },
-                    colors = itemColors,
                 )
             }
         }
     }
 }
+
+/**
+ * One tab of [AppBottomNavigationBar]: glyph, selection dot and label.
+ *
+ * @param tab The destination this item renders.
+ * @param selected Whether the current back stack is owned by this tab.
+ * @param reduceMotion Collapses the state animation to an instant swap.
+ * @param onClick Invoked when the item is tapped.
+ */
+@Composable
+private fun RowScope.BottomNavItem(
+    tab: TabDestination,
+    selected: Boolean,
+    reduceMotion: Boolean,
+    onClick: () -> Unit,
+) {
+    val stateAnimation = tween<Color>(
+        durationMillis = if (reduceMotion) 0 else NAV_STATE_ANIMATION_MS,
+        easing = KnotworkTheme.motion.easeStd,
+    )
+    val iconColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else KnotworkTheme.extended.onSurfaceMuted,
+        animationSpec = stateAnimation,
+        label = "bottomNavIconColor",
+    )
+    val labelColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.onSurface else KnotworkTheme.extended.onSurfaceMuted,
+        animationSpec = stateAnimation,
+        label = "bottomNavLabelColor",
+    )
+    val dotAlpha by animateFloatAsState(
+        targetValue = if (selected) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = if (reduceMotion) 0 else NAV_STATE_ANIMATION_MS,
+            easing = KnotworkTheme.motion.easeStd,
+        ),
+        label = "bottomNavDotAlpha",
+    )
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .semantics(mergeDescendants = true) {}
+            .padding(vertical = KnotworkTheme.spacing.sp1),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            imageVector = if (selected) tab.iconSelected else tab.iconUnselected,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(KnotworkIconSizes.AppBar),
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = NavDotGap)
+                .size(NavDotSize)
+                .alpha(dotAlpha)
+                .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape),
+        )
+        Text(
+            text = stringResource(tab.labelRes),
+            modifier = Modifier.padding(top = NavDotGap),
+            style = KnotworkTextStyles.LabelSm.copy(
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                letterSpacing = 0.2.sp,
+            ),
+            color = labelColor,
+            maxLines = 1,
+        )
+    }
+}
+
+/** Duration of a bottom-nav selection change, per spec: about 150 ms. */
+private const val NAV_STATE_ANIMATION_MS: Int = 150
+
+/** Diameter of the dot under the selected tab's glyph. */
+@Suppress("MagicNumber") // Spec value, not derived from another token.
+private val NavDotSize = 4.dp
+
+/** Gap between a glyph, its selection dot and its label. */
+@Suppress("MagicNumber") // Spec value, not derived from another token.
+private val NavDotGap = 3.dp
 
 /**
  * Anchor route used as the [popUpTo] target during tab switches.

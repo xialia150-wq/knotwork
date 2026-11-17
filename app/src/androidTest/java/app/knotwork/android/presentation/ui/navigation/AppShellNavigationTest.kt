@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.NavHostController
@@ -131,10 +132,126 @@ class AppShellNavigationTest {
             .filter { it in tabRoutes }
     }
 
+    /**
+     * The strip keeps the four product tabs, in order, one node each.
+     *
+     * The home/navigation redesign may restyle the bar but may not add, drop,
+     * reorder or relabel a tab.
+     */
+    @Test
+    fun bottomNavShowsTheFourTabs() {
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            AppShellScaffold(navController = navController, transientMessageRelay = TransientMessageRelay()) { _ ->
+                NavHost(navController = navController, startDestination = NavRoutes.CHAT_TAB) {
+                    composable(NavRoutes.CHAT_TAB) { Text(CHAT_TAB_BODY) }
+                }
+            }
+        }
+
+        TAB_LABELS.forEach { label -> composeTestRule.onNodeWithText(label).assertIsDisplayed() }
+        composeTestRule.runOnIdle { assertEquals(TAB_DESTINATIONS.size, TAB_LABELS.size) }
+    }
+
+    /**
+     * Splash is a shell-less destination: the bar must not flash there.
+     *
+     * Regression assertion for the current (pre-existing) rule in
+     * [shouldShowBottomNav] — this task must not bring the bar back to the
+     * start-up surfaces.
+     */
+    @Test
+    fun bottomNavStaysHiddenOnSplash() {
+        composeTestRule.setContent {
+            val navController = rememberNavController()
+            AppShellScaffold(navController = navController, transientMessageRelay = TransientMessageRelay()) { _ ->
+                NavHost(navController = navController, startDestination = NavRoutes.SPLASH) {
+                    composable(NavRoutes.SPLASH) { Text(SPLASH_BODY) }
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(SPLASH_BODY).assertIsDisplayed()
+        assertBottomNavHidden()
+    }
+
+    /**
+     * The pipeline editor is a focus-mode surface: the bar stays hidden there so
+     * the canvas keeps the full height.
+     */
+    @Test
+    fun bottomNavStaysHiddenInThePipelineEditor() {
+        lateinit var navController: NavHostController
+        composeTestRule.setContent {
+            val nav = rememberNavController()
+            navController = nav
+            AppShellScaffold(navController = nav, transientMessageRelay = TransientMessageRelay()) { _ ->
+                NavHost(navController = nav, startDestination = NavRoutes.CHAT_TAB) {
+                    composable(NavRoutes.CHAT_TAB) { Text(CHAT_TAB_BODY) }
+                    composable(NavRoutes.PIPELINE_EDITOR) { Text(EDITOR_BODY) }
+                }
+            }
+        }
+        composeTestRule.onNodeWithText(CHAT_TAB_BODY).assertIsDisplayed()
+        composeTestRule.onNodeWithText(TAB_LABELS.first()).assertIsDisplayed()
+
+        composeTestRule.runOnIdle { navController.navigate(NavRoutes.PIPELINE_EDITOR) }
+
+        composeTestRule.onNodeWithText(EDITOR_BODY).assertIsDisplayed()
+        assertBottomNavHidden()
+    }
+
+    /**
+     * A modal sheet route renders over the host destination; the bar stays hidden
+     * so the sheet owns the whole surface.
+     */
+    @Test
+    fun bottomNavStaysHiddenUnderAModalSheetRoute() {
+        lateinit var navController: NavHostController
+        composeTestRule.setContent {
+            val nav = rememberNavController()
+            navController = nav
+            AppShellScaffold(navController = nav, transientMessageRelay = TransientMessageRelay()) { _ ->
+                NavHost(navController = nav, startDestination = NavRoutes.CHAT_TAB) {
+                    composable(NavRoutes.CHAT_TAB) { Text(CHAT_TAB_BODY) }
+                    composable(NavRoutes.SHEET_CONSOLE) { Text(SHEET_BODY) }
+                }
+            }
+        }
+        composeTestRule.onNodeWithText(CHAT_TAB_BODY).assertIsDisplayed()
+
+        composeTestRule.runOnIdle { navController.navigate(NavRoutes.SHEET_CONSOLE) }
+
+        composeTestRule.onNodeWithText(SHEET_BODY).assertIsDisplayed()
+        assertBottomNavHidden()
+    }
+
+    /**
+     * Waits for the bar's hide animation to finish, then asserts no tab label is
+     * on screen. The hide is an [androidx.compose.animation.AnimatedVisibility]
+     * slide, so the labels stay composed for one transition before they go.
+     */
+    private fun assertBottomNavHidden() {
+        composeTestRule.waitUntil(timeoutMillis = NAV_HIDE_TIMEOUT_MS) {
+            TAB_LABELS.all { label ->
+                composeTestRule.onAllNodesWithText(label).fetchSemanticsNodes().isEmpty()
+            }
+        }
+    }
+
     private companion object {
         const val CHAT_TAB_BODY = "chat-tab-root"
         const val PIPELINES_BODY = "pipelines-root"
         const val TOOLS_BODY = "tools-root"
         const val MORE_BODY = "more-root"
+        const val SPLASH_BODY = "splash-root"
+        const val EDITOR_BODY = "pipeline-editor-root"
+        const val SHEET_BODY = "modal-sheet-root"
+
+        /** The four product tab labels, in the interface language the tests run in. */
+        val TAB_LABELS = listOf("Chat", "Pipelines", "Tools", "More")
+
+        /** Generous bound for a 280 ms hide animation plus CI emulator jank. */
+        const val NAV_HIDE_TIMEOUT_MS = 5_000L
     }
 }

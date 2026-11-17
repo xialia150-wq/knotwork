@@ -248,6 +248,7 @@ Paths below are relative to `src/main/java/app/knotwork/design/`.
     - `Monitor.kt` - `I.monitor` glyph (monitoring / metrics) — single-stroke icon family.
     - `More.kt` - `I.more` glyph (overflow ⋮ (solid)) — single-stroke icon family.
     - `More2.kt` - `I.more2` glyph (horizontal overflow), idle and active — single-stroke icon family.
+    - `NavIcons.kt` - The bottom-nav glyph family: the four rounded single-line tab glyphs (chat, pipelines, tools, more), each with an idle 1.6-stroke and an active 2.0-stroke variant.
     - `NodeBranch.kt` - Pipeline `IF_CONDITION` node glyph — diamond with a check mark.
     - `NodeClarify.kt` - Pipeline `CLARIFICATION` node glyph — chat bubble with question mark.
     - `NodeCloud.kt` - Pipeline `CLOUD` node glyph — cloud shape with up-arrow.

@@ -88,6 +88,18 @@ class BottomNavVisibilityTest {
         assertEquals(true, shouldShowBottomNav(NavRoutes.CHAT_WITH_THREAD))
     }
 
+    @Test
+    fun `the bar keeps exactly its four tabs in order`() {
+        // The product strip is 对话 · 流程 · 工具 · 更多, in this order. Neither the
+        // set of tabs nor their order may drift without a deliberate change here.
+        assertEquals(
+            listOf(NavRoutes.CHAT_TAB, NavRoutes.PIPELINES_GRAPH, NavRoutes.TOOLS, NavRoutes.MORE),
+            TAB_DESTINATIONS.map { it.route },
+        )
+        // Two tabs sharing a label would render the same word twice in the strip.
+        assertEquals(TAB_DESTINATIONS.size, TAB_DESTINATIONS.map { it.labelRes }.toSet().size)
+    }
+
     private fun assertExpectations(vararg expectations: Pair<String, Boolean>) {
         for ((route, expected) in expectations) {
             assertEquals(
