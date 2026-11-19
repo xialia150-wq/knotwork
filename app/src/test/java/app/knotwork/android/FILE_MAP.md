@@ -746,6 +746,7 @@ Only Kotlin files appear inside the generated blocks.
     - `prompts/` - Tests for the prompt library.
       - `PromptLibraryViewModelTest.kt` - Unit tests for `PromptLibraryViewModel`.
     - `settings/` - Tests for the settings screens and their catalogues.
+      - `AppearanceSettingsViewModelTest.kt` - Checks local RGB previews, final saves, and delayed persistence acknowledgements.
       - `AppLanguageLabelsTest.kt` - Each language is named in itself, whatever language the app is shown in.
       - `backup/` - Tests for the *Backup & restore* screen's ViewModel.
         - `AfterRestoreViewModelTest.kt` - `AfterRestoreViewModel`: the sheet from the report, the snackbar when nothing is left to do, the downloads it starts — one at a time — and *Done*.

@@ -36,6 +36,7 @@ fun AppearanceSettingsContent(
     onVivid: (Boolean) -> Unit,
     onMode: (String) -> Unit,
     onPureBlack: (Boolean) -> Unit,
+    onChannelChangeFinished: (Int) -> Unit = {},
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         HorizontalDivider()
@@ -65,7 +66,11 @@ fun AppearanceSettingsContent(
                 R.string.appearance_blue_channel to color.blue,
             ).forEachIndexed { index, (label, component) ->
                 Text(stringResource(label, (component * RGB_CHANNEL_MAX).toInt()))
-                Slider(value = component, onValueChange = { onChannel(index, it) })
+                Slider(
+                    value = component,
+                    onValueChange = { onChannel(index, it) },
+                    onValueChangeFinished = { onChannelChangeFinished(index) },
+                )
             }
         }
         Text(stringResource(R.string.appearance_intensity))
