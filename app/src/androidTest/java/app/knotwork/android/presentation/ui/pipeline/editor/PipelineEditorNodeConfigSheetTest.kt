@@ -1,21 +1,28 @@
 package app.knotwork.android.presentation.ui.pipeline.editor
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.unit.Density
 import androidx.test.platform.app.InstrumentationRegistry
+import app.knotwork.android.R
+import app.knotwork.android.presentation.ui.orchestrator.components.NodeContextConfigSection
 import app.knotwork.design.components.pipelineeditor.CloudConfig
 import app.knotwork.design.components.pipelineeditor.IfConditionConfig
 import app.knotwork.design.components.pipelineeditor.InputConfig
 import app.knotwork.design.components.pipelineeditor.LiteRtConfig
 import app.knotwork.design.components.pipelineeditor.NodeConfig
+import app.knotwork.design.components.pipelineeditor.NodeConfigSheet
 import app.knotwork.design.components.pipelineeditor.NodeConfigSheetBody
 import app.knotwork.design.components.pipelineeditor.OutputConfig
 import app.knotwork.design.components.pipelineeditor.PipelineConfig
@@ -50,6 +57,43 @@ class PipelineEditorNodeConfigSheetTest {
     private val ctx = InstrumentationRegistry.getInstrumentation().targetContext
     private val saveLabel = ctx.getString(KnotworkR.string.knotwork_node_config_action_save)
     private val cancelLabel = ctx.getString(KnotworkR.string.knotwork_node_config_action_cancel)
+
+    @Test
+    fun modalSheet_largeFont_canReachLastInputAndSave() {
+        var originalTask by mutableStateOf(true)
+        composeTestRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 1.3f)) {
+                MaterialTheme {
+                    NodeConfigSheet(
+                        config = OutputConfig(title = "Reply", systemPrompt = "Summarise"),
+                        peerTitles = emptySet(),
+                        onChange = {},
+                        onCancel = {},
+                        onSave = {},
+                        extraSection = {
+                            NodeContextConfigSection(
+                                originalTask = originalTask,
+                                chatHistory = false,
+                                longTermMemory = false,
+                                toolResults = false,
+                                onOriginalTaskChange = { originalTask = it },
+                                onChatHistoryChange = {},
+                                onLongTermMemoryChange = {},
+                                onToolResultsChange = {},
+                            )
+                        },
+                    )
+                }
+            }
+        }
+        composeTestRule.onNodeWithText(ctx.getString(R.string.orchestrator_context_original_task_label))
+            .performScrollTo().performClick()
+        composeTestRule.runOnIdle { assertEquals(false, originalTask) }
+        composeTestRule.onNodeWithText(ctx.getString(R.string.orchestrator_context_tool_results_label))
+            .performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText(saveLabel).performScrollTo().assertIsDisplayed()
+    }
 
     @Test
     fun inputForm_rendersInputVariableNameField() {

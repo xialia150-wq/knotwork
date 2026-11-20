@@ -239,7 +239,7 @@ class NodeConfigSheetSnapshotTest {
                     LocalDensity provides Density(density = baseDensity.density, fontScale = fontScale),
                     LocalProviderChoices provides CHOICES,
                 ) {
-                    content()
+                    Surface(color = MaterialTheme.colorScheme.surface) { content() }
                 }
             }
         }

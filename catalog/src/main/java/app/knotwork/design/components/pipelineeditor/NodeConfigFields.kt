@@ -6,22 +6,28 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.knotwork.design.R
 import app.knotwork.design.components.chips.ChipStyle
 import app.knotwork.design.components.chips.KnotworkChip
@@ -36,7 +42,7 @@ import app.knotwork.design.tokens.KnotworkTextStyles
 internal fun FieldLabel(text: String) {
     Text(
         text = text,
-        style = KnotworkTextStyles.LabelMd,
+        style = KnotworkTextStyles.LabelLg.copy(letterSpacing = 0.sp),
         color = KnotworkTheme.extended.onSurface2,
     )
 }
@@ -93,7 +99,12 @@ internal fun VariableChipsRow(onInsert: (String) -> Unit) {
         contentPadding = PaddingValues(end = KnotworkTheme.spacing.sp2),
     ) {
         items(variables) { name ->
-            KnotworkChip(label = name, onClick = { onInsert(name) }, style = ChipStyle.Outline)
+            KnotworkChip(
+                label = name,
+                onClick = { onInsert(name) },
+                style = ChipStyle.Outline,
+                modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
+            )
         }
     }
 }
@@ -116,11 +127,12 @@ private val PROMPT_VARIABLE_KEYS: List<String> = listOf(
 )
 
 /** Fixed row height — chip baseline plus a small breathing budget. */
-private const val VARIABLE_CHIPS_ROW_HEIGHT: Int = 40
+private const val VARIABLE_CHIPS_ROW_HEIGHT: Int = 48
 
 /** Single-line title field — shared across every node type. */
 @Composable
 internal fun TitleField(title: String, error: ValidationFailure?, onChange: (String) -> Unit) {
+    val maxHeight = compactSingleLineMaxHeight()
     Column(verticalArrangement = Arrangement.spacedBy(KnotworkTheme.spacing.sp1)) {
         FieldLabel(text = stringResource(R.string.knotwork_node_field_title))
         OutlinedTextField(
@@ -133,7 +145,8 @@ internal fun TitleField(title: String, error: ValidationFailure?, onChange: (Str
             // all read in the same JetBrains Mono face. Mixed body/mono fonts
             // read as accidentally inconsistent on the sheet.
             textStyle = KnotworkTextStyles.MonoBase,
-            modifier = Modifier.fillMaxWidth(),
+            colors = compactFieldColors(),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp, max = maxHeight),
         )
         InlineError(failure = error)
     }
@@ -160,6 +173,7 @@ internal fun TextField(
     onPickFromLibrary: PromptLibraryHook? = null,
     onSavePreset: SavePresetHook? = null,
 ) {
+    val maxHeight = compactSingleLineMaxHeight()
     Column(verticalArrangement = Arrangement.spacedBy(KnotworkTheme.spacing.sp1)) {
         // When the field is prompt-bearing AND the screen provided a library/save
         // hook, surface small icon buttons next to the label so the user can replace
@@ -212,7 +226,12 @@ internal fun TextField(
             // Same MonoBase rationale as TitleField — the sheet reads as a
             // uniform mono stack regardless of which field is prose vs ident.
             textStyle = KnotworkTextStyles.MonoBase,
-            modifier = Modifier.fillMaxWidth(),
+            colors = compactFieldColors(),
+            modifier = if (singleLine) {
+                Modifier.fillMaxWidth().heightIn(min = 48.dp, max = maxHeight)
+            } else {
+                Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
+            },
         )
         InlineError(failure = error)
     }
@@ -220,10 +239,18 @@ internal fun TextField(
 
 /**
  * Compact tap-target for the prompt-library trigger button next to a field
- * label. 32 dp keeps the label row tighter than the M3 default 48 dp
- * `IconButton` (which would otherwise inflate the row to fit the touch area).
+ * label. Keep the full 48 dp touch target for accessible use.
  */
-private const val LIBRARY_BUTTON_TARGET_DP: Float = 32f
+private const val LIBRARY_BUTTON_TARGET_DP: Float = 48f
+
+@Composable
+private fun compactFieldColors() = OutlinedTextFieldDefaults.colors(
+    unfocusedBorderColor = KnotworkTheme.extended.outlineStrong.copy(alpha = 0.5f),
+)
+
+/** Keep single-line inputs compact while allowing more room as system text grows. */
+@Composable
+private fun compactSingleLineMaxHeight() = 52.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
 
 /** Integer field rendered as a slider over an `IntRange`. */
 @Composable
@@ -281,6 +308,7 @@ internal fun <T> SegmentedChipRow(label: String, values: List<Pair<T, String>>, 
                     label = label,
                     selected = isSelected,
                     onClick = { onSelect(value) },
+                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp),
                     style = ChipStyle.Tonal,
                     // Compose Tonal chips at the project's primaryContainer tint are visibly
                     // similar to the unselected tonal surface in some Knotwork palettes,

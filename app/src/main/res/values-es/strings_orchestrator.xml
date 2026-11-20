@@ -54,7 +54,7 @@
     <string name="orchestrator_context_long_term_memory_hint">Recuerdos relevantes de la memoria a largo plazo del agente</string>
     <string name="orchestrator_context_tool_results_label">Resultados de herramientas</string>
     <string name="orchestrator_context_tool_results_hint">Datos que devolvieron las herramientas en el paso actual</string>
-    <string name="orchestrator_context_hint">Menos entradas hacen el nodo más rápido y barato. Activa solo lo necesario.</string>
+    <string name="orchestrator_context_hint">Cuantos menos datos, más rápido y económico.</string>
     <string name="orchestrator_context_inherited_tag">heredado</string>
     <string name="orchestrator_context_overridden_tag">modificado</string>
     <string name="orchestrator_library_speed_dial_new">Nuevo</string>

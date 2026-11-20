@@ -69,7 +69,7 @@
     <string name="orchestrator_context_long_term_memory_hint">Подходящие записи из долговременной памяти агента</string>
     <string name="orchestrator_context_tool_results_label">Результаты инструментов</string>
     <string name="orchestrator_context_tool_results_hint">Данные, которые вернули инструменты на текущем шаге</string>
-    <string name="orchestrator_context_hint">Чем меньше входных данных, тем быстрее и дешевле работает узел. Включайте только нужное.</string>
+    <string name="orchestrator_context_hint">Чем меньше данных, тем быстрее и дешевле работа.</string>
     <string name="orchestrator_context_inherited_tag">унаследовано</string>
     <string name="orchestrator_context_overridden_tag">переопределено</string>
     <string name="orchestrator_library_speed_dial_new">Создать</string>

@@ -10,19 +10,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
 import app.knotwork.design.R
 import app.knotwork.design.components.buttons.KnotworkButtonSize
 import app.knotwork.design.components.buttons.KnotworkPrimaryButton
 import app.knotwork.design.components.buttons.KnotworkTextButton
-import app.knotwork.design.components.chips.ChipStyle
-import app.knotwork.design.components.chips.KnotworkChip
+import app.knotwork.design.components.text.Text
 import app.knotwork.design.theme.KnotworkTheme
+import app.knotwork.design.tokens.KnotworkTextStyles
 
 /**
  * Modal bottom sheet that hosts the per-type configuration form for one
@@ -212,7 +215,20 @@ fun NodeConfigSheetBody(
 @Composable
 private fun SheetHeader(type: NodeType) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        KnotworkChip(label = stringResource(type.canvasName), style = ChipStyle.Tonal)
+        Surface(
+            shape = KnotworkTheme.shapes.full,
+            color = MaterialTheme.colorScheme.secondaryContainer,
+        ) {
+            Text(
+                text = stringResource(type.canvasName),
+                style = KnotworkTextStyles.TitleMd.copy(letterSpacing = 0.sp),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.padding(
+                    horizontal = KnotworkTheme.spacing.sp3,
+                    vertical = KnotworkTheme.spacing.sp1,
+                ),
+            )
+        }
     }
 }
 
