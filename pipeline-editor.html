@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Pipeline Editor</title>
+    <title>流程编辑器 · 织问</title>
     <style>
 /*!
  * Drawflow 0.0.60 — stylesheet, vendored into this file.
@@ -38,53 +38,74 @@
 .drawflow,.drawflow .parent-node{position:relative}.parent-drawflow{display:flex;overflow:hidden;touch-action:none;outline:0}.drawflow{width:100%;height:100%;user-select:none;perspective:0}.drawflow .drawflow-node{display:flex;align-items:center;position:absolute;background:#0ff;width:160px;min-height:40px;border-radius:4px;border:2px solid #000;color:#000;z-index:2;padding:15px}.drawflow .drawflow-node.selected{background:red}.drawflow .drawflow-node:hover{cursor:move}.drawflow .drawflow-node .inputs,.drawflow .drawflow-node .outputs{width:0}.drawflow .drawflow-node .drawflow_content_node{width:100%;display:block}.drawflow .drawflow-node .input,.drawflow .drawflow-node .output{position:relative;width:20px;height:20px;background:#fff;border-radius:50%;border:2px solid #000;cursor:crosshair;z-index:1;margin-bottom:5px}.drawflow .drawflow-node .input{left:-27px;top:2px;background:#ff0}.drawflow .drawflow-node .output{right:-3px;top:2px}.drawflow svg{z-index:0;position:absolute;overflow:visible!important}.drawflow .connection{position:absolute;pointer-events:none;aspect-ratio:1/1}.drawflow .connection .main-path{fill:none;stroke-width:5px;stroke:#4682b4;pointer-events:all}.drawflow .connection .main-path:hover{stroke:#1266ab;cursor:pointer}.drawflow .connection .main-path.selected{stroke:#43b993}.drawflow .connection .point{cursor:move;stroke:#000;stroke-width:2;fill:#fff;pointer-events:all}.drawflow .connection .point.selected,.drawflow .connection .point:hover{fill:#1266ab}.drawflow .main-path{fill:none;stroke-width:5px;stroke:#4682b4}.drawflow-delete{position:absolute;display:block;width:30px;height:30px;background:#000;color:#fff;z-index:4;border:2px solid #fff;line-height:30px;font-weight:700;text-align:center;border-radius:50%;font-family:monospace;cursor:pointer}.drawflow>.drawflow-delete{margin-left:-15px;margin-top:15px}.parent-node .drawflow-delete{right:-15px;top:-15px}
     </style>
     <style>
-        :root {
-            --bg: #1f2127;
-            --bg-soft: #272a31;
-            --border: #3a3d44;
-            --text: #e7e7ea;
-            --text-dim: #a0a3ab;
-            --accent: #4f8cff;
-            --danger: #f44336;
-        }
+        /* Colours live only in these variables; component rules never hard-code a
+           value. Two themes and two intensities (quiet / vivid).
 
-        /* Light theme overrides — applied via [data-theme="light"] on
-           <html>. Variables are the only knob so component CSS doesn't
-           need any conditional rules. */
+           Where the values come from — fixed catalog tokens, no wallpaper-derived
+           scheme (the checklist asks for a fixed preset):
+           - light surfaces: KnotworkLight in
+             catalog/src/main/java/app/knotwork/design/tokens/Color.kt
+           - dark surfaces: KnotworkDark in the same file
+           - accent: KnotworkPalette.Accent600 (= primary of knotworkLightColorScheme,
+             light) and KnotworkPalette.Accent300 (= primary of knotworkDarkColorScheme,
+             dark); the vivid intensity takes the next, brighter step of the same
+             amber ramp: Accent500 / Accent400
+           - signals: KnotworkPalette.SignalError / KnotworkDark.RiskDestructive
+             (danger), SignalWarn / KnotworkDark.RiskSensitive (warning)
+           - node hues: KnotworkPalette.Node* (see NODE_HUES below, the same set
+             NodeCard.headerTint() uses on the Android canvas) */
+        :root {
+            --bg: #0F0D0B;            /* KnotworkDark.Surface0 */
+            --bg-soft: #181512;       /* KnotworkDark.Surface1 */
+            --surface-2: #221E1A;     /* KnotworkDark.Surface2 */
+            --surface-3: #2C2823;     /* KnotworkDark.Surface3 */
+            --node-surface: #181512;  /* card surface: KnotworkDark.Surface1 (NodeCard's base surface) */
+            --border: #413C36;        /* KnotworkDark.Outline */
+            --divider: #2C2824;       /* KnotworkDark.Divider */
+            --text: #F4F1EE;          /* KnotworkDark.OnSurface */
+            --text-dim: #96918C;      /* KnotworkDark.OnSurfaceMuted */
+            --accent: #E1AC6E;        /* KnotworkPalette.Accent300 = dark primary */
+            --accent-soft: rgba(225, 172, 110, 0.12);
+            --on-accent: #171008;     /* KnotworkDark.OnPrimary */
+            --danger: #F97770;        /* KnotworkDark.RiskDestructive = dark error */
+            --warn: #E9B452;          /* KnotworkDark.RiskSensitive = dark warn */
+            --success: #43A96E;       /* KnotworkPalette.SignalSuccess */
+            --shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+            --canvas-bg: #0F0D0B;     /* KnotworkDark.Surface0 */
+            --canvas-dot: #2C2824;    /* KnotworkDark.Divider */
+        }
+        /* Light theme: the KnotworkLight tokens. No component rule needs a
+           condition any more. */
         html[data-theme="light"] {
-            --bg: #f4f5f8;
-            --bg-soft: #ffffff;
-            --border: #d6d8de;
-            --text: #1d1f25;
-            --text-dim: #5c6068;
-            --accent: #1a73e8;
-            --danger: #d93025;
+            --bg: #FEFCFA;            /* KnotworkLight.Surface0 */
+            --bg-soft: #FAF6F3;       /* KnotworkLight.Surface1 */
+            --surface-2: #F6F2ED;     /* KnotworkLight.Surface2 */
+            --surface-3: #F1ECE6;     /* KnotworkLight.Surface3 */
+            --node-surface: #FAF6F3;  /* KnotworkLight.Surface1 */
+            --border: #D4D0CB;        /* KnotworkLight.Outline */
+            --divider: #E7E4E0;       /* KnotworkLight.Divider */
+            --text: #14110E;          /* KnotworkLight.OnSurface */
+            --text-dim: #6D6863;      /* KnotworkLight.OnSurfaceMuted */
+            --accent: #A76C12;        /* KnotworkPalette.Accent600 = light primary */
+            --accent-soft: rgba(167, 108, 18, 0.10);
+            --on-accent: #FEFBF8;     /* KnotworkLight.OnPrimary */
+            --danger: #D55753;        /* KnotworkPalette.SignalError */
+            --warn: #D5A13C;          /* KnotworkPalette.SignalWarn */
+            --success: #43A96E;       /* KnotworkPalette.SignalSuccess */
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --canvas-bg: #FBFBFD;     /* the previous light canvas, kept */
+            --canvas-dot: #D6D8DE;    /* grid dot near KnotworkLight.Outline */
         }
-        html[data-theme="light"] #drawflow {
-            background: #fbfbfd;
-            background-image: radial-gradient(circle, #d6d8de 1px, transparent 1px);
+        /* Vivid intensity: the accent takes the next brighter step of the ramp;
+           the node header strips are computed in JS with NodeCard's
+           quietHeaderBackground / vividHeaderForeground algorithms. */
+        html[data-intensity="vivid"] {
+            --accent: #D49648;        /* KnotworkPalette.Accent400 (dark) */
+            --accent-soft: rgba(212, 150, 72, 0.16);
         }
-        html[data-theme="light"] .drawflow .drawflow-node {
-            background: #ffffff;
-            color: var(--text);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-        }
-        html[data-theme="light"] .palette-item { background: #ffffff; }
-        html[data-theme="light"] .palette-item:hover { background: #eceff4; }
-        html[data-theme="light"] #toolbar button { background: #ffffff; }
-        html[data-theme="light"] #toolbar button:hover:not(:disabled) { background: #eceff4; }
-        html[data-theme="light"] #toolbar input[type="text"]#pipeline-name,
-        html[data-theme="light"] #toolbar input[type="text"]#pipeline-memory-query { background: #ffffff; }
-        html[data-theme="light"] dialog#node-config input[type="text"],
-        html[data-theme="light"] dialog#node-config input[type="number"],
-        html[data-theme="light"] dialog#node-config select,
-        html[data-theme="light"] dialog#node-config textarea { background: #ffffff; }
-        html[data-theme="light"] dialog#node-config button { background: #ffffff; }
-        html[data-theme="light"] dialog#node-config .variable-chip { background: #ffffff; }
-        html[data-theme="light"] dialog#node-config .variable-chip:hover { background: #eceff4; }
-        html[data-theme="light"] .conn-label {
-            background: #ffffff;
-            color: var(--text);
+        html[data-theme="light"][data-intensity="vivid"] {
+            --accent: #C48225;        /* KnotworkPalette.Accent500 (light) */
+            --accent-soft: rgba(196, 130, 37, 0.14);
         }
 
         * { box-sizing: border-box; }
@@ -92,7 +113,10 @@
         html, body {
             height: 100%;
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* Prefer the platform CJK sans faces so Chinese never falls back to a
+               serif face; without one the generic fallback still applies. */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
             color: var(--text);
             background: var(--bg);
             overflow: hidden;
@@ -117,8 +141,7 @@
         #sidebar h2 {
             margin: 0 0 12px 0;
             font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
             color: var(--text-dim);
         }
 
@@ -128,7 +151,7 @@
             gap: 8px;
             padding: 8px 10px;
             margin-bottom: 6px;
-            background: #2e313a;
+            background: var(--surface-2);
             border: 1px solid var(--border);
             border-left-width: 4px;
             border-radius: 6px;
@@ -138,7 +161,7 @@
             transition: transform 0.05s ease, background 0.1s ease;
         }
 
-        .palette-item:hover { background: #353841; }
+        .palette-item:hover { background: var(--surface-3); }
         .palette-item:active { cursor: grabbing; transform: scale(0.98); }
         .palette-item .icon { font-size: 16px; width: 18px; text-align: center; }
         .palette-item .name { font-weight: 500; }
@@ -161,7 +184,7 @@
         }
 
         #toolbar button {
-            background: #2e313a;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -170,15 +193,15 @@
             font-size: 13px;
         }
 
-        #toolbar button:hover:not(:disabled) { background: #353841; }
+        #toolbar button:hover:not(:disabled) { background: var(--surface-3); }
         #toolbar button:disabled { opacity: 0.4; cursor: not-allowed; }
-        #toolbar .danger { border-color: var(--danger); color: #ff8a82; }
+        #toolbar .danger { border-color: var(--danger); color: var(--danger); }
         #toolbar .spacer { flex: 1; }
         #toolbar .hint { color: var(--text-dim); font-size: 12px; }
 
         #toolbar input[type="text"]#pipeline-name,
         #toolbar input[type="text"]#pipeline-memory-query {
-            background: #2e313a;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -194,9 +217,25 @@
         #toolbar .name-label {
             font-size: 11px;
             color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
             margin-right: 4px;
+        }
+        #toolbar .seg {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+        }
+        #toolbar .seg button {
+            border-radius: 0;
+            border-right-width: 0;
+            padding: 6px 10px;
+        }
+        #toolbar .seg button:first-child { border-radius: 6px 0 0 6px; }
+        #toolbar .seg button:last-child { border-radius: 0 6px 6px 0; border-right-width: 1px; }
+        #toolbar .seg button.is-on {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         /* Canvas */
@@ -209,9 +248,9 @@
         #drawflow {
             position: absolute;
             inset: 0;
-            background: #1a1c22;
+            background: var(--canvas-bg);
             background-image:
-                radial-gradient(circle, #2a2d35 1px, transparent 1px);
+                radial-gradient(circle, var(--canvas-dot) 1px, transparent 1px);
             background-size: 24px 24px;
         }
 
@@ -248,7 +287,7 @@
         #welcome-overlay button {
             pointer-events: auto;
             background: var(--accent);
-            color: white;
+            color: var(--on-accent);
             border: none;
             border-radius: 6px;
             padding: 8px 18px;
@@ -291,20 +330,52 @@
             min-width: 60px;
         }
 
-        /* Drawflow node skinning */
+        /* Drawflow node skinning — laid out like the Android canvas NodeCard:
+           card surface + a header strip on top. The strip colour and its ink are
+           computed by applyCanvasSkin() with NodeCard.kt's quiet/vivid algorithms
+           and written as inline --strip / --strip-ink; this rule only arranges. */
         .drawflow .drawflow-node {
-            background: #2a2d35;
+            display: block;
+            background: var(--node-surface);
             border: 1px solid var(--border);
-            border-top: 4px solid var(--border);
             color: var(--text);
-            padding: 10px 14px;
-            min-width: 140px;
+            padding: 0;
+            min-width: 150px;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            box-shadow: var(--shadow);
         }
 
         .drawflow .drawflow-node.selected {
-            box-shadow: 0 0 0 2px var(--accent);
+            /* The vendored drawflow sheet paints `.selected` red; paint the card
+               surface back over it and let the accent outline carry selection,
+               as the Android canvas does. */
+            background: var(--node-surface);
+            box-shadow: 0 0 0 2px var(--accent), var(--shadow);
+        }
+
+        .drawflow .drawflow-node .node-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            /* No clipping on the card: branch ports and their labels stick out
+               past its edge; only the strip itself gets rounded top corners. */
+            border-radius: 7px 7px 0 0;
+            background: var(--strip, var(--surface-3));
+            color: var(--strip-ink, var(--text));
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .drawflow .drawflow-node .node-head .icon { font-size: 13px; }
+        .drawflow .drawflow-node .node-head .head-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .drawflow .drawflow-node .node-head .node-kind {
+            margin-left: auto;
+            opacity: 0.8;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
         }
 
         .drawflow .drawflow-node .node-body {
@@ -312,16 +383,12 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
+            padding: 9px 12px;
+            min-height: 36px;
         }
 
         .drawflow .drawflow-node .node-body .icon { font-size: 16px; }
         .drawflow .drawflow-node .node-body .label { font-weight: 600; }
-        .drawflow .drawflow-node .node-body .type {
-            font-size: 11px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
 
         /* Unresolved-reference badge on PIPELINE / SKILL nodes (see
            refreshReferenceBadges). Amber chip that sits at the trailing edge
@@ -333,86 +400,24 @@
             white-space: nowrap;
             padding: 1px 6px;
             border-radius: 8px;
-            color: #1a1205;
-            background: #FFB300;
+            color: #14110E;
+            background: var(--warn);
         }
 
         .drawflow .drawflow-node .input,
         .drawflow .drawflow-node .output {
-            background: #11131a;
+            background: var(--bg);
             border-color: var(--border);
         }
 
-        /* Per-type top accent */
-        .drawflow .drawflow-node.nodetype-LITE_RT { border-top-color: #4CAF50; }
-        .drawflow .drawflow-node.nodetype-CLOUD { border-top-color: #2196F3; }
-        .drawflow .drawflow-node.nodetype-TOOL { border-top-color: #FF9800; }
-        .drawflow .drawflow-node.nodetype-IF_CONDITION { border-top-color: #FFC107; }
-        .drawflow .drawflow-node.nodetype-INTENT_ROUTER { border-top-color: #E91E63; }
-        .drawflow .drawflow-node.nodetype-DECOMPOSITION { border-top-color: #3F51B5; }
-        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR { border-top-color: #795548; }
-        .drawflow .drawflow-node.nodetype-EVALUATION { border-top-color: #009688; }
-        .drawflow .drawflow-node.nodetype-SUMMARY { border-top-color: #8BC34A; }
-        .drawflow .drawflow-node.nodetype-CLARIFICATION { border-top-color: #9C27B0; }
-        .drawflow .drawflow-node.nodetype-INPUT { border-top-color: #607D8B; }
-        .drawflow .drawflow-node.nodetype-OUTPUT { border-top-color: #F44336; }
-
-        /* IF_CONDITION outputs carry True / False semantics. Place the
-           labels outside the node (to the right of each port) so they
-           don't overlap node content and stay visible regardless of the
-           selection or validation outlines. The text-shadow gives a
-           halo against bright outlines (red `has-error` ring vs red
-           "False" text in particular). */
-        .drawflow .drawflow-node.nodetype-IF_CONDITION .output::after {
-            position: absolute;
-            left: 100%;
-            margin-left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-            pointer-events: none;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.85);
-        }
-        .drawflow .drawflow-node.nodetype-IF_CONDITION .output.output_1::after {
-            content: "True";
-            color: #4CAF50;
-        }
-        .drawflow .drawflow-node.nodetype-IF_CONDITION .output.output_2::after {
-            content: "False";
-            color: #F44336;
-        }
-
-        /* QUEUE_PROCESSOR has two semantically distinct outputs: output_1
-           ("Item") loops a subtask body back into the queue, output_2
-           ("Done") proceeds downstream once the queue empties. Naming
-           mirrors DraggableNode.kt to keep the UI vocabulary aligned. */
-        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR .output::after {
-            position: absolute;
-            left: 100%;
-            margin-left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-            pointer-events: none;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.85);
-        }
-        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR .output.output_1::after {
-            content: "Item";
-            color: #FFC107;
-        }
-        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR .output.output_2::after {
-            content: "Done";
-            color: #4CAF50;
-        }
-
-        /* EVALUATION has three verdict outputs that the runtime routes by
-           edge label: output_1 ("Pass"), output_2 ("Retry"), output_3
-           ("Fail"). The labels mirror GraphExecutionEngine.findNextNodeId /
-           SystemNodeExecutor's canonical Pass/Retry/Fail verdict tokens. */
+        /* Inline labels on branch ports. Only the display is Chinese: an edge's
+           stored label stays True / False / Item / Done / Pass / Retry / Fail
+           (the engine matches those literals and the pipeline JSON is not
+           translated — see ROUTE_LABEL_ZH). The labels sit outside the node so
+           they never overlap node content or the selection outline; the
+           text-shadow gives them a halo. */
+        .drawflow .drawflow-node.nodetype-IF_CONDITION .output::after,
+        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR .output::after,
         .drawflow .drawflow-node.nodetype-EVALUATION .output::after {
             position: absolute;
             left: 100%;
@@ -423,34 +428,45 @@
             font-weight: 600;
             white-space: nowrap;
             pointer-events: none;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.85);
+            text-shadow: 0 0 3px var(--node-surface);
         }
-        .drawflow .drawflow-node.nodetype-EVALUATION .output.output_1::after {
-            content: "Pass";
-            color: #4CAF50;
+        .drawflow .drawflow-node.nodetype-IF_CONDITION .output.output_1::after {
+            content: "是";
+            color: var(--success);
         }
-        .drawflow .drawflow-node.nodetype-EVALUATION .output.output_2::after {
-            content: "Retry";
-            color: #FFC107;
-        }
-        .drawflow .drawflow-node.nodetype-EVALUATION .output.output_3::after {
-            content: "Fail";
-            color: #F44336;
+        .drawflow .drawflow-node.nodetype-IF_CONDITION .output.output_2::after {
+            content: "否";
+            color: var(--danger);
         }
 
-        /* Sidebar palette colour bars */
-        .palette-item[data-type="LITE_RT"]         { border-left-color: #4CAF50; }
-        .palette-item[data-type="CLOUD"]           { border-left-color: #2196F3; }
-        .palette-item[data-type="TOOL"]            { border-left-color: #FF9800; }
-        .palette-item[data-type="IF_CONDITION"]    { border-left-color: #FFC107; }
-        .palette-item[data-type="INTENT_ROUTER"]   { border-left-color: #E91E63; }
-        .palette-item[data-type="DECOMPOSITION"]   { border-left-color: #3F51B5; }
-        .palette-item[data-type="QUEUE_PROCESSOR"] { border-left-color: #795548; }
-        .palette-item[data-type="EVALUATION"]      { border-left-color: #009688; }
-        .palette-item[data-type="SUMMARY"]         { border-left-color: #8BC34A; }
-        .palette-item[data-type="CLARIFICATION"]   { border-left-color: #9C27B0; }
-        .palette-item[data-type="INPUT"]           { border-left-color: #607D8B; }
-        .palette-item[data-type="OUTPUT"]          { border-left-color: #F44336; }
+        /* QUEUE_PROCESSOR has two semantically distinct outputs: output_1
+           ("Item") loops a subtask body back into the queue, output_2
+           ("Done") proceeds downstream once the queue empties. */
+        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR .output.output_1::after {
+            content: "逐项";
+            color: var(--warn);
+        }
+        .drawflow .drawflow-node.nodetype-QUEUE_PROCESSOR .output.output_2::after {
+            content: "完成";
+            color: var(--success);
+        }
+
+        /* EVALUATION has three verdict outputs that the runtime routes by
+           edge label: output_1 ("Pass"), output_2 ("Retry"), output_3
+           ("Fail"). The labels mirror GraphExecutionEngine.findNextNodeId /
+           SystemNodeExecutor's canonical Pass/Retry/Fail verdict tokens. */
+        .drawflow .drawflow-node.nodetype-EVALUATION .output.output_1::after {
+            content: "通过";
+            color: var(--success);
+        }
+        .drawflow .drawflow-node.nodetype-EVALUATION .output.output_2::after {
+            content: "重试";
+            color: var(--warn);
+        }
+        .drawflow .drawflow-node.nodetype-EVALUATION .output.output_3::after {
+            content: "失败";
+            color: var(--danger);
+        }
 
         /* Node config dialog */
         dialog#node-config {
@@ -491,8 +507,7 @@
         dialog#node-config header .type-badge {
             font-size: 11px;
             color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
             margin-left: auto;
         }
 
@@ -533,11 +548,11 @@
             padding: 8px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--surface-2);
         }
         dialog#node-config .list-add {
             align-self: flex-start;
-            background: #2e313a;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px dashed var(--border);
             border-radius: 6px;
@@ -556,20 +571,19 @@
             cursor: pointer;
             font: inherit;
         }
-        dialog#node-config .list-del:hover { color: #F44336; border-color: #F44336; }
+        dialog#node-config .list-del:hover { color: var(--danger); border-color: var(--danger); }
 
         dialog#node-config .field > label {
             font-size: 12px;
             color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
         }
 
         dialog#node-config input[type="text"],
         dialog#node-config input[type="number"],
         dialog#node-config select,
         dialog#node-config textarea {
-            background: #2e313a;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -609,7 +623,7 @@
         }
 
         dialog#node-config .variable-chip {
-            background: #2a2d35;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -619,12 +633,12 @@
             cursor: pointer;
         }
         dialog#node-config .variable-chip:hover {
-            background: #353841;
+            background: var(--surface-3);
             border-color: var(--accent);
         }
 
         dialog#node-config .prompts-trigger {
-            background: #2a2d35;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -635,7 +649,7 @@
             white-space: nowrap;
         }
         dialog#node-config .prompts-trigger:hover {
-            background: #353841;
+            background: var(--surface-3);
             border-color: var(--accent);
         }
 
@@ -668,8 +682,7 @@
         }
         dialog#node-config .prompts-section-title {
             font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.02em;
             color: var(--text-dim);
             padding: 0 6px 4px;
         }
@@ -724,20 +737,10 @@
             cursor: pointer;
         }
         dialog#node-config .prompts-save-current:hover {
-            background: rgba(79, 140, 255, 0.08);
+            background: var(--accent-soft);
             border-color: var(--accent);
         }
 
-        /* Light-theme overrides for the prompts popover */
-        html[data-theme="light"] dialog#node-config .prompts-trigger { background: #ffffff; }
-        html[data-theme="light"] dialog#node-config .prompts-trigger:hover { background: #eceff4; }
-        html[data-theme="light"] dialog#node-config .prompts-popover {
-            background: #ffffff;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-        }
-        html[data-theme="light"] dialog#node-config .prompts-row-pick:hover {
-            background: rgba(0,0,0,0.05);
-        }
 
         dialog#node-config .context-section {
             display: flex;
@@ -752,8 +755,7 @@
         dialog#node-config .context-section .section-title {
             font-size: 12px;
             color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
         }
 
         dialog#node-config .context-section .hint {
@@ -788,7 +790,7 @@
         }
 
         dialog#node-config button {
-            background: #2e313a;
+            background: var(--surface-2);
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -800,7 +802,7 @@
         dialog#node-config button.primary {
             background: var(--accent);
             border-color: var(--accent);
-            color: white;
+            color: var(--on-accent);
         }
 
         dialog#node-config button:hover { filter: brightness(1.1); }
@@ -821,8 +823,7 @@
             gap: 8px;
             padding: 8px 12px;
             font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.02em;
             color: var(--text-dim);
             border-bottom: 1px solid var(--border);
         }
@@ -859,7 +860,7 @@
 
         #validation-panel .item .icon { width: 16px; text-align: center; }
         #validation-panel .item.error .icon { color: var(--danger); }
-        #validation-panel .item.warning .icon { color: #FFC107; }
+        #validation-panel .item.warning .icon { color: var(--warn); }
 
         #validation-panel .item button.node-link {
             background: transparent;
@@ -874,7 +875,7 @@
 
         /* Validation highlighting on nodes */
         .drawflow .drawflow-node.has-warning {
-            outline: 2px solid #FFC107;
+            outline: 2px solid var(--warn);
             outline-offset: 2px;
         }
 
@@ -971,8 +972,7 @@
         .preset-card-name { font-size: 14px; font-weight: 600; }
         .preset-badge {
             font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
             padding: 2px 7px;
             border-radius: 999px;
             border: 1px solid var(--border);
@@ -1016,7 +1016,7 @@
         .preset-card-actions button.primary {
             background: var(--accent);
             border-color: var(--accent);
-            color: #fff;
+            color: var(--on-accent);
         }
         .preset-card-actions button.danger { color: var(--danger); }
         .preset-card-actions button.danger:hover { border-color: var(--danger); }
@@ -1052,7 +1052,7 @@
         dialog#preset-save footer button.primary {
             background: var(--accent);
             border-color: var(--accent);
-            color: #fff;
+            color: var(--on-accent);
         }
         dialog#preset-library footer { justify-content: space-between; }
 
@@ -1097,45 +1097,49 @@
 <body>
 <div id="app">
     <aside id="sidebar">
-        <h2>Nodes</h2>
+        <h2>节点</h2>
         <div id="palette"></div>
     </aside>
     <main id="main">
         <header id="toolbar">
-            <button id="btn-undo" title="Undo (Ctrl+Z)">↶ Undo</button>
-            <button id="btn-redo" title="Redo (Ctrl+Y)">↷ Redo</button>
-            <button id="btn-delete" class="danger" title="Delete selected (Del)">🗑 Delete</button>
-            <button id="btn-autolayout" title="Auto-layout the graph (left-to-right by topological depth)">🪄 Auto-layout</button>
-            <button id="btn-export" title="Export pipeline JSON">📤 Export JSON</button>
-            <button id="btn-import" title="Import pipeline JSON">📥 Import JSON</button>
-            <button id="btn-export-bundle" title="Export this pipeline with its PIPELINE dependencies as a bundle">📦 Export bundle</button>
-            <button id="btn-import-bundle" title="Import a pipeline bundle into your Mine presets">📦 Import bundle</button>
-            <button id="btn-presets" title="Browse and manage pipeline presets">📚 Presets</button>
+            <button id="btn-undo" title="撤销（Ctrl+Z）">↶ 撤销</button>
+            <button id="btn-redo" title="重做（Ctrl+Y）">↷ 重做</button>
+            <button id="btn-delete" class="danger" title="删除选中项（Del）">🗑 删除</button>
+            <button id="btn-autolayout" title="自动排版：按拓扑深度从左到右排列">🪄 自动排版</button>
+            <button id="btn-export" title="导出流程 JSON">📤 导出 JSON</button>
+            <button id="btn-import" title="导入流程 JSON">📥 导入 JSON</button>
+            <button id="btn-export-bundle" title="把本流程和它依赖的子流程一起导出为整包">📦 导出整包</button>
+            <button id="btn-import-bundle" title="把流程整包导入到「我的」预设">📦 导入整包</button>
+            <button id="btn-presets" title="浏览和管理流程预设">📚 预设库</button>
             <input id="file-import" type="file" accept="application/json,.json" hidden>
             <input id="file-import-preset" type="file" accept="application/json,.json,.preset.json" hidden>
             <input id="file-import-bundle" type="file" accept="application/json,.json" hidden>
-            <span class="name-label">Name</span>
-            <input id="pipeline-name" type="text" placeholder="Untitled pipeline">
-            <span class="name-label">Memory key</span>
+            <span class="name-label">名称</span>
+            <input id="pipeline-name" type="text" placeholder="未命名流程">
+            <span class="name-label">记忆键</span>
             <input id="pipeline-memory-query" type="text"
-                   placeholder="optional · background runs"
-                   title="Long-term-memory search key for background runs (trigger / scheduled / tile). Their prompt is fixed by you and describes no particular firing, so it makes a poor search key. Supports $DATE and the other prompt variables. Leave empty for interactive-only pipelines.">
+                   placeholder="可选 · 后台运行"
+                   title="后台运行（触发 / 定时 / 桌面磁贴）用的长期记忆检索键。这类运行的提示词由你固定写死、不描述具体某次触发，所以拿它当检索键并不合适。支持 $DATE 等提示词变量。只给交互式流程用时留空即可。">
             <span class="spacer"></span>
-            <span class="hint">Drag a node from the left. Double-click a connection to label it.</span>
-            <button id="btn-theme" type="button" title="Toggle theme">🌙</button>
+            <span class="hint">从左侧拖入节点。双击连线可给它加标签。</span>
+            <span class="seg" role="group" aria-label="浓度">
+                <button id="btn-intensity-quiet" type="button" title="静音浓度：节点类型条用 14% 淡染（同 Android 画布的静音档）">静音</button>
+                <button id="btn-intensity-vivid" type="button" title="鲜亮浓度：节点类型条用实色（同 Android 画布的鲜亮档）">鲜亮</button>
+            </span>
+            <button id="btn-theme" type="button" title="切换深浅主题">🌙</button>
         </header>
         <div id="canvas-wrapper">
             <div id="drawflow"></div>
             <div id="labels-layer"></div>
             <div id="welcome-overlay">
-                <h2>No pipeline yet</h2>
-                <p>Drag a node from the left to start, or load a starter graph (INPUT → CLOUD → OUTPUT) to see the editor in action.</p>
-                <button id="btn-load-example" type="button">Load Example</button>
+                <h2>还没有流程</h2>
+                <p>从左侧拖一个节点开始，或者先载入一个示例流程（输入 → 云端 → 输出）看看编辑器怎么用。</p>
+                <button id="btn-load-example" type="button">载入示例</button>
             </div>
         </div>
         <section id="validation-panel">
             <header>
-                <span>Validation</span>
+                <span>校验</span>
                 <span class="counts" data-role="counts"></span>
             </header>
             <div class="items" data-role="items"></div>
@@ -1147,13 +1151,13 @@
     <form method="dialog">
         <header>
             <span class="icon" data-role="icon"></span>
-            <span class="title">Configure node</span>
+            <span class="title">配置节点</span>
             <span class="type-badge" data-role="type"></span>
         </header>
         <div class="body" data-role="body"></div>
         <footer>
-            <button type="button" data-role="cancel">Cancel</button>
-            <button type="button" class="primary" data-role="save">Save</button>
+            <button type="button" data-role="cancel">取消</button>
+            <button type="button" class="primary" data-role="save">保存</button>
         </footer>
     </form>
 </dialog>
@@ -1165,17 +1169,17 @@
     <div class="preset-shell">
         <header>
             <span class="icon">📚</span>
-            <span class="title">Pipeline presets</span>
-            <button type="button" class="preset-close" data-role="close" title="Close (Esc)">✕</button>
+            <span class="title">流程预设</span>
+            <button type="button" class="preset-close" data-role="close" title="关闭（Esc）">✕</button>
         </header>
         <nav class="preset-tabs" data-role="tabs">
-            <button type="button" class="preset-tab is-active" data-tab="bundled">Bundled</button>
-            <button type="button" class="preset-tab" data-tab="mine">Mine</button>
+            <button type="button" class="preset-tab is-active" data-tab="bundled">内置</button>
+            <button type="button" class="preset-tab" data-tab="mine">我的</button>
         </nav>
         <div class="preset-list" data-role="list"></div>
         <footer>
-            <button type="button" data-role="import">📥 Import preset…</button>
-            <button type="button" class="primary" data-role="save-current">💾 Save canvas as preset…</button>
+            <button type="button" data-role="import">📥 导入预设…</button>
+            <button type="button" class="primary" data-role="save-current">💾 把画布存为预设…</button>
         </footer>
     </div>
 </dialog>
@@ -1185,30 +1189,30 @@
     <form method="dialog">
         <header>
             <span class="icon">💾</span>
-            <span class="title">Save canvas as preset</span>
+            <span class="title">把画布存为预设</span>
         </header>
         <div class="body">
             <div class="field">
-                <label for="preset-save-name">Name</label>
-                <input id="preset-save-name" type="text" maxlength="60" placeholder="My pipeline preset">
+                <label for="preset-save-name">名称</label>
+                <input id="preset-save-name" type="text" maxlength="60" placeholder="我的流程预设">
             </div>
             <div class="field">
-                <label for="preset-save-category">Category</label>
+                <label for="preset-save-category">分类</label>
                 <select id="preset-save-category"></select>
             </div>
             <div class="field">
-                <label for="preset-save-tags">Tags <span class="field-hint">(comma-separated)</span></label>
-                <input id="preset-save-tags" type="text" placeholder="offline, qa, starter">
+                <label for="preset-save-tags">标签 <span class="field-hint">（用逗号分隔）</span></label>
+                <input id="preset-save-tags" type="text" placeholder="离线、问答、入门">
             </div>
             <div class="field">
-                <label for="preset-save-description">Description</label>
-                <textarea id="preset-save-description" rows="3" placeholder="What this preset does and when to pick it."></textarea>
+                <label for="preset-save-description">说明</label>
+                <textarea id="preset-save-description" rows="3" placeholder="这个预设做什么、什么时候用它。"></textarea>
             </div>
             <p class="preset-save-error" data-role="error" hidden></p>
         </div>
         <footer>
-            <button type="button" data-role="cancel">Cancel</button>
-            <button type="button" class="primary" data-role="confirm">Save preset</button>
+            <button type="button" data-role="cancel">取消</button>
+            <button type="button" class="primary" data-role="confirm">保存预设</button>
         </footer>
     </form>
 </dialog>
@@ -1289,6 +1293,227 @@
     ];
     /* /AUTO-GEN:NODE_TYPES */
     const NODE_TYPE_BY_ID = Object.fromEntries(NODE_TYPES.map(t => [t.id, t]));
+
+    /* -------------------------------------------------------------------- *
+     *  Display-layer Chinese
+     *
+     *  The AUTO-GEN blocks (NODE_TYPES / AVAILABLE_TOOLS / prompt and preset
+     *  catalogues) are generated from the Android resources and compared
+     *  verbatim by :app:verifyBrowserEditorConstants, so the page must not edit
+     *  them. The Chinese lives in a separate **display-only** table instead:
+     *  every node name, one-line description and branch label drawn on screen
+     *  goes through the helpers here; node ids, routing values and JSON fields
+     *  stay exactly as they were.
+     *
+     *  Node names and descriptions paraphrase the name / description pair in
+     *  catalog/.../res/values/strings_node_types.xml, using the terminology the
+     *  Android side will use (LITE_RT reads as "local model", not "LiteRT").
+     * -------------------------------------------------------------------- */
+    const NODE_LABELS_ZH = {
+        INPUT: '输入',
+        OUTPUT: '输出',
+        LITE_RT: '本地模型',
+        CLOUD: '云端模型',
+        TOOL: '工具调用',
+        IF_CONDITION: '条件判断',
+        INTENT_ROUTER: '意图路由',
+        DECOMPOSITION: '任务拆解',
+        QUEUE_PROCESSOR: '队列处理',
+        EVALUATION: '结果评估',
+        SUMMARY: '内容汇总',
+        CLARIFICATION: '追问',
+        PIPELINE: '子流程',
+        SKILL: '技能',
+    };
+    const NODE_TOOLTIPS_ZH = {
+        INPUT: '流程的起点：你的消息、分享进来的页面，或触发器的提示词。',
+        OUTPUT: '流程的终点，答案在这里交给你。',
+        LITE_RT: '在手机本机模型上做一次推理。',
+        CLOUD: '对已配置的云端服务商做一次推理。',
+        TOOL: '调用一个工具——内置工具、别的 App 或 MCP 服务——再把结果传给下游。',
+        IF_CONDITION: '二选一分支：对输入问一个是非问题，或检查有没有附带图片。',
+        INTENT_ROUTER: '把进来的文本归到你定义的某一类，然后沿那一类的分支继续。',
+        DECOMPOSITION: '把一条指令拆成一串子任务。',
+        QUEUE_PROCESSOR: '按「逐项」分支逐个处理子任务，处理完再走「完成」分支。',
+        EVALUATION: '判定上一步的产出，给出「通过」「重试」或「失败」。',
+        SUMMARY: '把前面各步的产出压缩成一段文字，常在循环之后用。',
+        CLARIFICATION: '暂停流程问你一个问题，你的回答就是该节点的输出。',
+        PIPELINE: '把另一个已保存的流程当成一步来运行，并取回它的答案。',
+        SKILL: '运行一个可复用的技能：固定指令 + 该技能可用的工具清单。',
+    };
+    function nodeLabel(t) { return NODE_LABELS_ZH[t.id] || t.label; }
+    function nodeTooltip(t) { return NODE_TOOLTIPS_ZH[t.id] || t.tooltip; }
+
+    /**
+     * The title a node is drawn with. The file's `label` is data and is shown as
+     * it is; only when it is exactly the type's English default name from the
+     * Android side (e.g. a bare "Input") is the Chinese default substituted.
+     * Still display-only — import/export keep using data.label unchanged.
+     */
+    function displayNodeTitle(typeId, storedLabel) {
+        const t = NODE_TYPE_BY_ID[typeId];
+        if (!t) return storedLabel || '';
+        if (!storedLabel || storedLabel === t.label) return nodeLabel(t);
+        return storedLabel;
+    }
+
+    /* Node hues: KnotworkPalette.Node* from catalog/.../tokens/Color.kt — the
+       same set NodeCard.headerTint() (catalog/.../pipelineeditor/NodeTypeColors.kt)
+       gives the Android canvas. The page follows no wallpaper, so these fixed
+       hues are used as they are. SKILL has no hue of its own: like Android it
+       takes the theme primary, resolved by accentColor() below. */
+    const NODE_HUES = {
+        INPUT: '#C48225',
+        OUTPUT: '#81520A',
+        LITE_RT: '#A76C12',
+        CLOUD: '#5F9DB0',
+        TOOL: '#D5A13C',
+        IF_CONDITION: '#43A96E',
+        INTENT_ROUTER: '#9283DC',
+        DECOMPOSITION: '#00A8A2',
+        QUEUE_PROCESSOR: '#C670AB',
+        EVALUATION: '#D5725A',
+        SUMMARY: '#359BD9',
+        CLARIFICATION: '#D49648',
+        PIPELINE: '#424DB2',
+        SKILL: null,
+    };
+
+    /* Display translation of branch labels. The stored value and the value the
+       engine matches on stay English (PORT_AUTO_LABELS must equal RouteLabels);
+       only the layer drawn on screen is Chinese. A user typing a Chinese branch
+       label into an edge gets it folded back to English before it is stored, so
+       import/export still carry True / False / Item / Done / Pass / Retry / Fail. */
+    const ROUTE_LABEL_ZH = {
+        True: '是', False: '否', Item: '逐项', Done: '完成', Pass: '通过', Retry: '重试', Fail: '失败',
+    };
+    const ROUTE_LABEL_BY_ZH = Object.fromEntries(
+        Object.entries(ROUTE_LABEL_ZH).map(([label, zh]) => [zh, label]),
+    );
+    /** Display: a built-in branch label becomes Chinese; a custom label is returned as is. */
+    function routeLabelForDisplay(label) { return ROUTE_LABEL_ZH[label] || label; }
+    /** Storage: a Chinese branch label folds back to English; anything else is returned as is. */
+    function routeLabelForStorage(text) {
+        const trimmed = String(text == null ? '' : text).trim();
+        return ROUTE_LABEL_BY_ZH[trimmed] || trimmed;
+    }
+
+    /* -------------------------------------------------------------------- *
+     *  Quiet / vivid intensity on the canvas nodes
+     *
+     *  Ports NodeCard.kt + NodeTypeColors.kt straight across:
+     *   - quiet: the header strip is the node hue at 14% over the card surface
+     *     (quietHeaderBackground); the ink is the hue itself, pushed towards the
+     *     opposite of the background until it reaches 4.5:1
+     *     (what quietHeaderForeground does, done here with a binary search in sRGB);
+     *   - vivid: the strip is the solid node hue and the ink is whichever of
+     *     black / white has the higher contrast (vividHeaderForeground).
+     *  The hues come from KnotworkPalette; the surface comes from the CSS
+     *  variables above.
+     * -------------------------------------------------------------------- */
+    const QUIET_STRIP_ALPHA = 0.14; // quietHeaderBackground: tint.copy(alpha = 0.14f)
+
+    function hexToRgb(hex) {
+        const h = String(hex).replace('#', '');
+        const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+        return [
+            parseInt(full.slice(0, 2), 16),
+            parseInt(full.slice(2, 4), 16),
+            parseInt(full.slice(4, 6), 16),
+        ];
+    }
+
+    function rgbToHex(rgb) {
+        return '#' + rgb
+            .map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0'))
+            .join('');
+    }
+
+    /** WCAG relative luminance — the same formula as Compose's Color.luminance(). */
+    function relativeLuminance(rgb) {
+        const [r, g, b] = rgb.map(v => {
+            const c = v / 255;
+            return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    function contrastRatio(a, b) {
+        const x = relativeLuminance(a);
+        const y = relativeLuminance(b);
+        return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+    }
+
+    /** [tint] at [alpha] composited over [surface] (sRGB approximation of compositeOver). */
+    function compositeOver(tint, alpha, surface) {
+        return tint.map((v, i) => v * alpha + surface[i] * (1 - alpha));
+    }
+
+    function cssColor(name) {
+        const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return raw || '#000000';
+    }
+
+    function accentColor() { return cssColor('--accent'); }
+
+    function nodeHue(typeId) { return NODE_HUES[typeId] || accentColor(); }
+
+    /** Quiet ink: the hue itself when it already clears 4.5:1, else pushed away from the background. */
+    function quietStripInk(hueHex, stripRgb) {
+        const hue = hexToRgb(hueHex);
+        if (contrastRatio(hue, stripRgb) >= 4.5) return hueHex;
+        const dark = relativeLuminance(stripRgb) < 0.18;
+        const target = dark ? [255, 255, 255] : [0, 0, 0];
+        let low = 0;
+        let high = 1;
+        let best = target;
+        for (let i = 0; i < 24; i++) {
+            const amount = (low + high) / 2;
+            const candidate = hue.map((v, idx) => v + (target[idx] - v) * amount);
+            if (contrastRatio(candidate, stripRgb) >= 4.5) { best = candidate; high = amount; }
+            else { low = amount; }
+        }
+        return rgbToHex(best);
+    }
+
+    /** Vivid ink: whichever of black / white contrasts more with the solid hue (vividHeaderForeground). */
+    function vividStripInk(hueRgb) {
+        const luminance = relativeLuminance(hueRgb);
+        const darkContrast = (luminance + 0.05) / 0.05;
+        const lightContrast = 1.05 / (luminance + 0.05);
+        return darkContrast >= lightContrast ? '#000000' : '#FFFFFF';
+    }
+
+    /**
+     * Repaints the header strip of every node on the canvas. Called after a
+     * theme, intensity or graph change; it only writes inline CSS variables
+     * (--strip / --strip-ink) and never touches node data.
+     */
+    function applyCanvasSkin() {
+        const intensity = document.documentElement.dataset.intensity || 'quiet';
+        const surface = hexToRgb(cssColor('--node-surface'));
+        document.querySelectorAll('.drawflow .drawflow-node').forEach(nodeEl => {
+            const typeId = Array.from(nodeEl.classList)
+                .filter(c => c.startsWith('nodetype-'))
+                .map(c => c.slice('nodetype-'.length))[0];
+            if (!typeId) return;
+            const hueHex = nodeHue(typeId);
+            const hueRgb = hexToRgb(hueHex);
+            if (intensity === 'vivid') {
+                nodeEl.style.setProperty('--strip', hueHex);
+                nodeEl.style.setProperty('--strip-ink', vividStripInk(hueRgb));
+            } else {
+                const stripRgb = compositeOver(hueRgb, QUIET_STRIP_ALPHA, surface);
+                nodeEl.style.setProperty('--strip', rgbToHex(stripRgb));
+                nodeEl.style.setProperty('--strip-ink', quietStripInk(hueHex, stripRgb));
+            }
+        });
+        // Palette strips share the same source: SKILL wears the theme accent, so
+        // a theme or intensity switch has to repaint them too.
+        document.querySelectorAll('.palette-item').forEach(el => {
+            if (el.dataset.type) el.style.borderLeftColor = nodeHue(el.dataset.type);
+        });
+    }
 
     /* -------------------------------------------------------------------- *
      *  Default system prompts — port of
@@ -5618,7 +5843,7 @@
      *  KEEP IN SYNC as the registry grows. See DESCRIPTION.md §8.2.
      * -------------------------------------------------------------------- */
     const CLOUD_PROVIDERS = [
-        { id: 'auto',      label: 'Auto' },
+        { id: 'auto',      label: '自动' },
         { id: 'openai',    label: 'OpenAI' },
         { id: 'anthropic', label: 'Anthropic' },
         { id: 'google',    label: 'Google' },
@@ -5626,7 +5851,7 @@
         { id: 'openrouter', label: 'OpenRouter' },
         { id: 'groq',      label: 'Groq' },
         { id: 'ollama',    label: 'Ollama' },
-        { id: 'openai_compatible', label: 'OpenAI-compatible server' },
+        { id: 'openai_compatible', label: 'OpenAI 兼容服务器' },
     ];
 
     /* AUTO-GEN:AVAILABLE_TOOLS — generated by :app:generateBrowserEditorConstants. DO NOT EDIT BY HAND. */
@@ -5730,7 +5955,9 @@
         // The flat runtime fields are always derived from the rich `cfg` so the
         // two never drift; `cfg` is the source of truth the forms edit.
         return {
-            label: t.label,
+            // A new node's default title is the Chinese display name. Only the
+            // value of this field changes; its name and the JSON shape do not.
+            label: nodeLabel(t),
             cfg: cfg,
             ...richToFlat(typeId, cfg),
             contextConfig: defaultContextConfig(typeId),
@@ -5779,17 +6006,17 @@
     // round-trips into the app's NodeConfigSheet. `AUTO` is a real catalog
     // value (persisted as the flat `cloudProvider = "auto"` sentinel).
     const PROVIDER_OPTIONS = [
-        { id: 'OPEN_AI',    label: 'OpenAI',     group: 'Hosted' },
-        { id: 'ANTHROPIC',  label: 'Anthropic',  group: 'Hosted' },
-        { id: 'GOOGLE',     label: 'Google',     group: 'Hosted' },
-        { id: 'DEEPSEEK',   label: 'DeepSeek',   group: 'Hosted' },
-        { id: 'OPENROUTER', label: 'OpenRouter', group: 'Hosted' },
-        { id: 'GROQ',       label: 'Groq',       group: 'Hosted' },
-        { id: 'OLLAMA',     label: 'Ollama',     group: 'Your own server' },
-        { id: 'OPENAI_COMPATIBLE', label: 'OpenAI-compatible server', group: 'Your own server' },
+        { id: 'OPEN_AI',    label: 'OpenAI',     group: '托管服务' },
+        { id: 'ANTHROPIC',  label: 'Anthropic',  group: '托管服务' },
+        { id: 'GOOGLE',     label: 'Google',     group: '托管服务' },
+        { id: 'DEEPSEEK',   label: 'DeepSeek',   group: '托管服务' },
+        { id: 'OPENROUTER', label: 'OpenRouter', group: '托管服务' },
+        { id: 'GROQ',       label: 'Groq',       group: '托管服务' },
+        { id: 'OLLAMA',     label: 'Ollama',     group: '自建服务器' },
+        { id: 'OPENAI_COMPATIBLE', label: 'OpenAI 兼容服务器', group: '自建服务器' },
     ];
     const CLOUD_PROVIDER_OPTIONS = [
-        { id: 'AUTO', label: 'Auto — first configured of Google, Anthropic, OpenAI, DeepSeek' },
+        { id: 'AUTO', label: '自动——按 Google、Anthropic、OpenAI、DeepSeek 的顺序选第一个已配置的' },
         ...PROVIDER_OPTIONS,
     ];
 
@@ -5866,7 +6093,7 @@
     // default to on-device inference, so the first option is on-device (empty
     // id) and the rest pick a concrete provider — Auto is intentionally absent.
     const ENGINE_PROVIDER_OPTIONS = [
-        { id: '', label: 'On-device' },
+        { id: '', label: '本机推理' },
         ...PROVIDER_OPTIONS,
     ];
 
@@ -6220,10 +6447,10 @@
         el.className = 'palette-item';
         el.draggable = true;
         el.dataset.type = t.id;
-        // The node type's one-line description — the app's own sentence for the type,
-        // which the cookbook also opens the type's entry with.
-        el.title = t.tooltip;
-        el.innerHTML = `<span class="icon">${t.icon}</span><span class="name">${t.label}</span>`;
+        // The type's one-line description; Chinese is display-only (NODE_TOOLTIPS_ZH).
+        el.title = nodeTooltip(t);
+        el.style.borderLeftColor = nodeHue(t.id);
+        el.innerHTML = `<span class="icon">${t.icon}</span><span class="name">${nodeLabel(t)}</span>`;
         el.addEventListener('dragstart', e => {
             e.dataTransfer.setData('node-type', t.id);
             e.dataTransfer.effectAllowed = 'copy';
@@ -6263,13 +6490,18 @@
     });
 
     function nodeHtml(t) {
+        // Two bands, like the Android canvas NodeCard: a header strip on top
+        // (painted by applyCanvasSkin for the active intensity) and a body with
+        // the node title. The body keeps the .label selector that the import /
+        // save label patches target (`.node-body .label`).
         return `
-            <div class="node-body">
+            <div class="node-head">
                 <span class="icon">${t.icon}</span>
-                <div>
-                    <div class="label">${t.label}</div>
-                    <div class="type">${t.id}</div>
-                </div>
+                <span class="head-label">${nodeLabel(t)}</span>
+                <span class="node-kind">${t.id}</span>
+            </div>
+            <div class="node-body">
+                <span class="label">${nodeLabel(t)}</span>
             </div>`;
     }
 
@@ -6319,7 +6551,7 @@
         const sourceCfg = (data.cfg && typeof data.cfg === 'object')
             ? data.cfg
             : deriveRichFromFlat(typeId, data);
-        sourceCfg.title = data.label || sourceCfg.title || t.label;
+        sourceCfg.title = data.label || sourceCfg.title || nodeLabel(t);
 
         dialogNodeId = numericId;
         dialogTypeId = typeId;
@@ -6327,8 +6559,8 @@
         dialogCfg = JSON.parse(JSON.stringify(sourceCfg));
 
         dialogIcon.textContent = t.icon;
-        dialog.querySelector('.title').textContent = `Configure: ${dialogCfg.title || t.label}`;
-        dialogTypeBadge.textContent = t.id;
+        dialog.querySelector('.title').textContent = `配置节点：${dialogCfg.title || nodeLabel(t)}`;
+        dialogTypeBadge.textContent = nodeLabel(t);
         dialogBody.innerHTML = '';
         dialogBody.append(...renderFormFields(typeId, dialogCfg, data.contextConfig));
 
@@ -6348,10 +6580,10 @@
      */
     function renderFormFields(typeId, cfg, contextConfig) {
         const fields = [];
-        const label = NODE_TYPE_BY_ID[typeId].label;
+        const label = nodeLabel(NODE_TYPE_BY_ID[typeId]);
 
-        fields.push(cfgText('title', 'Node name', cfg.title ?? '', label));
-        fields.push(cfgText('description', 'Description (optional)', cfg.description ?? '', 'Short note'));
+        fields.push(cfgText('title', '节点名称', cfg.title ?? '', label));
+        fields.push(cfgText('description', '描述（可选）', cfg.description ?? '', '一句备注'));
 
         const prompt = (key, lbl, presetType, chips) => promptFieldWithLibrary({
             value: cfg[key] ?? '', fieldId: key, label: lbl,
@@ -6364,7 +6596,7 @@
                 // text arrives as it is.
                 break;
             case 'OUTPUT':
-                fields.push(prompt('systemPrompt', 'System prompt (blank = echo upstream verbatim)', typeId, true));
+                fields.push(prompt('systemPrompt', '系统提示词（留空＝逐字回传上游内容）', typeId, true));
                 break;
             // No sampling, token or timeout controls on LITE_RT / CLOUD, as in the app
             // (docs/decisions/0005): nothing reads them at run time — sampling comes
@@ -6372,19 +6604,19 @@
             // a control here would save a value the run ignores. The fields are still
             // decoded and encoded, so a file carrying them round-trips unchanged.
             case 'LITE_RT':
-                fields.push(cfgText('modelId', 'Model name', cfg.modelId ?? '', 'blank = active model'));
-                fields.push(prompt('systemPrompt', 'System prompt', typeId, true));
+                fields.push(cfgText('modelId', '模型名称', cfg.modelId ?? '', '留空＝当前启用的模型'));
+                fields.push(prompt('systemPrompt', '系统提示词', typeId, true));
                 break;
             case 'CLOUD':
-                fields.push(cfgSelect('provider', 'Provider', CLOUD_PROVIDER_OPTIONS, cfg.provider || 'AUTO',
-                    v => `${String(v).slice(UNKNOWN_WIRE_PREFIX.length)} (no provider has this id — the app will not import this file)`));
-                fields.push(prompt('systemPrompt', 'System prompt', typeId, true));
+                fields.push(cfgSelect('provider', '服务商', CLOUD_PROVIDER_OPTIONS, cfg.provider || 'AUTO',
+                    v => `${String(v).slice(UNKNOWN_WIRE_PREFIX.length)}（没有服务商用这个 id——App 不会导入这份文件）`));
+                fields.push(prompt('systemPrompt', '系统提示词', typeId, true));
                 break;
             case 'INTENT_ROUTER':
-                fields.push(cfgIntentClasses(cfg.classes, 'Classes (2–6) — one out-port label per class'));
-                fields.push(prompt('classifierPrompt', 'Classifier prompt', typeId, true));
-                fields.push(cfgText('fallbackClass', 'Fallback class (optional)', cfg.fallbackClass ?? '', 'class name routed on no match'));
-                fields.push(cfgSelect('engineProvider', 'Engine', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
+                fields.push(cfgIntentClasses(cfg.classes, '分类（2–6 个）——每个分类对应一个输出端口标签'));
+                fields.push(prompt('classifierPrompt', '分类提示词', typeId, true));
+                fields.push(cfgText('fallbackClass', '兜底分类（可选）', cfg.fallbackClass ?? '', '没匹配上时走哪个分类'));
+                fields.push(cfgSelect('engineProvider', '推理引擎', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
                 break;
             case 'IF_CONDITION':
                 // EvaluateIfConditionUseCase runs the LLM on `conditionPrompt`
@@ -6394,57 +6626,56 @@
                 // input, keywords, input length, then the question — the first
                 // that matches decides. The port labels are fixed at True / False
                 // because that is what the engine matches an outgoing edge against.
-                fields.push(cfgCheckbox('branchOnImage', 'Branch True when input has an image (checked first, no model call)', cfg.branchOnImage === true));
-                fields.push(cfgText('keywords', 'Keywords (comma-separated)', cfg.keywords ?? '', 'e.g. urgent, asap'));
-                fields.push(cfgNumber('complexityThreshold', 'Length threshold (chars, blank = off)', cfg.complexityThreshold, { min: 1, max: 2000, step: 10, kind: 'int' }));
-                fields.push(prompt('expression', 'Question for the model (asked last)', 'IF_CONDITION', false));
-                fields.push(cfgSelect('engineProvider', 'Engine', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
+                fields.push(cfgCheckbox('branchOnImage', '输入带图片时走「是」分支（最先判断，不调用模型）', cfg.branchOnImage === true));
+                fields.push(cfgText('keywords', '关键词（英文逗号分隔）', cfg.keywords ?? '', '例如 urgent, asap'));
+                fields.push(cfgNumber('complexityThreshold', '长度阈值（字符数，留空＝不判断）', cfg.complexityThreshold, { min: 1, max: 2000, step: 10, kind: 'int' }));
+                fields.push(prompt('expression', '问模型的问题（最后才问）', 'IF_CONDITION', false));
+                fields.push(cfgSelect('engineProvider', '推理引擎', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
                 break;
             case 'CLARIFICATION':
-                fields.push(prompt('questionTemplate', 'Question template', typeId, true));
-                fields.push(cfgStringList(cfg.quickReplies, 'Quick replies (0–4)', 'e.g. Yes'));
-                fields.push(cfgNumber('timeoutMs', 'Timeout (ms, blank = wait indefinitely)', cfg.timeoutMs, { min: 0, step: 1000, kind: 'int' }));
+                fields.push(prompt('questionTemplate', '问题模板', typeId, true));
+                fields.push(cfgStringList(cfg.quickReplies, '快捷回复（0–4 条）', '例如 是'));
+                fields.push(cfgNumber('timeoutMs', '超时（毫秒，留空＝一直等）', cfg.timeoutMs, { min: 0, step: 1000, kind: 'int' }));
                 break;
             case 'TOOL':
-                fields.push(cfgSelect('toolId', 'Tool', [{ id: '', label: 'Auto (pick at runtime)' }, ...AVAILABLE_TOOLS], cfg.toolId ?? '',
-                    v => `${v} (not a built-in tool — an MCP or app function; kept as is)`));
-                fields.push(cfgCheckbox('alwaysConfirm', 'Always ask before this call', cfg.alwaysConfirm === true));
-                fields.push(cfgSelect('engineProvider', 'Engine', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
+                fields.push(cfgSelect('toolId', '工具', [{ id: '', label: '自动（运行时选择）' }, ...AVAILABLE_TOOLS], cfg.toolId ?? '',
+                    v => `${v}（不是内置工具——可能是 MCP 或 App 函数，原样保留）`));
+                fields.push(cfgCheckbox('alwaysConfirm', '调用前总是先问我', cfg.alwaysConfirm === true));
+                fields.push(cfgSelect('engineProvider', '推理引擎', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
                 break;
             case 'DECOMPOSITION':
-                fields.push(prompt('planningPrompt', 'Planning prompt', typeId, true));
-                fields.push(cfgNumber('maxSubtasks', 'Max subtasks (1–20)', cfg.maxSubtasks, { min: 1, max: 20, step: 1, kind: 'int' }));
-                fields.push(cfgSelect('engineProvider', 'Engine', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
+                fields.push(prompt('planningPrompt', '规划提示词', typeId, true));
+                fields.push(cfgNumber('maxSubtasks', '最多子任务数（1–20）', cfg.maxSubtasks, { min: 1, max: 20, step: 1, kind: 'int' }));
+                fields.push(cfgSelect('engineProvider', '推理引擎', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
                 break;
             case 'QUEUE_PROCESSOR':
                 // The queue is the list the previous node produced, one item at
                 // a time; the only decision is what a failing item does.
-                fields.push(cfgCheckbox('stopOnError', 'Stop on first error', cfg.stopOnError !== false));
+                fields.push(cfgCheckbox('stopOnError', '遇到第一个错误就停', cfg.stopOnError !== false));
                 break;
             case 'EVALUATION':
-                fields.push(prompt('criteriaPrompt', 'Criteria prompt (model replies PASS / RETRY / FAIL)', typeId, true));
-                fields.push(cfgNumber('maxRetries', 'Max retries (0–5)', cfg.maxRetries, { min: 0, max: 5, step: 1, kind: 'int' }));
-                fields.push(cfgSelect('engineProvider', 'Engine', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
+                fields.push(prompt('criteriaPrompt', '判定提示词（模型回复 PASS / RETRY / FAIL）', typeId, true));
+                fields.push(cfgNumber('maxRetries', '最多重试次数（0–5）', cfg.maxRetries, { min: 0, max: 5, step: 1, kind: 'int' }));
+                fields.push(cfgSelect('engineProvider', '推理引擎', ENGINE_PROVIDER_OPTIONS, cfg.engineProvider ?? ''));
                 break;
             case 'SUMMARY':
                 // Shape and length are asked for in the prompt — it is the only
                 // lever the executor reads.
-                fields.push(prompt('customPrompt', 'Custom prompt (blank = built-in summarisation prompt)', typeId, true));
+                fields.push(prompt('customPrompt', '自定义提示词（留空＝内置摘要提示词）', typeId, true));
                 break;
             case 'PIPELINE':
                 fields.push(cfgPipelinePicker(cfg));
                 break;
             case 'SKILL':
-                fields.push(cfgText('skillId', 'Skill id', cfg.skillId ?? '', 'e.g. report-writer'));
-                fields.push(cfgSelect('engine', 'Inference engine', [
-                    { id: 'LITE_RT', label: 'On-device (LiteRT)' },
-                    { id: 'CLOUD', label: 'Cloud' },
+                fields.push(cfgText('skillId', '技能 id', cfg.skillId ?? '', '例如 report-writer'));
+                fields.push(cfgSelect('engine', '推理引擎', [
+                    { id: 'LITE_RT', label: '本机（LiteRT）' },
+                    { id: 'CLOUD', label: '云端' },
                 ], cfg.engine || 'LITE_RT'));
-                fields.push(cfgCheckbox('alwaysConfirm', 'Always ask before this call', cfg.alwaysConfirm === true));
+                fields.push(cfgCheckbox('alwaysConfirm', '调用前总是先问我', cfg.alwaysConfirm === true));
                 fields.push(cfgHint(
-                    'The browser has no skill library, so the id is entered by hand. The host app ' +
-                    'resolves the skill name, instruction preview and tool allowlist, and flags an ' +
-                    'unknown id on import.',
+                    '浏览器里没有技能库，所以技能 id 要手填。技能名称、指令预览和工具白名单由手机 App ' +
+                    '解析；id 认不出来时，App 会在导入时标出来。',
                 ));
                 break;
         }
@@ -6489,7 +6720,7 @@
      * rather than being silently dropped.
      */
     function cfgPipelinePicker(cfg) {
-        const wrap = fieldWrap('Target pipeline');
+        const wrap = fieldWrap('目标流程');
         const MANUAL = '__manual__';
         const known = knownPipelineOptions();
         const current = (cfg.targetPipelineId || '').trim();
@@ -6499,7 +6730,7 @@
         const sel = document.createElement('select');
         const placeholder = document.createElement('option');
         placeholder.value = '';
-        placeholder.textContent = known.length ? '— select a pipeline —' : '— no known pipelines —';
+        placeholder.textContent = known.length ? '— 选择一个流程 —' : '— 没有已知流程 —';
         sel.appendChild(placeholder);
         known.forEach(o => {
             const opt = document.createElement('option');
@@ -6509,13 +6740,13 @@
         });
         const manualOpt = document.createElement('option');
         manualOpt.value = MANUAL;
-        manualOpt.textContent = '✎ Enter id manually…';
+        manualOpt.textContent = '✎ 手动输入 id…';
         sel.appendChild(manualOpt);
         sel.value = useManual ? MANUAL : current;
 
         const manual = document.createElement('input');
         manual.type = 'text';
-        manual.placeholder = 'pipeline id';
+        manual.placeholder = '流程 id';
         manual.style.marginTop = '6px';
         manual.value = useManual ? current : '';
         manual.hidden = !useManual;
@@ -6535,9 +6766,8 @@
         wrap.appendChild(sel);
         wrap.appendChild(manual);
         wrap.appendChild(cfgHint(
-            'References another saved pipeline by id. Unknown ids import as “unresolved” (the node ' +
-            'shows a badge); the host app validates the full reference graph — transitive cycles and ' +
-            'the depth limit are checked there, not in the browser.',
+            '按 id 引用另一个已保存的流程。认不出的 id 导入后会显示为「无法解析」（节点上有标记）；' +
+            '完整的引用关系校验——传递环和层数上限——由手机 App 负责，浏览器这边不查。',
         ));
         return wrap;
     }
@@ -6589,7 +6819,7 @@
      * for a value the app runs as something else, and a save then wrote that
      * first option over the file's value.
      */
-    function cfgSelect(key, label, options, value, unknownLabel = v => `${v} (not in this list)`) {
+    function cfgSelect(key, label, options, value, unknownLabel = v => `${v}（不在列表里）`) {
         const wrap = fieldWrap(label);
         const sel = document.createElement('select');
         sel.dataset.field = key;
@@ -6663,7 +6893,7 @@
             const add = document.createElement('button');
             add.type = 'button';
             add.className = 'list-add';
-            add.textContent = '+ Add';
+            add.textContent = '＋ 添加';
             add.addEventListener('click', () => { arr.push(''); render(); });
             list.appendChild(add);
         };
@@ -6684,17 +6914,17 @@
                 card.className = 'list-card';
                 const name = document.createElement('input');
                 name.type = 'text';
-                name.placeholder = 'class name (out-port label)';
+                name.placeholder = '分类名（输出端口标签）';
                 name.value = cls.name || '';
                 name.addEventListener('input', () => { cls.name = name.value; });
                 const desc = document.createElement('input');
                 desc.type = 'text';
-                desc.placeholder = 'description (optional)';
+                desc.placeholder = '描述（可选）';
                 desc.value = cls.description || '';
                 desc.addEventListener('input', () => { cls.description = desc.value; });
                 const ex = document.createElement('textarea');
                 ex.rows = 2;
-                ex.placeholder = 'examples — one per line (optional)';
+                ex.placeholder = '示例——每行一条（可选）';
                 ex.value = (cls.examples || []).join('\n');
                 ex.addEventListener('input', () => {
                     cls.examples = ex.value.split('\n').map(s => s.trim()).filter(Boolean);
@@ -6702,7 +6932,7 @@
                 const del = document.createElement('button');
                 del.type = 'button';
                 del.className = 'list-del';
-                del.textContent = '✕ remove class';
+                del.textContent = '✕ 移除分类';
                 del.addEventListener('click', () => { arr.splice(i, 1); render(); });
                 card.append(name, desc, ex, del);
                 list.appendChild(card);
@@ -6710,7 +6940,7 @@
             const add = document.createElement('button');
             add.type = 'button';
             add.className = 'list-add';
-            add.textContent = '+ Add class';
+            add.textContent = '＋ 添加分类';
             add.addEventListener('click', () => { arr.push({ name: '', description: '', examples: [] }); render(); });
             list.appendChild(add);
         };
@@ -6804,7 +7034,7 @@
         const promptsBtn = document.createElement('button');
         promptsBtn.type = 'button';
         promptsBtn.className = 'prompts-trigger';
-        promptsBtn.textContent = '📚 Prompts ▾';
+        promptsBtn.textContent = '📚 提示词库 ▾';
         promptsBtn.setAttribute('aria-haspopup', 'listbox');
         promptsBtn.setAttribute('aria-expanded', 'false');
         toolbarRow.appendChild(promptsBtn);
@@ -6865,7 +7095,7 @@
         builtinSection.className = 'prompts-section';
         const builtinTitle = document.createElement('div');
         builtinTitle.className = 'prompts-section-title';
-        builtinTitle.textContent = 'Built-in';
+        builtinTitle.textContent = '内置';
         builtinSection.appendChild(builtinTitle);
 
         // Offer only the bundled presets in this field's category — same
@@ -6880,7 +7110,7 @@
         if (relevant.length === 0) {
             const empty = document.createElement('div');
             empty.className = 'prompts-empty';
-            empty.textContent = 'No built-in presets for this field.';
+            empty.textContent = '这个字段没有内置预设。';
             builtinSection.appendChild(empty);
         } else {
             relevant.forEach(t => {
@@ -6896,7 +7126,7 @@
         // that ship a default in DEFAULT_SYSTEM_PROMPTS.
         if (presetNodeType && DEFAULT_SYSTEM_PROMPTS[presetNodeType]) {
             builtinSection.appendChild(promptItemRow({
-                label: `Reset to ${presetNodeType} default`,
+                label: `重置为 ${presetNodeType} 的默认提示词`,
                 onPick: () => applyPromptTemplate(textarea, DEFAULT_SYSTEM_PROMPTS[presetNodeType], closeFn),
             }));
         }
@@ -6906,14 +7136,14 @@
         userSection.className = 'prompts-section';
         const userTitle = document.createElement('div');
         userTitle.className = 'prompts-section-title';
-        userTitle.textContent = 'Saved templates';
+        userTitle.textContent = '已存模板';
         userSection.appendChild(userTitle);
 
         const userTemplates = loadUserPromptTemplates();
         if (userTemplates.length === 0) {
             const empty = document.createElement('div');
             empty.className = 'prompts-empty';
-            empty.textContent = 'No saved templates yet.';
+            empty.textContent = '还没有保存的模板。';
             userSection.appendChild(empty);
         } else {
             userTemplates.forEach((t, idx) => {
@@ -6921,7 +7151,7 @@
                     label: t.name,
                     onPick: () => applyPromptTemplate(textarea, t.content, closeFn),
                     onDelete: () => {
-                        if (!confirm(`Delete template "${t.name}"?`)) return;
+                        if (!confirm(`要删除模板「${t.name}」吗？`)) return;
                         const updated = loadUserPromptTemplates();
                         updated.splice(idx, 1);
                         saveUserPromptTemplates(updated);
@@ -6935,19 +7165,19 @@
         const saveRow = document.createElement('button');
         saveRow.type = 'button';
         saveRow.className = 'prompts-save-current';
-        saveRow.textContent = '+ Save current prompt as template…';
+        saveRow.textContent = '＋ 把当前提示词存为模板…';
         saveRow.addEventListener('click', () => {
             const content = textarea.value.trim();
             if (!content) {
-                alert('System prompt is empty — nothing to save.');
+                alert('系统提示词是空的，没有可保存的内容。');
                 return;
             }
-            const name = (prompt('Template name?') || '').trim();
+            const name = (prompt('模板名称？') || '').trim();
             if (!name) return;
             const list = loadUserPromptTemplates();
             const existing = list.findIndex(t => t.name === name);
             if (existing !== -1) {
-                if (!confirm(`Overwrite template "${name}"?`)) return;
+                if (!confirm(`要覆盖模板「${name}」吗？`)) return;
                 list[existing] = { name, content, savedAt: Date.now() };
             } else {
                 list.push({ name, content, savedAt: Date.now() });
@@ -6978,8 +7208,8 @@
             const del = document.createElement('button');
             del.type = 'button';
             del.className = 'prompts-row-delete';
-            del.title = 'Delete template';
-            del.setAttribute('aria-label', `Delete template ${label}`);
+            del.title = '删除模板';
+            del.setAttribute('aria-label', `删除模板 ${label}`);
             del.textContent = '×';
             del.addEventListener('click', onDelete);
             row.appendChild(del);
@@ -6994,7 +7224,7 @@
     function applyPromptTemplate(textarea, content, closeFn) {
         const current = textarea.value.trim();
         if (current && current !== content.trim()) {
-            if (!confirm('Replace current prompt with the selected template?')) return;
+            if (!confirm('要用所选模板替换当前提示词吗？')) return;
         }
         textarea.value = content;
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
@@ -7049,20 +7279,20 @@
 
         const title = document.createElement('div');
         title.className = 'section-title';
-        title.textContent = 'Input data';
+        title.textContent = '输入数据';
         section.appendChild(title);
 
         const hint = document.createElement('div');
         hint.className = 'hint';
-        hint.textContent = 'These flags control which context blocks are mixed into the node input on every run.';
+        hint.textContent = '这些开关决定每次运行时，哪些上下文块会被混进节点输入。';
         section.appendChild(hint);
 
         const rows = [
-            { id: 'originalTask',   label: 'Original task' },
-            { id: 'chatHistory',    label: 'Chat history' },
-            { id: 'longTermMemory', label: 'Long-term memory' },
-            { id: 'toolResults',    label: 'Tool results' },
-            { id: 'nodeInput',      label: 'Previous node output', locked: true },
+            { id: 'originalTask',   label: '原始任务' },
+            { id: 'chatHistory',    label: '聊天记录' },
+            { id: 'longTermMemory', label: '长期记忆' },
+            { id: 'toolResults',    label: '工具结果' },
+            { id: 'nodeInput',      label: '上一节点的输出', locked: true },
         ];
         rows.forEach(r => {
             const row = document.createElement('label');
@@ -7081,7 +7311,7 @@
             if (r.locked) {
                 const hintEl = document.createElement('span');
                 hintEl.className = 'lock-hint';
-                hintEl.textContent = 'always on';
+                hintEl.textContent = '始终开启';
                 row.appendChild(hintEl);
             }
             section.appendChild(row);
@@ -7128,38 +7358,38 @@
      */
     function validateRichConfig(typeId, cfg) {
         const inRange = (v, lo, hi) => v != null && !Number.isNaN(v) && v >= lo && v <= hi;
-        if (!cfg.title || !String(cfg.title).trim()) return 'Node name must not be empty.';
+        if (!cfg.title || !String(cfg.title).trim()) return '节点名称不能为空。';
         switch (typeId) {
             // LITE_RT / CLOUD: nothing to check — their only savable fields are the
             // model name, provider and prompt (see renderFormFields), and a value the
             // user cannot see must not be able to block a save.
             case 'INTENT_ROUTER': {
                 const names = (cfg.classes || []).map(c => (c.name || '').trim());
-                if (names.length < 2 || names.length > 6) return 'Intent router needs between 2 and 6 classes.';
-                if (names.some(n => !n)) return 'Every intent class needs a non-empty name.';
-                if (new Set(names).size !== names.length) return 'Intent class names must be unique.';
-                if (cfg.fallbackClass && !names.includes(cfg.fallbackClass.trim())) return 'Fallback class must be one of the declared classes.';
+                if (names.length < 2 || names.length > 6) return '意图路由需要 2 到 6 个分类。';
+                if (names.some(n => !n)) return '每个意图分类都要有名字。';
+                if (new Set(names).size !== names.length) return '意图分类名不能重复。';
+                if (cfg.fallbackClass && !names.includes(cfg.fallbackClass.trim())) return '兜底分类必须是已声明的分类之一。';
                 break;
             }
             case 'CLARIFICATION':
-                if ((cfg.quickReplies || []).length > 4) return 'At most 4 quick replies are allowed.';
-                if (cfg.timeoutMs != null && cfg.timeoutMs < 0) return 'Timeout must be a non-negative number.';
+                if ((cfg.quickReplies || []).length > 4) return '快捷回复最多 4 条。';
+                if (cfg.timeoutMs != null && cfg.timeoutMs < 0) return '超时不能是负数。';
                 break;
             case 'DECOMPOSITION':
-                if (!inRange(cfg.maxSubtasks, 1, 20)) return 'Max subtasks must be between 1 and 20.';
+                if (!inRange(cfg.maxSubtasks, 1, 20)) return '最多子任务数必须在 1 到 20 之间。';
                 break;
             case 'EVALUATION':
-                if (!inRange(cfg.maxRetries, 0, 5)) return 'Max retries must be between 0 and 5.';
+                if (!inRange(cfg.maxRetries, 0, 5)) return '最多重试次数必须在 0 到 5 之间。';
                 break;
 
             case 'PIPELINE': {
                 const target = (cfg.targetPipelineId || '').trim();
-                if (!target) return 'A target pipeline id is required.';
-                if (target === currentPipelineId) return 'A pipeline cannot reference itself.';
+                if (!target) return '必须填一个目标流程 id。';
+                if (target === currentPipelineId) return '流程不能引用自己。';
                 break;
             }
             case 'SKILL':
-                if (!cfg.skillId || !String(cfg.skillId).trim()) return 'A skill id is required.';
+                if (!cfg.skillId || !String(cfg.skillId).trim()) return '必须填技能 id。';
                 break;
         }
         return null;
@@ -7179,7 +7409,7 @@
         // Derive the flat runtime fields from the rich cfg, then persist both.
         const flat = richToFlat(dialogTypeId, dialogCfg);
         const merged = Object.assign({}, internal.data || {}, flat, {
-            label: dialogCfg.title || NODE_TYPE_BY_ID[dialogTypeId].label,
+            label: dialogCfg.title || nodeLabel(NODE_TYPE_BY_ID[dialogTypeId]),
             cfg: dialogCfg,
             contextConfig: ctx,
         });
@@ -7191,8 +7421,7 @@
             `#node-${dialogNodeId} .node-body .label`,
         );
         if (labelEl) {
-            const t = NODE_TYPE_BY_ID[internal.name];
-            labelEl.textContent = merged.label || t.label;
+            labelEl.textContent = displayNodeTitle(dialogTypeId, merged.label);
         }
 
         pushSnapshot();
@@ -7306,7 +7535,11 @@
             const text = connectionLabels.get(key) || '';
             const labelEl = document.createElement('div');
             labelEl.className = 'conn-label' + (text ? '' : ' empty');
-            labelEl.textContent = text || '+ label';
+            // Built-in branch labels (True/False/Item/Done/Pass/Retry/Fail) are
+            // drawn in Chinese only; the stored value stays English and the hover
+            // title spells it out so it can be matched against the pipeline JSON.
+            labelEl.textContent = text ? routeLabelForDisplay(text) : '＋ 标签';
+            labelEl.title = text ? `标签（存储值：${text}）` : '双击给这条连线加标签';
             labelEl.style.left = x + 'px';
             labelEl.style.top  = y + 'px';
             labelEl.dataset.key = key;
@@ -7316,6 +7549,7 @@
             });
             labelsLayer.appendChild(labelEl);
         });
+        applyCanvasSkin();
     }
 
     function beginLabelEdit(labelEl, key) {
@@ -7333,7 +7567,17 @@
         const commit = (save) => {
             if (finished) return;
             finished = true;
-            const next = save ? input.value.trim() : current;
+            // Display is Chinese, storage must be what the engine matches on: a
+            // Chinese branch label folds back to True/False/Item/Done/Pass/Retry/Fail,
+            // and a differently-cased one is normalised to the PORT_AUTO_LABELS
+            // spelling (the same rule as RouteLabels.canonical on the app side).
+            let next = save ? routeLabelForStorage(input.value) : current;
+            if (save && next) {
+                const src = editor.getNodeFromId(key.split('_')[0]);
+                if (src && PORT_AUTO_LABELS[src.name]) {
+                    next = canonicalBranchLabel(src.name, next) ?? next;
+                }
+            }
             if (save && next !== current) {
                 if (next) connectionLabels.set(key, next);
                 else connectionLabels.delete(key);
@@ -7644,10 +7888,10 @@
         const inputs  = nodes.filter(n => n.type === 'INPUT');
         const outputs = nodes.filter(n => n.type === 'OUTPUT');
 
-        if (inputs.length === 0)  errors.push({ kind: 'MissingInput',    level: 'error', message: 'Graph must contain an INPUT node.' });
-        if (inputs.length > 1)    errors.push({ kind: 'MultipleInputs',  level: 'error', message: 'Graph contains more than one INPUT node.' });
-        if (outputs.length === 0) errors.push({ kind: 'MissingOutput',   level: 'error', message: 'Graph must contain an OUTPUT node.' });
-        if (outputs.length > 1)   errors.push({ kind: 'MultipleOutputs', level: 'error', message: 'Graph contains more than one OUTPUT node.' });
+        if (inputs.length === 0)  errors.push({ kind: 'MissingInput',    level: 'error', message: '流程里必须有一个「输入」节点。' });
+        if (inputs.length > 1)    errors.push({ kind: 'MultipleInputs',  level: 'error', message: '流程里有不止一个「输入」节点。' });
+        if (outputs.length === 0) errors.push({ kind: 'MissingOutput',   level: 'error', message: '流程里必须有一个「输出」节点。' });
+        if (outputs.length > 1)   errors.push({ kind: 'MultipleOutputs', level: 'error', message: '流程里有不止一个「输出」节点。' });
 
         // Build adjacency. Cycle DFS ignores back-edges into QUEUE_PROCESSOR
         // (matches Android PipelineGraph.isValidDAG()), but reachability
@@ -7673,7 +7917,7 @@
             if ((forward.get(n.id) || []).length === 0) {
                 errors.push({
                     kind: 'DisconnectedInput', level: 'error', nodeId: n.id,
-                    message: 'INPUT node is not connected.',
+                    message: '「输入」节点还没有连线。',
                 });
             }
         });
@@ -7681,7 +7925,7 @@
             if ((backward.get(n.id) || []).length === 0) {
                 errors.push({
                     kind: 'DisconnectedOutput', level: 'error', nodeId: n.id,
-                    message: 'OUTPUT node is not connected.',
+                    message: '「输出」节点还没有连线。',
                 });
             }
         });
@@ -7704,7 +7948,7 @@
                 if (!reachable.has(n.id)) {
                     errors.push({
                         kind: 'UnreachableNode', level: 'error', nodeId: n.id,
-                        message: 'Node is unreachable from INPUT.',
+                        message: '这个节点从「输入」走不到。',
                     });
                 }
             });
@@ -7723,7 +7967,7 @@
                 if (!canReach.has(n.id)) {
                     errors.push({
                         kind: 'DeadEndNode', level: 'error', nodeId: n.id,
-                        message: 'Node cannot reach OUTPUT.',
+                        message: '这个节点到不了「输出」。',
                     });
                 }
             });
@@ -7750,7 +7994,7 @@
         }
         nodes.forEach(n => { if (!hasCycle) dfs(n.id); });
         if (hasCycle) {
-            errors.push({ kind: 'HasCycles', level: 'error', message: 'Graph contains a cycle.' });
+            errors.push({ kind: 'HasCycles', level: 'error', message: '流程里有环。' });
         }
 
         // Empty context — only meaningful for context-aware types. Skipping
@@ -7768,7 +8012,7 @@
                     kind: 'NodeEmptyContext',
                     level: 'error',
                     nodeId: n.id,
-                    message: 'All context sources are disabled on this node.',
+                    message: '这个节点把上下文来源全关了。',
                 });
             }
         });
@@ -7787,17 +8031,17 @@
                 if (!target) {
                     errors.push({
                         kind: 'MissingTargetPipeline', level: 'error', nodeId: n.id,
-                        message: 'PIPELINE node has no target pipeline.',
+                        message: '子流程节点没有选择目标流程。',
                     });
                 } else if (target === currentPipelineId) {
                     errors.push({
                         kind: 'SelfReference', level: 'error', nodeId: n.id,
-                        message: 'PIPELINE node references its own pipeline.',
+                        message: '子流程节点引用了它自己。',
                     });
                 } else if (!knownPipelineIds.has(target)) {
                     warnings.push({
                         kind: 'UnresolvedReference', level: 'warning', nodeId: n.id,
-                        message: `Target pipeline "${target}" is not among the known pipelines.`,
+                        message: `目标流程「${target}」不在已知流程里。`,
                     });
                 }
             } else if (n.type === 'SKILL') {
@@ -7805,7 +8049,7 @@
                 if (!skill) {
                     errors.push({
                         kind: 'MissingSkill', level: 'error', nodeId: n.id,
-                        message: 'SKILL node has no skill selected.',
+                        message: '技能节点没有选择技能。',
                     });
                 }
             }
@@ -7835,7 +8079,8 @@
         const internal = editor.getNodeFromId(nodeId);
         if (!internal) return '#' + nodeId;
         const t = NODE_TYPE_BY_ID[internal.name];
-        return (internal.data && internal.data.label) || (t ? t.label : internal.name);
+        if (!t) return (internal.data && internal.data.label) || internal.name;
+        return displayNodeTitle(internal.name, internal.data && internal.data.label);
     }
 
     function renderValidation({ errors, warnings }) {
@@ -7844,7 +8089,7 @@
         if (total === 0) {
             const empty = document.createElement('div');
             empty.className = 'empty';
-            empty.textContent = 'No issues — graph is ready to export.';
+            empty.textContent = '没有发现问题——流程可以导出了。';
             validationItemsEl.appendChild(empty);
         } else {
             [...errors, ...warnings].forEach(item => {
@@ -7871,8 +8116,8 @@
             });
         }
         validationCountsEl.textContent = total === 0
-            ? 'OK'
-            : `${errors.length} error(s), ${warnings.length} warning(s)`;
+            ? '无问题'
+            : `${errors.length} 个错误，${warnings.length} 个提醒`;
 
         // Re-paint per-node highlight classes
         canvas.querySelectorAll('.drawflow-node.has-error, .drawflow-node.has-warning')
@@ -7935,15 +8180,15 @@
                 badge.className = 'ref-badge';
                 body.appendChild(badge);
             }
-            const label = n.type === 'SKILL' ? 'skill' : 'pipeline';
-            badge.textContent = issue === 'self' ? '⚠ self-ref'
-                : issue === 'unset' ? `⚠ no ${label}`
-                : '⚠ unresolved';
+            const label = n.type === 'SKILL' ? '技能' : '流程';
+            badge.textContent = issue === 'self' ? '⚠ 指向自身'
+                : issue === 'unset' ? `⚠ 未选${label}`
+                : '⚠ 无法解析';
             badge.title = issue === 'self'
-                ? 'This pipeline references itself.'
+                ? '这个流程引用了它自己。'
                 : issue === 'unset'
-                    ? `No ${label} selected — open the node to choose one.`
-                    : 'The referenced id is not among the known pipelines (resolved by the host app).';
+                    ? `没有选择${label}——双击节点来选一个。`
+                    : '引用的 id 不在已知流程里（由手机 App 解析）。';
         });
     }
 
@@ -7988,7 +8233,7 @@
             editor.addConnection(cloudId, outId, 'output_1', 'input_1');
 
             currentPipelineId = generateUuid();
-            nameInput.value = 'Example pipeline';
+            nameInput.value = '示例流程';
             // The example is a brand-new pipeline: clear any memory key left
             // over from a previously imported document instead of silently
             // carrying it onto an unrelated graph.
@@ -8052,7 +8297,7 @@
             });
         }
         if (order.length < nodes.length) {
-            alert('Auto-layout requires a cycle-free graph.');
+            alert('自动排版要求流程里没有环。');
             return;
         }
 
@@ -8122,6 +8367,10 @@
         // Sun glyph when light theme is active (clicking goes to dark),
         // moon glyph when dark theme is active (clicking goes to light).
         themeBtn.textContent = theme === 'light' ? '☀️' : '🌙';
+        themeBtn.title = theme === 'light' ? '当前浅色主题，点击切到深色' : '当前深色主题，点击切到浅色';
+        // The card surface changed with the theme: the quiet strips are a mix
+        // over it, so they have to be recomputed.
+        applyCanvasSkin();
     }
 
     function initialTheme() {
@@ -8142,6 +8391,44 @@
         applyTheme(next);
         try { localStorage.setItem(THEME_STORAGE_KEY, next); } catch (_) { /* ignore */ }
     });
+
+    /* -------------------------------------------------------------------- *
+     *  Intensity: quiet / vivid (Android's two appearance intensities)
+     *
+     *  The choice persists in localStorage; before the user picks one it is
+     *  quiet, the app's default appearance. The two differ as in NodeCard.kt:
+     *  quiet keeps the strip at 14% of the hue, vivid paints it solid, and the
+     *  accent takes the next brighter step of the ramp (see the CSS variables).
+     * -------------------------------------------------------------------- */
+    const INTENSITY_STORAGE_KEY = 'pipeline-editor-intensity';
+    const intensityQuietBtn = document.getElementById('btn-intensity-quiet');
+    const intensityVividBtn = document.getElementById('btn-intensity-vivid');
+
+    function applyIntensity(intensity) {
+        document.documentElement.dataset.intensity = intensity;
+        const quiet = intensity !== 'vivid';
+        intensityQuietBtn.classList.toggle('is-on', quiet);
+        intensityVividBtn.classList.toggle('is-on', !quiet);
+        intensityQuietBtn.setAttribute('aria-pressed', String(quiet));
+        intensityVividBtn.setAttribute('aria-pressed', String(!quiet));
+        applyCanvasSkin();
+    }
+
+    function initialIntensity() {
+        try {
+            const stored = localStorage.getItem(INTENSITY_STORAGE_KEY);
+            if (stored === 'quiet' || stored === 'vivid') return stored;
+        } catch (_) { /* Safari private mode etc. — fall through */ }
+        return 'quiet';
+    }
+
+    [[intensityQuietBtn, 'quiet'], [intensityVividBtn, 'vivid']].forEach(([btn, value]) => {
+        btn.addEventListener('click', () => {
+            applyIntensity(value);
+            try { localStorage.setItem(INTENSITY_STORAGE_KEY, value); } catch (_) { /* ignore */ }
+        });
+    });
+    applyIntensity(initialIntensity());
 
     /* -------------------------------------------------------------------- *
      *  JSON export / import (schemaVersion 1)
@@ -8185,7 +8472,7 @@
             const cfg = (n.data && n.data.cfg && typeof n.data.cfg === 'object')
                 ? n.data.cfg
                 : deriveRichFromFlat(n.type, fullData);
-            cfg.title = fullData.label || cfg.title || NODE_TYPE_BY_ID[n.type].label;
+            cfg.title = fullData.label || cfg.title || nodeLabel(NODE_TYPE_BY_ID[n.type]);
             // Derive the flat block from cfg so `config` and `nodeConfig`
             // always agree (the runtime reads the flat block).
             const flat = richToFlat(n.type, cfg);
@@ -8252,7 +8539,7 @@
         const doc = {
             schemaVersion: CURRENT_SCHEMA_VERSION,
             id: currentPipelineId,
-            name: (nameInput.value || '').trim() || 'Untitled pipeline',
+            name: (nameInput.value || '').trim() || '未命名流程',
             updatedAt: Date.now(),
             nodes: jsonNodes,
             connections: jsonConnections,
@@ -8302,10 +8589,10 @@
             try {
                 importFromJson(JSON.parse(reader.result));
             } catch (err) {
-                alert('Failed to parse JSON: ' + err.message);
+                alert('解析 JSON 失败：' + err.message);
             }
         };
-        reader.onerror = () => alert('Failed to read file.');
+        reader.onerror = () => alert('读取文件失败。');
         reader.readAsText(file);
     });
 
@@ -8321,15 +8608,15 @@
         // current graph and then crashing partway through the rebuild
         // would silently destroy the user's work for a malformed file.
         if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
-            alert('File does not contain a valid JSON document.');
+            alert('文件不是有效的 JSON 文档。');
             return;
         }
         if (doc.nodes != null && !Array.isArray(doc.nodes)) {
-            alert('Invalid pipeline document: "nodes" must be an array.');
+            alert('流程文档无效："nodes" 必须是数组。');
             return;
         }
         if (doc.connections != null && !Array.isArray(doc.connections)) {
-            alert('Invalid pipeline document: "connections" must be an array.');
+            alert('流程文档无效："connections" 必须是数组。');
             return;
         }
         const rawNodes = doc.nodes || [];
@@ -8337,15 +8624,15 @@
         for (let i = 0; i < rawNodes.length; i++) {
             const jn = rawNodes[i];
             if (!jn || typeof jn !== 'object' || Array.isArray(jn)) {
-                alert(`Invalid pipeline document: nodes[${i}] is not an object.`);
+                alert(`流程文档无效：nodes[${i}] 不是对象。`);
                 return;
             }
             if (typeof jn.id !== 'string' || !jn.id) {
-                alert(`Invalid pipeline document: nodes[${i}].id is missing.`);
+                alert(`流程文档无效：nodes[${i}].id 缺失。`);
                 return;
             }
             if (typeof jn.type !== 'string' || !NODE_TYPE_BY_ID[jn.type]) {
-                alert(`Invalid pipeline document: nodes[${i}] has unknown type "${jn.type}".`);
+                alert(`流程文档无效：nodes[${i}] 的类型「${jn.type}」认不出来。`);
                 return;
             }
         }
@@ -8356,15 +8643,15 @@
         for (let i = 0; i < rawConnections.length; i++) {
             const jc = rawConnections[i];
             if (!jc || typeof jc !== 'object' || Array.isArray(jc)) {
-                alert(`Invalid pipeline document: connections[${i}] is not an object.`);
+                alert(`流程文档无效：connections[${i}] 不是对象。`);
                 return;
             }
             const srcType = rawNodes.find(n => n.id === jc.fromNodeId)?.type;
             if (typeof jc.label === 'string' && jc.label.trim() && PORT_AUTO_LABELS[srcType]) {
                 const branch = canonicalBranchLabel(srcType, jc.label);
                 if (!branch) {
-                    alert(`Connection "${jc.id}" from ${srcType} node "${jc.fromNodeId}" is labelled ` +
-                        `"${jc.label}"; its branches are ${Object.values(PORT_AUTO_LABELS[srcType]).join(', ')}`);
+                    alert(`连线「${jc.id}」（${srcType} 节点「${jc.fromNodeId}」）上的标签是 ` +
+                        `「${jc.label}」，而它的分支只有 ${Object.values(PORT_AUTO_LABELS[srcType]).map(routeLabelForDisplay).join('、')}`);
                     return;
                 }
                 branchLabels.set(i, branch);
@@ -8373,9 +8660,8 @@
 
         if (doc.schemaVersion !== CURRENT_SCHEMA_VERSION) {
             const ok = confirm(
-                `File was created by a different editor version ` +
-                `(schemaVersion=${doc.schemaVersion}, expected ${CURRENT_SCHEMA_VERSION}). ` +
-                `Some configuration may not round-trip cleanly. Continue?`,
+                `这份文件是另一个版本的编辑器写的（schemaVersion=${doc.schemaVersion}，` +
+                `当前是 ${CURRENT_SCHEMA_VERSION}）。有些配置可能没法完整往返。仍然继续吗？`,
             );
             if (!ok) return;
         }
@@ -8398,7 +8684,7 @@
                 // run reads is shown from these, with or without a nodeConfig
                 // envelope (deriveRichFromFlat / decodeRichEnvelope).
                 const flatIn = {
-                    label: jn.label || t.label,
+                    label: jn.label || nodeLabel(t),
                     systemPrompt: jn.config?.systemPrompt || '',
                     cloudProvider: jn.config?.cloudProvider || (jn.type === 'CLOUD' ? 'auto' : ''),
                     modelPath: jn.config?.modelPath || '',
@@ -8449,7 +8735,7 @@
                 idMap.set(jn.id, String(dfId));
                 // Patch the visible label inside the just-rendered node.
                 const labelEl = document.querySelector(`#node-${dfId} .node-body .label`);
-                if (labelEl) labelEl.textContent = data.label || t.label;
+                if (labelEl) labelEl.textContent = displayNodeTitle(jn.type, data.label);
             });
 
             rawConnections.forEach((jc, i) => {
@@ -8542,18 +8828,18 @@
      * (key = lower-case enum name). KEEP IN SYNC. See DESCRIPTION.md §8.2.
      */
     const PRESET_CATEGORIES = [
-        { key: 'local',    label: 'Local' },
-        { key: 'cloud',    label: 'Cloud' },
-        { key: 'hybrid',   label: 'Hybrid' },
-        { key: 'tool',     label: 'Tool' },
-        { key: 'research', label: 'Research' },
-        { key: 'other',    label: 'Other' },
+        { key: 'local',    label: '本地' },
+        { key: 'cloud',    label: '云端' },
+        { key: 'hybrid',   label: '混合' },
+        { key: 'tool',     label: '工具' },
+        { key: 'research', label: '研究' },
+        { key: 'other',    label: '其他' },
     ];
 
     /** Decodes a category wire key to its label, falling back to "Other". */
     function presetCategoryLabel(key) {
         const found = PRESET_CATEGORIES.find(c => c.key === (key || 'other'));
-        return found ? found.label : 'Other';
+        return found ? found.label : '其他';
     }
 
     /**
@@ -8638,17 +8924,17 @@
      */
     function pipelineDocStructureError(doc) {
         if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
-            return 'File does not contain a valid JSON document.';
+            return '文件不是有效的 JSON 文档。';
         }
-        if (doc.nodes != null && !Array.isArray(doc.nodes)) return '"nodes" must be an array.';
-        if (doc.connections != null && !Array.isArray(doc.connections)) return '"connections" must be an array.';
+        if (doc.nodes != null && !Array.isArray(doc.nodes)) return '"nodes" 必须是数组。';
+        if (doc.connections != null && !Array.isArray(doc.connections)) return '"connections" 必须是数组。';
         const nodes = doc.nodes || [];
         for (let i = 0; i < nodes.length; i++) {
             const n = nodes[i];
-            if (!n || typeof n !== 'object' || Array.isArray(n)) return `nodes[${i}] is not an object.`;
-            if (typeof n.id !== 'string' || !n.id) return `nodes[${i}].id is missing.`;
+            if (!n || typeof n !== 'object' || Array.isArray(n)) return `nodes[${i}] 不是对象。`;
+            if (typeof n.id !== 'string' || !n.id) return `nodes[${i}].id 缺失。`;
             if (typeof n.type !== 'string' || !NODE_TYPE_BY_ID[n.type]) {
-                return `nodes[${i}] has unknown type "${n.type}".`;
+                return `nodes[${i}] 的类型「${n.type}」认不出来。`;
             }
         }
         return null;
@@ -8659,7 +8945,7 @@
         try {
             doc = JSON.parse(text);
         } catch (e) {
-            return { error: 'Failed to parse JSON: ' + e.message };
+            return { error: '解析 JSON 失败：' + e.message };
         }
         const structureError = pipelineDocStructureError(doc);
         if (structureError) return { error: structureError };
@@ -8676,9 +8962,9 @@
         if (doc.schemaVersion === CURRENT_SCHEMA_VERSION) return true;
         const newer = typeof doc.schemaVersion === 'number' && doc.schemaVersion > CURRENT_SCHEMA_VERSION;
         return confirm(
-            `This preset was created by a ${newer ? 'newer' : 'different'} editor version ` +
-            `(schemaVersion=${doc.schemaVersion}, expected ${CURRENT_SCHEMA_VERSION}). ` +
-            `Some configuration may not round-trip cleanly. Import anyway?`,
+            `这个预设是${newer ? '更新' : '另一个'}版本的编辑器写的` +
+            `（schemaVersion=${doc.schemaVersion}，当前是 ${CURRENT_SCHEMA_VERSION}）。` +
+            `有些配置可能没法完整往返。仍然导入吗？`,
         );
     }
 
@@ -8698,7 +8984,7 @@
         head.className = 'preset-card-head';
         const nameEl = document.createElement('span');
         nameEl.className = 'preset-card-name';
-        nameEl.textContent = doc.name || 'Untitled preset';
+        nameEl.textContent = doc.name || '未命名预设';
         const badge = document.createElement('span');
         badge.className = 'preset-badge';
         badge.textContent = presetCategoryLabel(doc.category);
@@ -8732,13 +9018,13 @@
         const loadBtn = document.createElement('button');
         loadBtn.type = 'button';
         loadBtn.className = 'primary';
-        loadBtn.textContent = 'Load';
+        loadBtn.textContent = '载入';
         loadBtn.addEventListener('click', () => loadPresetOntoCanvas(doc));
         actions.appendChild(loadBtn);
 
         const exportRowBtn = document.createElement('button');
         exportRowBtn.type = 'button';
-        exportRowBtn.textContent = 'Export';
+        exportRowBtn.textContent = '导出';
         exportRowBtn.addEventListener('click', () => downloadPresetJson(doc));
         actions.appendChild(exportRowBtn);
 
@@ -8746,7 +9032,7 @@
             const delBtn = document.createElement('button');
             delBtn.type = 'button';
             delBtn.className = 'danger';
-            delBtn.textContent = 'Delete';
+            delBtn.textContent = '删除';
             delBtn.addEventListener('click', () => deleteUserPreset(index));
             actions.appendChild(delBtn);
         }
@@ -8772,8 +9058,8 @@
             const empty = document.createElement('div');
             empty.className = 'preset-empty';
             empty.textContent = isMine
-                ? 'No saved presets yet. Build a graph and tap "Save canvas as preset…", or import a .preset.json file.'
-                : 'No bundled presets available.';
+                ? '还没有保存的预设。搭好一个流程后点「把画布存为预设…」，或者导入一个 .preset.json 文件。'
+                : '没有可用的内置预设。';
             list.appendChild(empty);
             return;
         }
@@ -8800,8 +9086,8 @@
     function deleteUserPreset(index) {
         const list = loadUserPipelinePresets();
         if (index < 0 || index >= list.length) return;
-        const name = list[index].name || 'this preset';
-        if (!confirm(`Delete preset "${name}"? This cannot be undone.`)) return;
+        const name = list[index].name || '这个预设';
+        if (!confirm(`要删除预设「${name}」吗？删除后无法撤销。`)) return;
         list.splice(index, 1);
         saveUserPipelinePresets(list);
         renderPresetList();
@@ -8816,7 +9102,7 @@
         reader.onload = () => {
             const res = parsePresetDoc(reader.result);
             if (res.error) {
-                alert('Failed to import preset: ' + res.error);
+                alert('导入预设失败：' + res.error);
                 return;
             }
             if (!confirmPresetSchema(res.doc)) return;
@@ -8829,14 +9115,14 @@
             presetActiveTab = 'mine';
             renderPresetList();
         };
-        reader.onerror = () => alert('Failed to read file.');
+        reader.onerror = () => alert('读取文件失败。');
         reader.readAsText(file);
     });
 
     /* ---- Save canvas as preset ---- */
     function openSavePresetDialog() {
         if (validateGraph().errors.length > 0) {
-            alert('Fix the validation errors before saving this graph as a preset.');
+            alert('保存前请先把校验里的错误改掉。');
             return;
         }
         const sel = document.getElementById('preset-save-category');
@@ -8862,13 +9148,13 @@
         const err = presetSaveDialog.querySelector('[data-role="error"]');
         const name = (document.getElementById('preset-save-name').value || '').trim();
         if (!name) {
-            err.textContent = 'Name is required.';
+            err.textContent = '名称不能为空。';
             err.hidden = false;
             return;
         }
         // 60-char cap matches MAX_NAME_LENGTH in the Android save use-cases.
         if (name.length > 60) {
-            err.textContent = 'Name must be 60 characters or fewer.';
+            err.textContent = '名称不能超过 60 个字符。';
             err.hidden = false;
             return;
         }
@@ -8936,7 +9222,7 @@
         const pure = {
             schemaVersion: doc.schemaVersion || CURRENT_SCHEMA_VERSION,
             id: doc.id,
-            name: doc.name || 'Untitled pipeline',
+            name: doc.name || '未命名流程',
             updatedAt: doc.updatedAt || Date.now(),
             nodes: doc.nodes || [],
             connections: doc.connections || [],
@@ -8988,12 +9274,12 @@
         }
 
         if (unresolved.size > 0) {
-            return { error: 'Cannot export bundle — these PIPELINE dependencies are not among the ' +
-                'Bundled or Mine presets: ' + Array.from(unresolved).join(', ') +
-                '. Save them as presets first.' };
+            return { error: '无法导出整包——下面这些子流程依赖既不在内置预设里，也不在「我的」预设里：' +
+                Array.from(unresolved).join('、') +
+                '。请先把它们存成预设。' };
         }
         if (collected.size > MAX_BUNDLE_PIPELINES) {
-            return { error: `Dependency closure exceeds the limit of ${MAX_BUNDLE_PIPELINES} pipelines.` };
+            return { error: `依赖闭包超过了 ${MAX_BUNDLE_PIPELINES} 个流程的上限。` };
         }
         return { pipelines: Array.from(collected.values()) };
     }
@@ -9022,30 +9308,29 @@
         try {
             doc = JSON.parse(text);
         } catch (e) {
-            return { error: 'Failed to parse JSON: ' + e.message };
+            return { error: '解析 JSON 失败：' + e.message };
         }
         if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
-            return { error: 'File does not contain a valid JSON document.' };
+            return { error: '文件不是有效的 JSON 文档。' };
         }
-        if (typeof doc.bundleVersion === 'undefined') return { error: 'Not a bundle (missing bundleVersion).' };
+        if (typeof doc.bundleVersion === 'undefined') return { error: '不是整包文件（缺少 bundleVersion）。' };
         if (!Array.isArray(doc.pipelines) || doc.pipelines.length === 0) {
-            return { error: 'Bundle contains no pipelines.' };
+            return { error: '整包里没有任何流程。' };
         }
         if (doc.pipelines.length > MAX_BUNDLE_PIPELINES) {
-            return { error: `Bundle contains ${doc.pipelines.length} pipelines, exceeding the limit of ` +
-                `${MAX_BUNDLE_PIPELINES}.` };
+            return { error: `整包里有 ${doc.pipelines.length} 个流程，超过 ${MAX_BUNDLE_PIPELINES} 个的上限。` };
         }
         for (let i = 0; i < doc.pipelines.length; i++) {
             const structureError = pipelineDocStructureError(doc.pipelines[i]);
-            if (structureError) return { error: `Bundle pipeline #${i}: ${structureError}` };
+            if (structureError) return { error: `整包第 ${i} 个流程有问题：${structureError}` };
         }
         const ids = doc.pipelines.map(p => p.id);
         const duplicate = ids.find((id, i) => ids.indexOf(id) !== i);
-        if (duplicate) return { error: `Bundle contains duplicate pipeline id "${duplicate}".` };
+        if (duplicate) return { error: `整包里有重复的流程 id「${duplicate}」。` };
         const idSet = new Set(ids);
         for (const p of doc.pipelines) {
             const dangling = pipelineTargetsOf(p).find(t => !idSet.has(t));
-            if (dangling) return { error: `Bundle references pipeline "${dangling}" that it does not contain.` };
+            if (dangling) return { error: `整包引用了流程「${dangling}」，但包里没有它。` };
         }
         return { doc };
     }
@@ -9059,7 +9344,7 @@
         const reader = new FileReader();
         reader.onload = () => {
             const res = parseBundleDoc(reader.result);
-            if (res.error) { alert('Failed to import bundle: ' + res.error); return; }
+            if (res.error) { alert('导入整包失败：' + res.error); return; }
             // Only a real, numeric, older/newer schemaVersion counts as a
             // mismatch — a missing schemaVersion is treated as current (avoids a
             // 'schema vundefined' prompt), matching export's default.
@@ -9080,7 +9365,7 @@
             presetActiveTab = 'mine';
             openPresetLibrary();
         };
-        reader.onerror = () => alert('Failed to read file.');
+        reader.onerror = () => alert('读取文件失败。');
         reader.readAsText(file);
     });
 
