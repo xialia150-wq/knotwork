@@ -211,6 +211,9 @@ class BoundedTextGuardTest {
                 "A skill's name, description and instruction: typed, or restored with a backup.",
             "$CATALOG/screens/tools/McpServerConfigContent.kt" to "An MCP server's address, headers and name: typed.",
             "$CATALOG/screens/triggers/TriggerEditorContent.kt" to "A trigger's name, prompt and conditions: typed.",
+            "main/java/app/knotwork/android/presentation/ui/orchestrator/PipelineLibraryScreen.kt" to
+                "The one-sentence generator's request and its \"change one sentence\" refinement: typed by " +
+                "the user, and the model's own pipe-line description is never an input.",
         )
 
         /** Production Kotlin of `:app` (every source set) and `:catalog`, comments removed. */

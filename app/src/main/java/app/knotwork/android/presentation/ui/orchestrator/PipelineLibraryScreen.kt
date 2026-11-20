@@ -10,9 +10,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -93,11 +96,13 @@ import java.time.LocalDate
 fun PipelineLibraryScreen(
     viewModel: OrchestratorViewModel = hiltViewModel(),
     presetsViewModel: PipelinePresetsViewModel = hiltViewModel(),
+    generationViewModel: PipelineGenerationViewModel = hiltViewModel(),
     onOpenEditor: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val presetsState by presetsViewModel.uiState.collectAsStateWithLifecycle()
+    val generationState by generationViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -323,6 +328,7 @@ fun PipelineLibraryScreen(
                     PipelineLibrarySpeedDial(
                         onNewPipeline = callbacks.onNewPipeline,
                         onFromPreset = { showPresetPicker = true },
+                        onGenerateFromSentence = generationViewModel::open,
                     )
                 }
             },
@@ -363,6 +369,34 @@ fun PipelineLibraryScreen(
             snackbarHostState.showSnackbar(msg)
             presetsViewModel.clearError()
         }
+    }
+
+    // A confirmed generation is the ONLY moment something is written: the use case
+    // hands back a freshly minted id here, and the screen opens the editor on it.
+    LaunchedEffect(generationState.savedPipelineId) {
+        val savedId = generationState.savedPipelineId ?: return@LaunchedEffect
+        generationViewModel.consumeSavedPipeline()
+        viewModel.library.loadPipeline(pipelineId = savedId)
+        onOpenEditor()
+    }
+
+    val generationFeedback = generationState.feedbackMessage?.asString()
+    LaunchedEffect(generationFeedback) {
+        generationFeedback?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            generationViewModel.clearFeedback()
+        }
+    }
+
+    if (generationState.isOpen) {
+        PipelineGenerationDialog(
+            state = generationState,
+            onDismiss = generationViewModel::dismiss,
+            onDemandChange = generationViewModel::updateDemand,
+            onGenerate = generationViewModel::generate,
+            onRevise = generationViewModel::revise,
+            onAddToCanvas = generationViewModel::addToCanvas,
+        )
     }
 
     saveAsPresetTarget?.let { target ->
@@ -678,3 +712,143 @@ private fun resolveDisplayName(resolver: ContentResolver, uri: Uri): String? =
         val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
         if (index >= 0 && cursor.moveToFirst()) cursor.getString(index) else null
     }
+
+/**
+ * The *generate a pipeline from one sentence* dialog.
+ *
+ * Deliberately a preview-first surface: it offers **Add to canvas** (the one write),
+ * **Regenerate** and **Change one sentence**, and closing it discards the draft without
+ * touching the library. Its state lives in [PipelineGenerationViewModel]; this
+ * composable only renders it and forwards intents.
+ *
+ * @param state What to render.
+ * @param onDismiss Cancel / scrim tap: drop the draft.
+ * @param onDemandChange The request text changed.
+ * @param onGenerate Ask for a draft (also used by Regenerate).
+ * @param onRevise Stack one more sentence and regenerate.
+ * @param onAddToCanvas Persist the draft under a new id.
+ */
+@Composable
+private fun PipelineGenerationDialog(
+    state: PipelineGenerationUiState,
+    onDismiss: () -> Unit,
+    onDemandChange: (String) -> Unit,
+    onGenerate: () -> Unit,
+    onRevise: (String) -> Unit,
+    onAddToCanvas: () -> Unit,
+) {
+    var refineMode by remember { mutableStateOf(false) }
+    var revisionText by remember { mutableStateOf("") }
+    val busy = state.isGenerating || state.isSaving
+    AlertDialog(
+        modifier = Modifier.testTag(tag = GENERATE_DIALOG_TEST_TAG),
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.orchestrator_generate_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(KnotworkTheme.spacing.sp2)) {
+                OutlinedTextField(
+                    value = state.demand,
+                    onValueChange = onDemandChange,
+                    label = { Text(stringResource(R.string.orchestrator_generate_prompt_label)) },
+                    enabled = !busy,
+                    minLines = DEFAULT_DEMAND_MIN_LINES,
+                    modifier = Modifier.fillMaxWidth().testTag(tag = GENERATE_DEMAND_FIELD_TEST_TAG),
+                )
+                state.errorMessage?.let { error ->
+                    Text(text = error.asString(), color = KnotworkTheme.extended.signalError)
+                }
+                if (state.isGenerating) {
+                    Text(stringResource(R.string.orchestrator_generate_loading))
+                }
+                state.previewGraph?.let { preview ->
+                    Text(
+                        text = stringResource(R.string.orchestrator_generate_preview_heading),
+                        style = KnotworkTextStyles.LabelMd,
+                    )
+                    Text(preview.name)
+                    state.plan?.let { plan ->
+                        Text(
+                            text = stringResource(R.string.orchestrator_generate_plan_heading),
+                            style = KnotworkTextStyles.LabelMd,
+                        )
+                        Text(plan)
+                    }
+                    Text(
+                        pluralStringResource(
+                            R.plurals.pipeline_library_node_count,
+                            preview.nodes.size,
+                            preview.nodes.size,
+                        ),
+                    )
+                    GraphFlowPreview.render(preview)?.let { flow -> Text(flow) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(KnotworkTheme.spacing.sp2)) {
+                        TextButton(
+                            onClick = { refineMode = true },
+                            enabled = !busy,
+                            modifier = Modifier.testTag(tag = GENERATE_REFINE_BUTTON_TEST_TAG),
+                        ) {
+                            Text(stringResource(R.string.orchestrator_generate_action_refine))
+                        }
+                        TextButton(onClick = onGenerate, enabled = !busy) {
+                            Text(stringResource(R.string.orchestrator_generate_action_regenerate))
+                        }
+                    }
+                    if (refineMode) {
+                        OutlinedTextField(
+                            value = revisionText,
+                            onValueChange = { revisionText = it },
+                            label = { Text(stringResource(R.string.orchestrator_generate_revision_label)) },
+                            enabled = !busy,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        TextButton(
+                            onClick = {
+                                onRevise(revisionText)
+                                revisionText = ""
+                                refineMode = false
+                            },
+                            enabled = revisionText.isNotBlank() && !busy,
+                        ) {
+                            Text(stringResource(R.string.orchestrator_generate_action_revise))
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (state.draft == null) onGenerate() else onAddToCanvas() },
+                enabled = state.demand.isNotBlank() && !busy,
+                modifier = Modifier.testTag(tag = GENERATE_PRIMARY_BUTTON_TEST_TAG),
+            ) {
+                Text(
+                    stringResource(
+                        if (state.draft == null) {
+                            R.string.orchestrator_generate_action_generate
+                        } else {
+                            R.string.orchestrator_generate_action_add_to_canvas
+                        },
+                    ),
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
+        },
+    )
+}
+
+/** TestTag on the generation dialog root. */
+internal const val GENERATE_DIALOG_TEST_TAG = "pipeline_generate_dialog"
+
+/** TestTag on the dialog's request text field. */
+internal const val GENERATE_DEMAND_FIELD_TEST_TAG = "pipeline_generate_demand_field"
+
+/** TestTag on the dialog's primary action (Generate / Add to canvas). */
+internal const val GENERATE_PRIMARY_BUTTON_TEST_TAG = "pipeline_generate_primary"
+
+/** TestTag on the "Change one sentence" action. */
+internal const val GENERATE_REFINE_BUTTON_TEST_TAG = "pipeline_generate_refine"
+
+/** Lines the request field opens with, so a sentence is visible without scrolling. */
+private const val DEFAULT_DEMAND_MIN_LINES = 2

@@ -75,6 +75,23 @@
     <string name="orchestrator_library_speed_dial_new">Создать</string>
     <string name="orchestrator_library_speed_dial_new_pipeline">Новый пайплайн</string>
     <string name="orchestrator_library_speed_dial_from_preset">Из пресета</string>
+
+    <!-- One-sentence pipeline generation (draft, preview, then an explicit save) -->
+    <string name="orchestrator_library_speed_dial_from_sentence">Из фразы</string>
+    <string name="orchestrator_generate_title">Создать пайплайн</string>
+    <string name="orchestrator_generate_prompt_label">Опишите, что должен делать пайплайн</string>
+    <string name="orchestrator_generate_loading">Создаём…</string>
+    <string name="orchestrator_generate_preview_heading">Предпросмотр</string>
+    <string name="orchestrator_generate_plan_heading">План</string>
+    <string name="orchestrator_generate_action_generate">Создать</string>
+    <string name="orchestrator_generate_action_regenerate">Создать заново</string>
+    <string name="orchestrator_generate_action_refine">Изменить одной фразой</string>
+    <string name="orchestrator_generate_revision_label">Что изменить?</string>
+    <string name="orchestrator_generate_action_revise">Применить и создать заново</string>
+    <string name="orchestrator_generate_action_add_to_canvas">Добавить на холст</string>
+    <string name="orchestrator_generate_blank_demand">Сначала опишите пайплайн.</string>
+    <string name="orchestrator_generate_failed">Не удалось создать пайплайн: %1$s</string>
+    <string name="orchestrator_generate_success">Пайплайн добавлен</string>
     <string name="orchestrator_preset_picker_title">Выберите пресет</string>
     <string name="orchestrator_preset_picker_tab_bundled">Встроенные</string>
     <string name="orchestrator_preset_picker_tab_mine">Мои</string>

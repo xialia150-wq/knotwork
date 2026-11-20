@@ -60,6 +60,23 @@
     <string name="orchestrator_library_speed_dial_new">Nuevo</string>
     <string name="orchestrator_library_speed_dial_new_pipeline">Nuevo pipeline</string>
     <string name="orchestrator_library_speed_dial_from_preset">Desde un preajuste</string>
+
+    <!-- One-sentence pipeline generation (draft, preview, then an explicit save) -->
+    <string name="orchestrator_library_speed_dial_from_sentence">Desde una frase</string>
+    <string name="orchestrator_generate_title">Generar un pipeline</string>
+    <string name="orchestrator_generate_prompt_label">Describe qué debe hacer el pipeline</string>
+    <string name="orchestrator_generate_loading">Generando…</string>
+    <string name="orchestrator_generate_preview_heading">Vista previa</string>
+    <string name="orchestrator_generate_plan_heading">Planificación</string>
+    <string name="orchestrator_generate_action_generate">Generar</string>
+    <string name="orchestrator_generate_action_regenerate">Regenerar</string>
+    <string name="orchestrator_generate_action_refine">Cambiar una frase</string>
+    <string name="orchestrator_generate_revision_label">¿Qué debe cambiar?</string>
+    <string name="orchestrator_generate_action_revise">Aplicar y regenerar</string>
+    <string name="orchestrator_generate_action_add_to_canvas">Añadir al lienzo</string>
+    <string name="orchestrator_generate_blank_demand">Describe primero el pipeline.</string>
+    <string name="orchestrator_generate_failed">No se pudo generar un pipeline: %1$s</string>
+    <string name="orchestrator_generate_success">Pipeline añadido</string>
     <string name="orchestrator_preset_picker_title">Elige un preajuste</string>
     <string name="orchestrator_preset_picker_tab_bundled">Integrados</string>
     <string name="orchestrator_preset_picker_tab_mine">Míos</string>

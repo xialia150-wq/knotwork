@@ -85,6 +85,23 @@
     <string name="orchestrator_library_speed_dial_new_pipeline">New pipeline</string>
     <string name="orchestrator_library_speed_dial_from_preset">From preset</string>
 
+    <!-- One-sentence pipeline generation (draft, preview, then an explicit save) -->
+    <string name="orchestrator_library_speed_dial_from_sentence">From a sentence</string>
+    <string name="orchestrator_generate_title">Generate a pipeline</string>
+    <string name="orchestrator_generate_prompt_label">Describe what the pipeline should do</string>
+    <string name="orchestrator_generate_loading">Generating…</string>
+    <string name="orchestrator_generate_preview_heading">Preview</string>
+    <string name="orchestrator_generate_plan_heading">Plan</string>
+    <string name="orchestrator_generate_action_generate">Generate</string>
+    <string name="orchestrator_generate_action_regenerate">Regenerate</string>
+    <string name="orchestrator_generate_action_refine">Change one sentence</string>
+    <string name="orchestrator_generate_revision_label">What should change?</string>
+    <string name="orchestrator_generate_action_revise">Apply and regenerate</string>
+    <string name="orchestrator_generate_action_add_to_canvas">Add to canvas</string>
+    <string name="orchestrator_generate_blank_demand">Describe the pipeline first.</string>
+    <string name="orchestrator_generate_failed">Could not generate a pipeline: %1$s</string>
+    <string name="orchestrator_generate_success">Pipeline added</string>
+
     <!-- Preset picker sheet -->
     <string name="orchestrator_preset_picker_title">Choose a preset</string>
     <string name="orchestrator_preset_picker_tab_bundled">Bundled</string>

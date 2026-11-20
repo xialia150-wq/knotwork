@@ -450,6 +450,8 @@ Only Kotlin files appear inside the generated blocks.
     - `MemorySupersedeJudgeTest.kt` - Unit tests for `MemorySupersedeJudge`: verdict parsing through the real `StructuredOutputGate`, the fail-to-keep-both contract, cancellation, and the prompt layout that keeps a fact from opening a line of its own.
     - `MemoryVectorSimilarityTest.kt` - Unit tests for `MemoryVectorSimilarity` — the metric every stage of the memory subsystem shares, plus the near-duplicate threshold expressed in it.
     - `PipelineCompositionValidatorTest.kt` - Tests for PipelineCompositionValidator (cycles, depth limit, dangling targets).
+    - `PipelineGenerationModelTest.kt` - Pins the production gateway's model choice: DeepSeek, its reply passthrough, and the typed "cannot be reached" failure naming the key to add.
+    - `PipelineGenerationPromptBuilderTest.kt` - Asserts the generation prompt names the demand, the node catalogue, the plan request and only the connected MCP tools, and that correction prompts carry the findings and a bounded previous reply.
     - `ScheduledTaskTagTest.kt` - Verifies `ScheduledTaskTag`: the label a scheduled task carries is the only thing the task monitor can say about it (a queued task's input data is not readable), so it has to survive a round trip through a plain tag string and degrade to `null` — never to a wrong label — on anything it does not recognise.
     - `WorkspaceGlobTest.kt` - Unit tests for `WorkspaceGlob`, pinning the documented glob semantics: `*` stays within a path segment, `**` crosses directories, `?` matches a single non-separator character, and everything else is literal.
     - `WorkspaceNamePolicyTest.kt` - Unit tests for `WorkspaceNamePolicy`: which characters a new name may not carry, the byte limits at their exact boundaries (in UTF-8, not characters), and the two renderings of a forbidden character — replaced on import, escaped in a listing.
@@ -506,6 +508,7 @@ Only Kotlin files appear inside the generated blocks.
     - `FindPipelineBindingsUseCaseTest.kt` - `FindPipelineBindingsUseCase` — every id-keyed binding, one source at a time.
     - `FindPipelinesUsingSkillUseCaseTest.kt` - The skill-usage scan is wired now but dormant until the SKILL node ships (no `PipelineGraph` node can reference a skill yet), so it must return empty for every skill regardless of the saved pipelines.
     - `FireTriggerUseCaseTest.kt` - Unit tests for `FireTriggerUseCase` — the worker-side orchestration that loads a trigger, defers the decision to `EvaluateTriggerFiringUseCase`, acts (resolve the bound session, enqueue, mark fired, disarm event triggers, re-arm, or auto-disable), and — the focus of the journal write-point tests — records exactly one evaluation verdict per evaluated trigger.
+    - `GeneratePipelineFromPromptUseCaseTest.kt` - The generation loop against a scripted gateway: a valid reply, malformed JSON retried then exhausted by the gate, validation findings fed back, both retry budgets spent, transport failure and cancellation.
     - `GetContextWindowUseCaseTest.kt` - Tests for GetContextWindowUseCase.
     - `GetDiscoverableModelDetailUseCaseTest.kt` - Unit tests for `GetDiscoverableModelDetailUseCase`.
     - `GetModelPerformanceUseCaseTest.kt` - Unit tests for `GetModelPerformanceUseCase`.
@@ -555,6 +558,7 @@ Only Kotlin files appear inside the generated blocks.
     - `RetrieveRelevantMemoryUseCaseTest.kt` - Tests for RetrieveRelevantMemoryUseCase.
     - `RunBenchmarkUseCaseTest.kt` - Unit tests for `RunBenchmarkUseCase`.
     - `RunRateCeilingTest.kt` - Unit tests for `RunRateCeiling` — the shared runaway-guard arithmetic.
+    - `SaveGeneratedPipelineUseCaseTest.kt` - The only write path: a fresh id per save, the ordinary validation gates, refusal of empty/unrunnable drafts, storage failure surfaced as `Result`, cancellation escaping.
     - `SaveMessageToMemoryUseCaseTest.kt` - Unit tests for `SaveMessageToMemoryUseCase` — the direct-wrapper manual save path behind the chat "Save to memory" action.
     - `SavePipelineAsPresetUseCaseTest.kt` - Unit tests for `SavePipelineAsPresetUseCase`.
     - `SavePipelineUseCaseTest.kt` - Tests for SavePipelineUseCase.
@@ -714,6 +718,7 @@ Only Kotlin files appear inside the generated blocks.
         - `PromptPresetPickerDialogTest.kt` - Pure-logic tests for the filter helper backing `PromptPresetPickerDialog`.
       - `OrchestratorViewModelTest.kt` - Tests for OrchestratorViewModel.
       - `PipelineBindingsTextTest.kt` - The Replace confirmation's lines for what is bound to a pipeline.
+      - `PipelineGenerationViewModelTest.kt` - The dialog's ViewModel: the preview is positioned by `AutoLayout` and not saved, a blank demand is refused before any call, saving happens only on *Add to canvas*, a failed save keeps the draft, and dismissing cancels the in-flight generation without writing.
       - `presets/` - Tests for the preset gallery and its graph-flow preview.
         - `GraphFlowPreviewTest.kt` - Unit tests for the preset graph-flow preview.
         - `PipelinePresetsViewModelTest.kt` - Unit tests for `PipelinePresetsViewModel`.

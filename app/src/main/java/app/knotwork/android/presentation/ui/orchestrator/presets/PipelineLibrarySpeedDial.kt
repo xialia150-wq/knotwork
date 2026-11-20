@@ -20,20 +20,29 @@ import app.knotwork.design.icons.AppIcons
 import app.knotwork.design.theme.KnotworkTheme
 
 /**
- * Two-action speed-dial replacement for the catalog `PipelineLibraryFab`.
- * Tapping the primary FAB toggles a stack of two extended-FAB rows:
+ * Three-action speed-dial replacement for the catalog `PipelineLibraryFab`. Tapping the
+ * primary FAB toggles a stack of extended-FAB rows:
  *
  *  - `+ From preset` — opens the `PresetPickerSheet`.
+ *  - `+ From a sentence` — opens the one-sentence generator, which drafts a pipeline
+ *    and shows it as a preview before anything is saved.
  *  - `+ New pipeline` — preserves the existing "create blank pipeline" flow.
  *
- * The expansion is local — the screen does not need to thread state
- * across the navigation graph.
+ * The expansion is local — the screen does not need to thread state across the
+ * navigation graph.
  *
  * @param onNewPipeline Invoked when the user taps the New pipeline entry.
  * @param onFromPreset Invoked when the user taps the From preset entry.
+ * @param onGenerateFromSentence Invoked when the user taps the From a sentence entry.
+ * @param modifier Modifier applied to the dial's column.
  */
 @Composable
-fun PipelineLibrarySpeedDial(onNewPipeline: () -> Unit, onFromPreset: () -> Unit, modifier: Modifier = Modifier) {
+fun PipelineLibrarySpeedDial(
+    onNewPipeline: () -> Unit,
+    onFromPreset: () -> Unit,
+    onGenerateFromSentence: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var expanded by remember { mutableStateOf(false) }
     Column(
         modifier = modifier.testTag(tag = LIBRARY_SPEED_DIAL_TEST_TAG),
@@ -41,17 +50,33 @@ fun PipelineLibrarySpeedDial(onNewPipeline: () -> Unit, onFromPreset: () -> Unit
         horizontalAlignment = androidx.compose.ui.Alignment.End,
     ) {
         AnimatedVisibility(visible = expanded) {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    expanded = false
-                    onFromPreset()
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                icon = { Icon(AppIcons.Bookmark, contentDescription = null) },
-                text = { Text(stringResource(R.string.orchestrator_library_speed_dial_from_preset)) },
-                modifier = Modifier.testTag(tag = SPEED_DIAL_FROM_PRESET_TEST_TAG),
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(KnotworkTheme.spacing.sp2),
+                horizontalAlignment = androidx.compose.ui.Alignment.End,
+            ) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        expanded = false
+                        onFromPreset()
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    icon = { Icon(AppIcons.Bookmark, contentDescription = null) },
+                    text = { Text(stringResource(R.string.orchestrator_library_speed_dial_from_preset)) },
+                    modifier = Modifier.testTag(tag = SPEED_DIAL_FROM_PRESET_TEST_TAG),
+                )
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        expanded = false
+                        onGenerateFromSentence()
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    icon = { Icon(AppIcons.Add, contentDescription = null) },
+                    text = { Text(stringResource(R.string.orchestrator_library_speed_dial_from_sentence)) },
+                    modifier = Modifier.testTag(tag = SPEED_DIAL_FROM_SENTENCE_TEST_TAG),
+                )
+            }
         }
         ExtendedFloatingActionButton(
             onClick = {
@@ -87,3 +112,6 @@ internal const val SPEED_DIAL_NEW_TEST_TAG = "library_speed_dial_new"
 
 /** Test-tag applied to the secondary "From preset" FAB (visible when expanded). */
 internal const val SPEED_DIAL_FROM_PRESET_TEST_TAG = "library_speed_dial_from_preset"
+
+/** Test-tag applied to the "From a sentence" FAB (visible when expanded). */
+internal const val SPEED_DIAL_FROM_SENTENCE_TEST_TAG = "library_speed_dial_from_sentence"

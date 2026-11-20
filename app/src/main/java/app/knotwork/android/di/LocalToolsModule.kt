@@ -21,6 +21,8 @@ import app.knotwork.android.domain.engine.CloudLlmModelResolver
 import app.knotwork.android.domain.engine.CloudModelCatalog
 import app.knotwork.android.domain.engine.structured.CloudStructuredInferenceClientFactory
 import app.knotwork.android.domain.repositories.LocalToolExecutor
+import app.knotwork.android.domain.services.DeepSeekPipelineGenerationModel
+import app.knotwork.android.domain.services.PipelineGenerationModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -134,4 +136,13 @@ abstract class LocalToolsModule {
     abstract fun bindCloudStructuredInferenceClientFactory(
         impl: KoogStructuredInferenceClientFactory,
     ): CloudStructuredInferenceClientFactory
+
+    /**
+     * Domain-level binding for the sentence-to-pipeline model: DeepSeek Flash through
+     * the shared cloud structured-inference path. The generator's provider is fixed
+     * there, so this binding adds no setting and no second provider.
+     */
+    @Binds
+    @Singleton
+    abstract fun bindPipelineGenerationModel(impl: DeepSeekPipelineGenerationModel): PipelineGenerationModel
 }
