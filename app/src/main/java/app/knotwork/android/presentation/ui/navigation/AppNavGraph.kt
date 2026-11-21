@@ -1,25 +1,37 @@
 package app.knotwork.android.presentation.ui.navigation
 
 import android.content.Intent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.DefaultNavTransitions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import androidx.navigationevent.NavigationEvent
+import androidx.navigationevent.NavigationEventTransitionState
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import app.knotwork.android.domain.models.ProviderId
 import app.knotwork.android.presentation.state.ChatEntryRequest
 import app.knotwork.android.presentation.state.ChatEntryRequestRelay
@@ -134,7 +146,7 @@ fun AppNavGraph(
     onSplashContentReady: () -> Unit = {},
     onSplashBackgroundChanged: (Color) -> Unit = {},
 ) {
-    NavHost(
+    AppNavHost(
         navController = navController,
         startDestination = NavRoutes.SPLASH,
         modifier = modifier.fillMaxSize(),
@@ -603,6 +615,78 @@ fun AppNavGraph(
         }
     }
 }
+
+/** Hands off the screen immediately on tab switches and selected detail routes. */
+@Composable
+internal fun AppNavHost(
+    navController: NavHostController,
+    startDestination: String,
+    modifier: Modifier = Modifier,
+    builder: NavGraphBuilder.() -> Unit,
+) {
+    val backPreviewOffset = with(LocalDensity.current) { BACK_PREVIEW_OFFSET_DP.dp.toPx() }
+    val dispatcher = checkNotNull(LocalNavigationEventDispatcherOwner.current).navigationEventDispatcher
+    val gestureState = dispatcher.transitionState.collectAsState()
+    val currentEntry = navController.currentBackStackEntryAsState()
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier.clipToBounds().graphicsLayer {
+            // Follow the live gesture without extending the NavHost's exit transition.
+            val gesture = gestureState.value as? NavigationEventTransitionState.InProgress
+            translationX = if (
+                isImmediateDetail(
+                    parentRoute = navController.previousBackStackEntry?.destination?.route,
+                    detailRoute = currentEntry.value?.destination?.route,
+                ) &&
+                gesture?.direction == NavigationEventTransitionState.TRANSITIONING_BACK
+            ) {
+                val event = gesture.latestEvent
+                val distance = backPreviewOffset * event.progress
+                if (event.swipeEdge == NavigationEvent.EDGE_RIGHT) -distance else distance
+            } else {
+                0f
+            }
+        },
+        enterTransition = {
+            if (shouldCutTransition()) EnterTransition.None else DefaultNavTransitions.enterTransition(this)
+        },
+        exitTransition = {
+            if (shouldCutTransition()) ExitTransition.None else DefaultNavTransitions.exitTransition(this)
+        },
+        predictivePopEnterTransition = { swipeEdge ->
+            if (shouldCutTransition()) {
+                EnterTransition.None
+            } else {
+                DefaultNavTransitions.predictivePopEnterTransition(this, swipeEdge)
+            }
+        },
+        predictivePopExitTransition = { swipeEdge ->
+            if (shouldCutTransition()) {
+                ExitTransition.None
+            } else {
+                DefaultNavTransitions.predictivePopExitTransition(this, swipeEdge)
+            }
+        },
+        builder = builder,
+    )
+}
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.shouldCutTransition(): Boolean {
+    val fromRoute = initialState.destination.route
+    val toRoute = targetState.destination.route
+    val tabSwitch = fromRoute in TAB_ROOT_ROUTES && toRoute in TAB_ROOT_ROUTES
+    // Hand off drawing and touch input together when entering or leaving these details.
+    return tabSwitch || isImmediateDetail(fromRoute, toRoute) || isImmediateDetail(toRoute, fromRoute)
+}
+
+private fun isImmediateDetail(parentRoute: String?, detailRoute: String?): Boolean =
+    (parentRoute in TOOL_LIST_ROUTES && detailRoute == NavRoutes.TOOL_DETAIL) ||
+        (parentRoute == NavRoutes.MORE && detailRoute in MORE_CONTENT_ROUTES)
+
+private val TOOL_LIST_ROUTES = setOf(NavRoutes.TOOLS, NavRoutes.SETTINGS_TOOLS_MANAGE)
+private val MORE_CONTENT_ROUTES = setOf(NavRoutes.FILES, NavRoutes.MEMORY)
+private const val BACK_PREVIEW_OFFSET_DP = 8
 
 /**
  * The tool / MCP management surface, registered at two routes.
